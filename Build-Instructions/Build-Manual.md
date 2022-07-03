@@ -121,13 +121,19 @@
 
 ## Assembly
 
+Use this picture as reference: 
+
+![Stargate Rear (real)](./Assets/stargate-front-inserts.png)
+
 # Lightning diffuser for chevrons
 - Insert "Light-Chevron" into place on "Stargate-Front" and "Stargate-Back". You may need a hammer and a big metal part to force it. Be gentle to now destroy the parts. You can print "Chevron-insert-tool.stl" too to help.
 
 # Alignment blocks
 - Insert "Alignment-block" into place on the "Stargate-Front" part. 
 Ensure the holes are clear and everything fit. Then glue them in place, pour gorilla glue into the hole then install the alignment blocks.
-- Use a sharpie and mark a chevron as being the "master chevron" on both side. Doesn't matter which one it is but it should have a master chevron. It's labelled M.C on the picture below, use the same pattern.
+- Use a sharpie and mark a chevron as being the "master chevron" on both side. Doesn't matter which one it is but it should have a master chevron. It's labelled M.C on the picture above, use the same pattern.
 
-![Stargate Rear (real)](./Assets/front-and-rear.jpg)
+# Test
+- Try to assemble "Stargate-Front" and "Stargate-Back" together to ensure alignment block are meshing together.
 
+![stargate-front-back-assemble](./Assets/stargate-front-back-assemble.png)
