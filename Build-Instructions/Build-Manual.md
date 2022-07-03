@@ -48,14 +48,21 @@
 | Dremel Purple Glue | 1 | https://www.amazon.ca/Dremel-GS45-01-Glue-Sticks/dp/B077FVQ3DX
 | Magigoo | 1 | https://shop3d.ca/products/magigoo-3d-printing-adhesive-50ml?variant=27936894287950&currency=CAD&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic
 
+### MISC
+
+| Description | Quantity | Description
+|---|---|---|
+| Gorilla Glue | 1 | Used to glue the most important parts.
+| Canopy Glue | 1 | Need a glue that turn transparent. Gorilla glue stain the plexiglass and leave horrible traces.
+
 # Ring assembly
 
-- Print "Stargate-Front-0.2mm_x1.stl" using 0.2 mm nozzle 
+- Print "Stargate-Front-0.2mm_x1.stl" using 0.2 mm nozzle. Recommend using Tree Support with BRIM, no raft. May takes ~40h to print.
 
 ![Stargate Front](./Assets/Stargate-Front.png)
 ![Stargate Front (real)](./Assets/Stargate-Front-0.2vs0.4.png)
 
-- Print "Stargate-Back-0.2mm_x1.stl" using 0.2 mm nozzle 
+- Print "Stargate-Back-0.2mm_x1.stl" using 0.2 mm nozzle . Recommend using Tree Support with BRIM, no raft. May takes ~40h to print.
 
 ![Stargate Back](./Assets/Stargate-Back.png)
 
@@ -89,14 +96,38 @@
 
 - Print "Magnet-ring" 1 times using 0.2 mm nozzle. Color doesn't really matter.
 
-![Inner-ring](./Assets/Magnet-ring.png)
+![Magnet-ring](./Assets/Magnet-ring.png)
+
+- Print "symbol-light-guide_0.2mm-x36.stl" 36 times using 0.2 mm nozzle. Should use transparent or white PLA.
+
+![symbol-light-guide_0.2mm-x36.stl](./Assets/symbol-light-guide_0.2mm-x36.png)
 
 - Print "Inner ring" 1 times using 0.4 mm nozzle. Color doesn't really matter.
 
 ![Inner-ring](./Assets/Inner-ring.png)
 
+- Print "Inner-ring-sensor-holder_0.4mm-x1" 1 times using 0.4 mm nozzle. Color doesn't really matter.
+
+![Inner-ring-sensor-holder_0.4mm-x1](./Assets/Inner-ring-sensor-holder_0.4mm-x1.png)
+
+- Print "Home-magnet-holder_0.4mm-x1" 1 times using 0.4 mm nozzle. Color doesn't really matter.
+
+![Home-magnet-holder_0.4mm-x1](./Assets/Home-magnet-holder_0.4mm-x1.png)
+
+- Print every symbols 1 times using 0.2 mm nozzle. Should be the gray PLA.
+
+![Every-Symbols](./Assets/Every-Symbols.png)
+
+
 ## Assembly
 
+# Lightning diffuser for chevrons
 - Insert "Light-Chevron" into place on "Stargate-Front" and "Stargate-Back". You may need a hammer and a big metal part to force it. Be gentle to now destroy the parts. You can print "Chevron-insert-tool.stl" too to help.
 
+# Alignment blocks
+- Insert "Alignment-block" into place on the "Stargate-Front" part. 
+Ensure the holes are clear and everything fit. Then glue them in place, pour gorilla glue into the hole then install the alignment blocks.
+- Use a sharpie and mark a chevron as being the "master chevron" on both side. Doesn't matter which one it is but it should have a master chevron. It's labelled M.C on the picture below, use the same pattern.
+
 ![Stargate Rear (real)](./Assets/front-and-rear.jpg)
+
