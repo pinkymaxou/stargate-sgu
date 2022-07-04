@@ -54,6 +54,7 @@
 |---|---|---|
 | Gorilla Glue | 1 | Used to glue the most important parts.
 | Canopy Glue | 1 | Need a glue that turn transparent. Gorilla glue stain the plexiglass and leave horrible traces.
+| Small clamps to hold parts while curing | 1 | 
 
 # Ring assembly
 
@@ -74,7 +75,7 @@
 
 ![Alignment-block](./Assets/Alignment-block.png)
 
-- Print "Module-With_wheel-0.2mm_x18.stl" 18 times using 0.2 mm nozzle
+- Print "Module-With_wheel-0.2mm_x18.stl" 18 times using 0.2 mm nozzle. Color doesn't matter.
 
 ![Module-With_wheel](./Assets/Module-With_wheel-0.2mm_x18.png)
 
@@ -102,6 +103,11 @@
 
 ![symbol-light-guide_0.2mm-x36.stl](./Assets/symbol-light-guide_0.2mm-x36.png)
 
+- Print every symbols 1 times using 0.2 mm nozzle. Should use gray PLA.
+You can use a resin printer to print them and get better resolution, but resin is more transparent than gray PLA. You will need to paint the symbols after if you want correct effect using resin or too much light will go through.
+
+![Every-Symbols](./Assets/Every-Symbols.png)
+
 - Print "Inner ring" 1 times using 0.4 mm nozzle. Color doesn't really matter.
 
 ![Inner-ring](./Assets/Inner-ring.png)
@@ -114,12 +120,8 @@
 
 ![Home-magnet-holder_0.4mm-x1](./Assets/Home-magnet-holder_0.4mm-x1.png)
 
-- Print every symbols 1 times using 0.2 mm nozzle. Should be the gray PLA.
 
-![Every-Symbols](./Assets/Every-Symbols.png)
-
-
-## Assembly
+## Assemble alignment block and chevrons light diffuser
 
 Use this picture as reference: 
 
@@ -137,3 +139,39 @@ Ensure the holes are clear and everything fit. Then glue them in place, pour gor
 - Try to assemble "Stargate-Front" and "Stargate-Back" together to ensure alignment block are meshing together.
 
 ![stargate-front-back-assemble](./Assets/stargate-front-back-assemble.png)
+
+## Assemble bearing modules
+
+- Modules are made of two part meant to mesh together and hold the bearing in sandwitch.
+The part is printed 18 times so you will have 9 modules.
+So the tolerance are very tight, you will have to use a lot of force to insert the bearing. If it's not hard to insert then something is wrong and you may need to change the design of the part. We suggest you to use a wrench or c-clamp to force two part together.
+- Use gorilla glue to glue both part together and use clamp to hold parts
+
+![](./Assets/Module-With_wheel-0.2mm_x18-2.png)
+![](./Assets/Module-With_wheel-0.2mm_x18-real.png)
+
+- Insert the completed modules in their final spaces to ensure everything fit in place.
+
+![](./Assets/all-modules-in-places.png)
+
+
+## Assemble symbols
+
+Tolerance are so tight that you will need a hammer to insert symbols in place and you need to put something behind the gate to avoid destroying it. 
+You don't need glue. It may be possible you need to sand a bit to insert symbols.
+
+- Put each "symbol-light-guide_0.2mm-x36" (36 of them) into symbol holes. 
+- Insert symbols in each holes at correction positions according to the chart, the master chevron should be positionned as top most according to your previous marking.
+
+![](./Assets/SGUUniverse.webp)
+
+![](./Assets/all-symbols-in-place.jpg)
+
+## Assemble lights reflectors (Light-chevron-cover)
+
+The reflectors are meant to reflect light and give a better effect so it's important to print them with white color.
+
+- Glue "light-chevron-cover" using canopy glue over chevron "Light-chevron".
+- Glue WS1228B leds over holes, there are 45 LEDs to glue using canopy glue. It's important for chevron LEDs to be as close as possible to "alignment-block" and not interfere with the ring groove. Magnet ring will be fitted there later.
+
+![](./Assets/Light-chevron-cover.png)
