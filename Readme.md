@@ -32,7 +32,8 @@ Still writing the print and assembly manual, more will come later including the 
 | Module-With_wheel-0.2mm_x18.stl | 18
 | SGUv8-Ring.f3d | 1
 | Stargate-Back-0.2mm_x1.stl | 1
-| Stargate-Back-Transparent-ToggleSw_0.2mm-x1.stl | 1
+| Stargate-Back-Transparent-PwrSw_0.2mm-x1 | 1
+| Stargate-Back-Transparent-ResetBtn_0.2mm-x1 | 1
 | Stargate-Back-TransWindow-0.2mm-x10-12.stl | 12
 | Stargate-Front-0.2mm_x1.stl | 1
 | Symbols/symbol-template10_0.2mm-x1.stl | 1
@@ -71,7 +72,6 @@ Still writing the print and assembly manual, more will come later including the 
 | Symbols/symbol-template7_0.2mm-x1.stl | 1
 | Symbols/symbol-template8_0.2mm-x1.stl | 1
 | Symbols/symbol-template9_0.2mm-x1.stl | 1
-| Window-pushbutton_0.2mm-x1.stl | 1
 | symbol-light-guide_0.2mm-x36.stl | 36
 | TOTAL | 148
 

@@ -60,72 +60,72 @@
 
 - Print "Stargate-Front-0.2mm_x1.stl" using 0.2 mm nozzle. Recommend using Tree Support with BRIM, no raft. May takes ~40h to print.
 
-![Stargate Front](./Assets/Stargate-Front.png)
-![Stargate Front (real)](./Assets/Stargate-Front-0.2vs0.4.png)
+![](./Assets/Stargate-Front.png)
+![](./Assets/Stargate-Front-0.2vs0.4.png)
 
 - Print "Stargate-Back-0.2mm_x1.stl" using 0.2 mm nozzle . Recommend using Tree Support with BRIM, no raft. May takes ~40h to print.
 
-![Stargate Back](./Assets/Stargate-Back.png)
+![](./Assets/Stargate-Back.png)
 
 - Print "Light-chevron-0.2mm_x18" 18 times using 0.2 mm nozzle 
 
-![Light-chevron](./Assets/Light-chevron-0.2mm_x18.png)
+![](./Assets/Light-chevron-0.2mm_x18.png)
 
 - Print "Alignment-block-0.2mm_x9" 9 times using 0.2 mm nozzle
 
-![Alignment-block](./Assets/Alignment-block.png)
+![](./Assets/Alignment-block.png)
 
 - Print "Module-With_wheel-0.2mm_x18.stl" 18 times using 0.2 mm nozzle. Color doesn't matter.
 
-![Module-With_wheel](./Assets/Module-With_wheel-0.2mm_x18.png)
+![](./Assets/Module-With_wheel-0.2mm_x18.png)
 
 - Print "Light-chevron-cover-0.2mm-x9" 9 times using 0.2 mm nozzle. Using white PLA, it will reflect light.
 
-![Module-With_wheel](./Assets/Light-chevron-cover-0.2mm-x9.png)
+![](./Assets/Light-chevron-cover-0.2mm-x9.png)
 
 - Print "Stargate-Back-TransWindow-0.2mm-x10-12" 12 times using 0.2 mm nozzle. Use transparent PLA or white.
 
-![Stargate-Back-TransWindow-0.2mm-x10-12](./Assets/Stargate-Back-TransWindow-0.2mm-x10-12.png)
+![](./Assets/Stargate-Back-TransWindow-0.2mm-x10-12.png)
 
-- Print "Stargate-Back-Transparent-ToggleSw_0.2mm-x1" 1 time using 0.2 mm nozzle. Use transparent PLA or white.
+- Print "Stargate-Back-Transparent-ResetBtn_0.2mm-x1" 1 time using 0.2 mm nozzle. Use transparent PLA or white.
 
-![Stargate-Back-Transparent-ToggleSw_0.2mm-x1](./Assets/Stargate-Back-Transparent-ToggleSw_0.2mm-x1.png)
+![](./Assets/Stargate-Back-Transparent-ResetBtn_0.2mm-x1.png)
 
-- Print "Window-pushbutton_0.2mm-x1" 1 time using 0.2 mm nozzle. Use transparent PLA or white.
+- Print "Stargate-Back-Transparent-PwrSw_0.2mm-x1" 1 time using 0.2 mm nozzle. Use transparent PLA or white.
 
-![Window-pushbutton_0.2mm](./Assets/Window-pushbutton_0.2mm-x1.png)
+![](./Assets/Stargate-Back-Transparent-PwrSw_0.2mm-x1.png)
 
 - Print "Magnet-ring" 1 times using 0.2 mm nozzle. Color doesn't really matter.
 
-![Magnet-ring](./Assets/Magnet-ring.png)
+![](./Assets/Magnet-ring.png)
 
 - Print "symbol-light-guide_0.2mm-x36.stl" 36 times using 0.2 mm nozzle. Should use transparent or white PLA.
 
-![symbol-light-guide_0.2mm-x36.stl](./Assets/symbol-light-guide_0.2mm-x36.png)
+![](./Assets/symbol-light-guide_0.2mm-x36.png)
 
 - Print every symbols 1 times using 0.2 mm nozzle. Should use gray PLA.
 You can use a resin printer to print them and get better resolution, but resin is more transparent than gray PLA. You will need to paint the symbols after if you want correct effect using resin or too much light will go through.
 
-![Every-Symbols](./Assets/Every-Symbols.png)
+![](./Assets/Every-Symbols.png)
 
 - Print "Inner ring" 1 times using 0.4 mm nozzle. Color doesn't really matter.
 
-![Inner-ring](./Assets/Inner-ring.png)
+![](./Assets/Inner-ring.png)
 
 - Print "Inner-ring-sensor-holder_0.4mm-x1" 1 times using 0.4 mm nozzle. Color doesn't really matter.
 
-![Inner-ring-sensor-holder_0.4mm-x1](./Assets/Inner-ring-sensor-holder_0.4mm-x1.png)
+![](./Assets/Inner-ring-sensor-holder_0.4mm-x1.png)
 
 - Print "Home-magnet-holder_0.4mm-x1" 1 times using 0.4 mm nozzle. Color doesn't really matter.
 
-![Home-magnet-holder_0.4mm-x1](./Assets/Home-magnet-holder_0.4mm-x1.png)
+![](./Assets/Home-magnet-holder_0.4mm-x1.png)
 
 
 ## Assemble alignment block and chevrons light diffuser
 
 Use this picture as reference: 
 
-![Stargate Rear (real)](./Assets/stargate-front-inserts.png)
+![](./Assets/stargate-front-inserts.png)
 
 # Lightning diffuser for chevrons
 - Insert "Light-Chevron" into place on "Stargate-Front" and "Stargate-Back". You may need a hammer and a big metal part to force it. Be gentle to now destroy the parts. You can print "Chevron-insert-tool.stl" too to help.
@@ -138,7 +138,7 @@ Ensure the holes are clear and everything fit. Then glue them in place, pour gor
 # Test
 - Try to assemble "Stargate-Front" and "Stargate-Back" together to ensure alignment block are meshing together.
 
-![stargate-front-back-assemble](./Assets/stargate-front-back-assemble.png)
+![](./Assets/stargate-front-back-assemble.png)
 
 ## Assemble bearing modules
 
@@ -172,6 +172,33 @@ You don't need glue. It may be possible you need to sand a bit to insert symbols
 The reflectors are meant to reflect light and give a better effect so it's important to print them with white color.
 
 - Glue "light-chevron-cover" using canopy glue over chevron "Light-chevron".
-- Glue WS1228B leds over holes, there are 45 LEDs to glue using canopy glue. It's important for chevron LEDs to be as close as possible to "alignment-block" and not interfere with the ring groove. Magnet ring will be fitted there later.
+- Glue WS1228B leds over holes, there are 45 LEDs to glue using canopy glue. It's important for chevron LEDs to be as close as possible to "alignment-block" and not interfere with the ring groove. Magnet ring will be fitted there later. ** WARNING: ** There is an arrow on each LEDs, they should point in counter-clockwise direction. (See the picture)
+- Starting with the "master chevron" LED, solder all LEDs positive and negative terminals. Ensure to connect the last LED to the master chevron LED to reduce voltage peak. You can use nacked wire.
+- Starting with the "master chevron" LED, solder every data wire, start with the output of the master chevron LED, then connect to the next etc ...
+The master chevron LED data input should be where the microcontroller will be connected later. Recommend to use very small gauge, like 28 awg.
 
 ![](./Assets/Light-chevron-cover.png)
+
+- Add tape over symbol LEDs to project from accidental short circuit.
+- Add a 3 pins connector on the master chevron LED. Servo motor connector or JST can do the job. One ground, one positive and the WS1228B led data input.
+
+![](./Assets/light-tape-chevron.png)
+
+## Assemble stargate back window
+
+You needs those parts:
+- Stargate-Back-TransWindow-0.2mm-x10-12.stl (x1)
+
+![](./Assets/Stargate-Back-TransWindow-0.2mm-x10-12.png)
+
+- Stargate-Back-Transparent-ResetBtn_0.2mm-x1.stl (x1)
+
+![](./Assets/Stargate-Back-Transparent-ResetBtn_0.2mm-x1.png)
+
+- Stargate-Back-Window-pushbutton_0.2mm-x1.stl (x10)
+
+![](./Assets/Stargate-Back-Transparent-PwrSw_0.2mm-x1.png)
+
+
+
+
