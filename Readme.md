@@ -72,5 +72,6 @@ Still writing the print and assembly manual, more will come later including the 
 | Symbols/symbol-template8_0.2mm-x1.stl | 1
 | Symbols/symbol-template9_0.2mm-x1.stl | 1
 | Window-pushbutton_0.2mm-x1.stl | 1
-| TOTAL | 112
+| symbol-light-guide_0.2mm-x36.stl | 36
+| TOTAL | 148
 
