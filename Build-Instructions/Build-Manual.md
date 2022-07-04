@@ -173,7 +173,7 @@ The reflectors are meant to reflect light and give a better effect so it's impor
 
 - Glue "light-chevron-cover" using canopy glue over chevron "Light-chevron".
 - Glue WS1228B leds over holes, there are 45 LEDs to glue using canopy glue. It's important for chevron LEDs to be as close as possible to "alignment-block" and not interfere with the ring groove. Magnet ring will be fitted there later. ** WARNING: ** There is an arrow on each LEDs, they should point in counter-clockwise direction. (See the picture)
-- Starting with the "master chevron" LED, solder all LEDs positive and negative terminals. Ensure to connect the last LED to the master chevron LED to reduce voltage peak. You can use nacked wire.
+- Starting with the "master chevron" LED, solder all LEDs positive and negative terminals. Ensure to connect the last LED to the master chevron LED to reduce voltage peak. You can use nacked wire. **Warning: ** Ensure to not overheat with the soldering iron. Be very careful to not melt the plastic under it.
 - Starting with the "master chevron" LED, solder every data wire, start with the output of the master chevron LED, then connect to the next etc ...
 The master chevron LED data input should be where the microcontroller will be connected later. Recommend to use very small gauge, like 28 awg.
 
@@ -199,6 +199,22 @@ You needs those parts:
 
 ![](./Assets/Stargate-Back-Transparent-PwrSw_0.2mm-x1.png)
 
+### Power collector
 
+- Use two "Stargate-Back-TransWindow-0.2mm-x10-12", wrap them using cooper tape. 
+** Warning: ** The back of the cooper tape is not conductor at all, ensure both side are covered by the same piece.
+- Glue them in place using gorilla glue
+- Use a sharpy to mark the positive and the negative inside the ring.
+- Insert the magnet into "Home-magnet-holder_0.4mm-x1" and glue it in place on "stargate-back" (check the photo for details)
 
+![](./Assets/stargate-back-power-collector-zero-magnet.png)
 
+- Mark polarity inside the track using a sharpie. It won't be visible once assembled.
+
+![](./Assets/stargate-back-power-collector-2.png)
+
+### Other windows
+
+- Glue other transparent window and button using this pattern.
+
+![](./Assets/stargate-back-window-assembly.png)
