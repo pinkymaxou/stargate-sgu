@@ -1,13 +1,13 @@
-**Warning**: This project contains several hundred of parts to print and hundreds of hour of print. 
+**Warning**: This project contains several hundred parts to print and hundreds hours of print. 
 If you go decide to take this path you will suffer a lot, you may lost some compatriot in the battle.
 You will no longer be the same after that, it could also cause hair loss.
 
 # Stargate Universe
 
-This project is basically a small stargate made to decorate your desk. It feature lightning for symbols like in the serie and the wheel spin.
+This project is basically a small stargate made to decorate your desk. It feature lightning for symbols like in the serie and the ring spins.
 https://www.youtube.com/channel/UCcdElKiCrVWVq5p8XVurI4g for more details.
 
-Unfortunately this project went through a lot of trial and error, so there are more part than it should have especially in the base.
+Unfortunately this project went through a lot of trial and error, so there are more parts than it should have especially in the base.
 Optimize it would require making a second gate to test new optimization. I'm no willing to do that now.
 
 Still writing the print and assembly manual, more will come later including the source code and wiring diagrams to operate the system.
