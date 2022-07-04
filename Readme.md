@@ -19,56 +19,58 @@ Still writing the print and assembly manual, more will come later including the 
 
 ##  Ring
 
-| File name |
-|---|
-| Alignment-block-0.2mm_x9.stl
-| Chevron-insert-tool.stl
-| Home-magnet-holder_0.4mm-x1.stl
-| Inner-ring-0.4mm_x1.stl
-| Inner-ring-sensor-holder_0.4mm-x1.stl
-| Light-chevron-0.2mm_x18.stl
-| Light-chevron-cover-0.2mm-x9.stl
-| Magnet-ring-0.2mm-x1.stl
-| Module-With_wheel-0.2mm_x18.stl
-| SGUv8-Ring.f3d
-| Stargate-Back-0.2mm_x1.stl
-| Stargate-Back-Transparent-ToggleSw_0.2mm-x1.stl
-| Stargate-Back-TransWindow-0.2mm-x10-12.stl
-| Stargate-Front-0.2mm_x1.stl
-| Symbols/symbol-template10_0.2mm-x1.stl
-| Symbols/symbol-template11_0.2mm-x1.stl
-| Symbols/symbol-template12_0.2mm-x1.stl
-| Symbols/symbol-template13_0.2mm-x1.stl
-| Symbols/symbol-template14_0.2mm-x1.stl
-| Symbols/symbol-template15_0.2mm-x1.stl
-| Symbols/symbol-template16_0.2mm-x1.stl
-| Symbols/symbol-template17_0.2mm-x1.stl
-| Symbols/symbol-template18_0.2mm-x1.stl
-| Symbols/symbol-template19_0.2mm-x1.stl
-| Symbols/symbol-template1_0.2mm-x1.stl
-| Symbols/symbol-template20_0.2mm-x1.stl
-| Symbols/symbol-template21_0.2mm-x1.stl
-| Symbols/symbol-template22_0.2mm-x1.stl
-| Symbols/symbol-template23_0.2mm-x1.stl
-| Symbols/symbol-template24_0.2mm-x1.stl
-| Symbols/symbol-template25_0.2mm-x1.stl
-| Symbols/symbol-template26_0.2mm-x1.stl
-| Symbols/symbol-template27_0.2mm-x1.stl
-| Symbols/symbol-template28_0.2mm-x1.stl
-| Symbols/symbol-template29_0.2mm-x1.stl
-| Symbols/symbol-template2_0.2mm-x1.stl
-| Symbols/symbol-template30_0.2mm-x1.stl
-| Symbols/symbol-template31_0.2mm-x1.stl
-| Symbols/symbol-template32_0.2mm-x1.stl
-| Symbols/symbol-template33_0.2mm-x1.stl
-| Symbols/symbol-template34_0.2mm-x1.stl
-| Symbols/symbol-template35_0.2mm-x1.stl
-| Symbols/symbol-template36_0.2mm-x1.stl
-| Symbols/symbol-template3_0.2mm-x1.stl
-| Symbols/symbol-template4_0.2mm-x1.stl
-| Symbols/symbol-template5_0.2mm-x1.stl
-| Symbols/symbol-template6_0.2mm-x1.stl
-| Symbols/symbol-template7_0.2mm-x1.stl
-| Symbols/symbol-template8_0.2mm-x1.stl
-| Symbols/symbol-template9_0.2mm-x1.stl
-| Window-pushbutton_0.2mm-x1.stl
+| File name | Count |
+|---|---|
+| Alignment-block-0.2mm_x9.stl | 9
+| Chevron-insert-tool.stl | 1
+| Home-magnet-holder_0.4mm-x1.stl | 1
+| Inner-ring-0.4mm_x1.stl | 1
+| Inner-ring-sensor-holder_0.4mm-x1.stl | 1
+| Light-chevron-0.2mm_x18.stl | 18
+| Light-chevron-cover-0.2mm-x9.stl | 9
+| Magnet-ring-0.2mm-x1.stl | 1
+| Module-With_wheel-0.2mm_x18.stl | 18
+| SGUv8-Ring.f3d | 1
+| Stargate-Back-0.2mm_x1.stl | 1
+| Stargate-Back-Transparent-ToggleSw_0.2mm-x1.stl | 1
+| Stargate-Back-TransWindow-0.2mm-x10-12.stl | 12
+| Stargate-Front-0.2mm_x1.stl | 1
+| Symbols/symbol-template10_0.2mm-x1.stl | 1
+| Symbols/symbol-template11_0.2mm-x1.stl | 1
+| Symbols/symbol-template12_0.2mm-x1.stl | 1
+| Symbols/symbol-template13_0.2mm-x1.stl | 1
+| Symbols/symbol-template14_0.2mm-x1.stl | 1
+| Symbols/symbol-template15_0.2mm-x1.stl | 1
+| Symbols/symbol-template16_0.2mm-x1.stl | 1
+| Symbols/symbol-template17_0.2mm-x1.stl | 1
+| Symbols/symbol-template18_0.2mm-x1.stl | 1
+| Symbols/symbol-template19_0.2mm-x1.stl | 1
+| Symbols/symbol-template1_0.2mm-x1.stl | 1
+| Symbols/symbol-template20_0.2mm-x1.stl | 1
+| Symbols/symbol-template21_0.2mm-x1.stl | 1
+| Symbols/symbol-template22_0.2mm-x1.stl | 1
+| Symbols/symbol-template23_0.2mm-x1.stl | 1
+| Symbols/symbol-template24_0.2mm-x1.stl | 1
+| Symbols/symbol-template25_0.2mm-x1.stl | 1
+| Symbols/symbol-template26_0.2mm-x1.stl | 1
+| Symbols/symbol-template27_0.2mm-x1.stl | 1
+| Symbols/symbol-template28_0.2mm-x1.stl | 1
+| Symbols/symbol-template29_0.2mm-x1.stl | 1
+| Symbols/symbol-template2_0.2mm-x1.stl | 1
+| Symbols/symbol-template30_0.2mm-x1.stl | 1
+| Symbols/symbol-template31_0.2mm-x1.stl | 1
+| Symbols/symbol-template32_0.2mm-x1.stl | 1
+| Symbols/symbol-template33_0.2mm-x1.stl | 1
+| Symbols/symbol-template34_0.2mm-x1.stl | 1
+| Symbols/symbol-template35_0.2mm-x1.stl | 1
+| Symbols/symbol-template36_0.2mm-x1.stl | 1
+| Symbols/symbol-template3_0.2mm-x1.stl | 1
+| Symbols/symbol-template4_0.2mm-x1.stl | 1
+| Symbols/symbol-template5_0.2mm-x1.stl | 1
+| Symbols/symbol-template6_0.2mm-x1.stl | 1
+| Symbols/symbol-template7_0.2mm-x1.stl | 1
+| Symbols/symbol-template8_0.2mm-x1.stl | 1
+| Symbols/symbol-template9_0.2mm-x1.stl | 1
+| Window-pushbutton_0.2mm-x1.stl | 1
+| TOTAL | 112
+
