@@ -153,6 +153,8 @@ So the tolerance are very tight, you will have to use a lot of force to insert t
 
 - Insert the completed modules in their final spaces to ensure everything fit in place.
 
+***Warning***: DO NOT GLUE THE MODULES to the stargate-back or stargate-front! they will never need to be glued. They will hold in place by themselve once both halves get assembled.
+
 ![](./Assets/all-modules-in-places.png)
 
 
@@ -161,7 +163,10 @@ So the tolerance are very tight, you will have to use a lot of force to insert t
 Tolerance are so tight that you will need a hammer to insert symbols in place and you need to put something behind the gate to avoid destroying it. 
 You don't need glue. It may be possible you need to sand a bit to insert symbols.
 
-- Put each "symbol-light-guide_0.2mm-x36" (36 of them) into symbol holes. 
+- Put each "symbol-light-guide_0.2mm-x36" (36 of them) into symbol holes. You can try lighting up a LED behind to ensure they diffuse light correctly.
+
+![](./Assets/symbol-light-guide_0.2mm-x36.png)
+
 - Insert symbols in each holes at correction positions according to the chart, the master chevron should be positionned as top most according to your previous marking.
 
 ![](./Assets/SGUUniverse.webp)
