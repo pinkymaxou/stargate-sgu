@@ -1,62 +1,3 @@
-# Material prerequisite
-
-### Electronics
-
-| Description | Quantity | URL 
-|---|---|---|
-| MOSFET P Channel | 1 | https://www.aliexpress.com/item/32884055864.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| LEDs WS2812B | 100 | https://www.aliexpress.com/item/1005002657432751.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| Copper tape  | 1 | https://www.aliexpress.com/item/1005002822966859.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| Plexiglass 20x20cm (recommend buying spare)  | 1 | https://www.aliexpress.com/item/32833660352.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| 4x2 mm magnets  | 160 | https://www.aliexpress.com/item/1005002591601630.html?spm=a2g0o.9042311.0.0.3dbd4c4dx9x0BJ |
-| Privacy film  | 25x25 cm at least | https://www.aliexpress.com/item/32967449727.html?spm=a2g0o.9042311.0.0.27424c4dzn6Avn |
-| 693ZZ bearings (8mm wide, 4mm thick, 3mm inner)  | 9 |  https://www.aliexpress.com/item/557757520.html |
-| M5Stack Official M5Stamp Pico | 1 |  https://www.aliexpress.com/item/1005003449579749.html?spm=a2g0o.productlist.0.0.1c9d2fabovp8Jp |
-| LiPo Charger with 5v boost |   | https://www.aliexpress.com/item/4000935870120.html |
-| LiPo battery | 4x 100mA  | https://www.aliexpress.com/item/32853990764.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd (any will do as long as it fit into the ring) |
-| ESP32 | 1 | Any with enough output pin will do. But don't buy node MCU they sucks |
-| Fermion DFPlayer Pro Mini MP3 | 1 | https://www.aliexpress.com/item/4000394488862.html |
-| DRV8825 Stepper Motor Controller | 1 | 
-| Resistors kit | |
-| Capacitor kit | |
-| A few schottky diodes | |
-| All kind of wires | (24 to 26 AWG mostly) |
-| 12 volts adapter, at least 2A | 1 |
-| 12 volts to 5 volts step converter | 1 |
-| NEMA 14 stepper | 1 | https://www.amazon.ca/0-9deg-steps-Precision-Stepper-15-6oz/dp/B00PNEPZQC
-| 12 mm tactile switch | 1 | 
-| Hall-Effect Sensor Digital 3144 | 1 | https://www.aliexpress.com/item/32823025060.html (Any will do as long as it's digital)
-
-### Mechnical parts
-
-| Description | Quantity | URL 
-|---|---|---|
-| Servo 9g | 1 |  
-| M2 screws kit | 1 | 
-| M3 screws kit | 1 |  
-
-### 3D Printing parts
-
-| Description | Quantity | URL
-|---|---|---|
-| Nozzle 0.2mm | 1 | Required to get nice results
-
-### Recommendations
-
-| Description | Quantity | URL
-|---|---|---|
-| Dremel Purple Glue | 1 | https://www.amazon.ca/Dremel-GS45-01-Glue-Sticks/dp/B077FVQ3DX
-| Magigoo | 1 | https://shop3d.ca/products/magigoo-3d-printing-adhesive-50ml?variant=27936894287950&currency=CAD&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic
-
-### MISC
-
-| Description | Quantity | Description
-|---|---|---|
-| Gorilla Glue | 1 | Used to glue the most important parts.
-| Canopy Glue | 1 | Need a glue that turn transparent. Gorilla glue stain the plexiglass and leave horrible traces.
-| Hot Glue | 1 | It could be done with canopy glue too but it's easier to remove hot glue if necessary.
-| Small clamps to hold parts while curing | 1 | 
-
 # Ring assembly
 
 - Print "Stargate-Front-0.2mm_x1.stl" using 0.2 mm nozzle. Recommend using Tree Support with BRIM, no raft. May takes ~40h to print.
@@ -178,7 +119,7 @@ You don't need glue. It may be possible you need to sand a bit to insert symbols
 The reflectors are meant to reflect light and give a better effect so it's important to print them with white color.
 
 - Glue "light-chevron-cover" using canopy glue over chevron "Light-chevron".
-- Glue WS1228B leds over holes, there are 45 LEDs to glue using canopy glue. It's important for chevron LEDs to be as close as possible to "alignment-block" and not interfere with the ring groove. Magnet ring will be fitted there later. ** WARNING: ** There is an arrow on each LEDs, they should point in counter-clockwise direction. (See the picture)
+- Glue WS2812B leds over holes, there are 45 LEDs to glue using canopy glue. It's important for chevron LEDs to be as close as possible to "alignment-block" and not interfere with the ring groove. Magnet ring will be fitted there later. ** WARNING: ** There is an arrow on each LEDs, they should point in counter-clockwise direction. (See the picture)
 - Starting with the "master chevron" LED, solder all LEDs positive and negative terminals. Ensure to connect the last LED to the master chevron LED to reduce voltage peak. You can use nacked wire. **Warning: ** Ensure to not overheat with the soldering iron. Be very careful to not melt the plastic under it.
 - Starting with the "master chevron" LED, solder every data wire, start with the output of the master chevron LED, then connect to the next etc ...
 The master chevron LED data input should be where the microcontroller will be connected later. Recommend to use very small gauge, like 28 awg.
@@ -186,7 +127,7 @@ The master chevron LED data input should be where the microcontroller will be co
 ![](./Assets/Light-chevron-cover.png)
 
 - Add tape over symbol LEDs to project from accidental short circuit.
-- Add a 3 pins connector on the master chevron LED. Servo motor connector or JST can do the job. One ground, one positive and the WS1228B led data input.
+- Add a 3 pins connector on the master chevron LED. Servo motor connector or JST can do the job. One ground, one positive and the WS2812B led data input.
 
 ![](./Assets/light-tape-chevron.png)
 
@@ -232,7 +173,7 @@ You needs those parts:
 ![](./Assets/battery-installation.png)
 
 - Assemble electronic according to this picture: (You are under no obligatoire to position parts this way, but ensure to balance weight as much as possible)
-** Warning: ** Unfortunately there are not a lot of picture of this part. Earlier you installed a connector for WS1228B leds, you will have to soldier the other half of the connector according to the plan.
+** Warning: ** Unfortunately there are not a lot of picture of this part. Earlier you installed a connector for WS2812B leds, you will have to soldier the other half of the connector according to the plan.
 
 ![](./Assets/interior-electronic.png)
 
