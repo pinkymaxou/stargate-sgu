@@ -54,6 +54,7 @@
 |---|---|---|
 | Gorilla Glue | 1 | Used to glue the most important parts.
 | Canopy Glue | 1 | Need a glue that turn transparent. Gorilla glue stain the plexiglass and leave horrible traces.
+| Hot Glue | 1 | It could be done with canopy glue too but it's easier to remove hot glue if necessary.
 | Small clamps to hold parts while curing | 1 | 
 
 # Ring assembly
@@ -140,7 +141,7 @@ Ensure the holes are clear and everything fit. Then glue them in place, pour gor
 
 ![](./Assets/stargate-front-back-assemble.png)
 
-## Assemble bearing modules
+# Assemble bearing modules
 
 - Modules are made of two part meant to mesh together and hold the bearing in sandwitch.
 The part is printed 18 times so you will have 9 modules.
@@ -155,7 +156,7 @@ So the tolerance are very tight, you will have to use a lot of force to insert t
 ![](./Assets/all-modules-in-places.png)
 
 
-## Assemble symbols
+# Assemble symbols
 
 Tolerance are so tight that you will need a hammer to insert symbols in place and you need to put something behind the gate to avoid destroying it. 
 You don't need glue. It may be possible you need to sand a bit to insert symbols.
@@ -167,7 +168,7 @@ You don't need glue. It may be possible you need to sand a bit to insert symbols
 
 ![](./Assets/all-symbols-in-place.jpg)
 
-## Assemble lights reflectors (Light-chevron-cover)
+# Assemble lights reflectors (Light-chevron-cover)
 
 The reflectors are meant to reflect light and give a better effect so it's important to print them with white color.
 
@@ -184,7 +185,7 @@ The master chevron LED data input should be where the microcontroller will be co
 
 ![](./Assets/light-tape-chevron.png)
 
-## Assemble stargate back window
+# Assemble stargate back window
 
 You needs those parts:
 - Stargate-Back-TransWindow-0.2mm-x10-12.stl (x1)
@@ -215,6 +216,22 @@ You needs those parts:
 
 ### Other windows
 
-- Glue other transparent window and button using this pattern.
+- Glue other transparent window and buttons using this pattern.
 
 ![](./Assets/stargate-back-window-assembly.png)
+
+# Internal electronic assembly
+
+- Install batteries using hot glue. You don't need to put a lot, just tacking is good enough.
+
+![](./Assets/battery-installation.png)
+
+- Assemble electronic according to this picture: (You are under no obligatoire to position parts this way, but ensure to balance weight as much as possible)
+** Warning: ** Unfortunately there are not a lot of picture of this part. Earlier you installed a connector for WS1228B leds, you will have to soldier the other half of the connector according to the plan.
+
+![](./Assets/interior-electronic.png)
+
+![](./Assets/Schematic_SGU-Ring.png)
+
+# Magnetic ring
+
