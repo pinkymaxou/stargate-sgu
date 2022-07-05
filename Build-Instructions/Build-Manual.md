@@ -240,3 +240,18 @@ You needs those parts:
 
 # Magnetic ring
 
+Odd position magnets should not have the same polarity as even magnets.
+**WARNING** Recomment to install the magnet ring into the "stargate-front" part and glue it in place before installing magnets.
+Don't glue it too hard, just tacking is good enough as long as magnet don't move outside.
+
+- Use the stack of magnets and put them in place starting from the top most magnets, skip one position every time.
+- Flip the stack of magnets and put reverted polarity magnet into remaining holes.
+- You can add some canopy glue over magnets to hold them in place. Not too much.
+
+The photo doesn't show it installed inside the "stargate-front" because I don't have any photo of it.
+
+![](./Assets/magnet-ring-install.png)
+
+This photo comes from an ealier prototype, as you can see there is no location for modules on it but if you check the magnet ring inside the groove it should looks like this when assembled with all magnets in place.
+
+![](./Assets/magnet-gear-example.png)
