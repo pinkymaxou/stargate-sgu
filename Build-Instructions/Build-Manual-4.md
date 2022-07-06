@@ -32,7 +32,18 @@ It should looks like this:
 
 ![](./Assets/Inner-ring-assembled.png)
 
+## Install the hall sensor
 
+**WARNING:** Ensure to install the hall sensor the right way, it is sensitive to magnet polarity.
+ - Find the part "Inner-ring-sensor-holder"
+ - Solder wire to the hall sensor, label or use recornisable color to differentiate power and signal.
+ - Ensure to find the right hall sensor direction so it could react with the magnet inside the ring 2Home-magnet-holder"
+    - We suggest you to test it with an arduino or something.
+ - Glue the part and the sensor at the right place (check the picture)
+
+![](./Assets/inner-ring+lowerbridge-hall-sensor.png)
+
+![](./Assets/inner-ring+lowerbridge-hall-sensor2.png)
 ## Install screws
 
 This step is necessary to ensure the gate spin correctly before going further. 
