@@ -166,19 +166,6 @@ You needs those parts:
 
 ![](./Assets/stargate-back-window-assembly.png)
 
-# Internal electronic assembly
-
-- Install batteries using hot glue. You don't need to put a lot, just tacking is good enough.
-
-![](./Assets/battery-installation.png)
-
-- Assemble electronic according to this picture: (You are under no obligatoire to position parts this way, but ensure to balance weight as much as possible)
-** Warning: ** Unfortunately there are not a lot of picture of this part. Earlier you installed a connector for WS2812B leds, you will have to soldier the other half of the connector according to the plan.
-
-![](./Assets/interior-electronic.png)
-
-![](./Assets/Schematic_SGU-Ring.png)
-
 # Magnetic ring
 
 Odd position magnets should not have the same polarity as even magnets.
