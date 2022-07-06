@@ -23,8 +23,17 @@
 
 ***Warning:*** This chapter won't explain how to program an ESP32, there are plenty of existing tutorial to explain it.
 
+To start, the gate needs to receive power from power collector (DON'T REVERSE POLARITY!) at least to start, then the ESP32 can hold it's own power using the MOSFET. But if you power it using the programmer it will stay powered.
+
 - You need to connect the M5Stamp pico programmer to the M5Stamp pico.
 - Flash "ring-factory" app into it.
+- Prime the ring or let it connected to the programmer, chevron should blink with a nice pattern.
+- Connect to "SGU-Ring-Fact-XXXXXX" Wi-Fi access point without password.
+- To flash with the new firmware, you should send the firmware "ring-fw.bin" to 192.168.66.1:8888 using any program that will just send the content of the bin using TCP socket.
+    - Example: using netcat: nc 192.168.66.1 8888 < ring-fw.bin
+    **Note:** Yes it sucks, but hopefully there will be a new version that support using an HTTP browser for update. I should also create 2 OTA partitions and use the factory-app only as an emergency measure.
 
-#### ADD MORE DETAILS HERE LATER ####
+## Program again
 
+The bootloader of the factory app is programmed to automatically erase the last firmware if you hold the button for 5s after startup.
+You can put the disconnect the battery using the toggle switch, hold the button, then prime the gate.
