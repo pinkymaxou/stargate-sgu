@@ -76,3 +76,45 @@ Still writing the print and assembly manual, more will come later including the 
 | Lower-bridge-0.4mm-x1.stl | 1
 | TOTAL | 149
 
+## Base
+
+| File name | Count |
+|---|---|
+| Back-plunger-anchor_4mm-x2.stl | 2
+| Bar_4mm-x1.stl | 1
+| black-plunger-hammer-cover_4mm-x1.stl | 1 
+| black-plunger-hammer_4mm-x1.stl | 1
+| Board-holder_4mm-x1.stl | 1
+| Bottom-plate-v2_4mm-x1.stl | 1
+| Higher-spring_4mm-x1.stl | 1
+| Lower-spring_4mm-x1.stl | 1
+| magnet-gear_4mm-x1.stl | 1
+| Mechanic-Anchor-L_4mm-x1.stl |1 
+| Mechanic-Anchor-R_4mm-x1.stl | 1
+| Mechanic-Archor-p2-L_4mm-x1.stl | 1
+| Mechanic-Archor-p2-R_4mm-x1.stl | 1
+| Moving-part_4mm-x1.stl | 1
+| Outer-back-cover-plug-blocking_4mm-x1.stl | 1
+| Outer-back-cover-plug_4mm-x1.stl | 1
+| Outer-back-cover_4mm-x1.stl | 1
+| Outer-back-plate-reinforcement_4mm-x1.stl | 1
+| Outer-back-plate_4mm-x1.stl | 1
+| Outer-bottom-plate2_4mm-x1.stl | 1
+| Outer-bottom-plate_4mm-x1.stl | 1
+| Outer-front-plate_4mm-x1.stl | 1
+| Outer-side-plate#1_4mm-x1.stl | 1
+| Outer-side-plate#2_4mm-x1.stl | 1
+| ramp-light-guide_4mm-x2.stl | 2
+| Ramp_4mm-x1.stl | 1
+| Side-back-cover-L_4mm-x1.stl | 1
+| Side-back-cover-R_4mm-x1.stl | 1
+| Side-ramp-cover-L_4mm-x1.stl | 1
+| Side-ramp-cover-R_4mm-x1.stl | 1
+| spacer_4mm-x4.stl | 4
+| Stepper-bracket_4mm-x1.stl | 1
+| Stepper-mount-1_4mm-x1.stl | 1
+| Stepper-mount-2_4mm-x1.stl | 1
+| top-cover_4mm-x1.stl | 1
+| Truss#1_4mm-x1.stl | 1
+| Truss#2_4mm-x1.stl | 1
+| TOTAL | 42
