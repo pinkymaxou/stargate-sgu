@@ -44,6 +44,8 @@ It should looks like this:
 ![](./Assets/inner-ring+lowerbridge-hall-sensor.png)
 
 ![](./Assets/inner-ring+lowerbridge-hall-sensor2.png)
+
+
 ## Install screws
 
 This step is necessary to ensure the gate spin correctly before going further. 
@@ -57,3 +59,5 @@ There are 9 screws that fit in the back of the gate.
 
 Try to make it spins freely, if required sand again the inner-ring or the edge of the outer-ring.
 If everything is fine, continue to next step but you will need to remove screw later.
+
+![](./Assets/assembled-ring.png)
