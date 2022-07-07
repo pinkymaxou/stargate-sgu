@@ -75,3 +75,7 @@ You may need to hammer the back of the shaft of the stepper until the gear press
 Use 4x 3Mx8 to install to the bottom plate. You can use only 2x 3Mx8 if you think it's enough.
 
 ![](./Assets/Stepper-mount-2_to_bottom-plate.png)
+
+It should looks like this in the end.
+
+![](./Assets/base%2Bring-assembled.png)
