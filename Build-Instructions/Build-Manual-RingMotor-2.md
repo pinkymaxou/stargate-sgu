@@ -58,3 +58,5 @@ You may need to do some modification to your servo arm, there are difference bet
 You just need to use 2 M3x10 screws to install the part in place.
 
 ![](./Assets/back-plunger-bar_glue-servo-real.jpg)
+
+![](./Assets/completed-base-ring.png)
