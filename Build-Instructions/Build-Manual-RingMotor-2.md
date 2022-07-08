@@ -41,4 +41,20 @@ Use two M2x20 screw to install the arm, shouldn't be too tight, the arm shoud be
 ![](./Assets/Back-plunger-arm-part.png)
 
 
-## Glue the servo motor on ()
+## Glue the servo motor on (Back-plunger-bar_4mm-x1.stl)
+
+Use canopy glue or gorilla glue to glue the servo to "Back-plunger-bar_4mm-x1.stl". Use a clamp to hold it in place.
+
+![](./Assets/back-plunger-bar_glue-servo.png)
+
+## Glue the hammer (black-plunger-hammer_4mm-x1.stl, black-plunger-hammer-cover_4mm-x1.stl) to the servo arm
+
+You may need to do some modification to your servo arm, there are difference between models.
+
+![](./Assets/back-plunger-bar_glue-servo-real-2.jpg)
+
+## Install "Back-plunger-arm_4mm-x1.stl" in place
+
+You just need to use 2 M3x10 screws to install the part in place.
+
+![](./Assets/back-plunger-bar_glue-servo-real.jpg)
