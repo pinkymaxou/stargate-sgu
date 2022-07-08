@@ -81,19 +81,19 @@ Still writing the print and assembly manual, more will come later including the 
 | File name | Count |
 |---|---|
 | Back-plunger-anchor_4mm-x2.stl | 2
-| Bar_4mm-x1.stl | 1
+| Back-plunger-arm_4mm-x1.stl | 1
+| Back-plunger-bar_4mm-x1.stl | 1
+| Back-plunger-Higher-spring_4mm-x1.stl | 1
+| Back-plunger-Lower-spring_4mm-x1.stl | 1
 | black-plunger-hammer-cover_4mm-x1.stl | 1 
 | black-plunger-hammer_4mm-x1.stl | 1
 | Board-holder_4mm-x1.stl | 1
 | Bottom-plate-v2_4mm-x1.stl | 1
-| Higher-spring_4mm-x1.stl | 1
-| Lower-spring_4mm-x1.stl | 1
 | magnet-gear_4mm-x1.stl | 1
 | Mechanic-Anchor-L_4mm-x1.stl |1 
 | Mechanic-Anchor-R_4mm-x1.stl | 1
 | Mechanic-Archor-p2-L_4mm-x1.stl | 1
 | Mechanic-Archor-p2-R_4mm-x1.stl | 1
-| Moving-part_4mm-x1.stl | 1
 | Outer-back-cover-plug-blocking_4mm-x1.stl | 1
 | Outer-back-cover-plug_4mm-x1.stl | 1
 | Outer-back-cover_4mm-x1.stl | 1
