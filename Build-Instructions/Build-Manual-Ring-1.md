@@ -183,3 +183,5 @@ The photo doesn't show it installed inside the "stargate-front" because I don't 
 This photo comes from an ealier prototype, as you can see there is no location for modules on it but if you check the magnet ring inside the groove it should looks like this when assembled with all magnets in place.
 
 ![](./Assets/magnet-gear-example.png)
+
+![](./Assets/magnet-ring-with-magnets.png)

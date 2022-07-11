@@ -54,6 +54,8 @@ This part allows to adjust the bracket by loosing nuts.
 
 ![](./Assets/Stepper-mount-2_on_Stepper-mount-1.png)
 
+![](./Assets/Stepper-mount-example.png)
+
 ## Prepare the magnetic gear
 
 Use 4x2 mm magnet, push them into place using a screwdriver. Magnet should stay there by themselves, there is a small nudge to hold them.
@@ -75,6 +77,8 @@ You may need to hammer the back of the shaft of the stepper until the gear press
 Use 4x 3Mx8 to install to the bottom plate. You can use only 2x 3Mx8 if you think it's enough.
 
 ![](./Assets/Stepper-mount-2_to_bottom-plate.png)
+
+![](./Assets/Stepper-mount-2-real.png)
 
 It should looks like this in the end.
 
