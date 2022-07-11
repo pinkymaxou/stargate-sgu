@@ -77,6 +77,8 @@ You can use an M3x25 screws to secure it in place but friction should be enough.
 
 ![](./Assets/Outer-assembly-part7.png)
 
+![](./Assets/base-with-ring-install1.png)
+
 ## Install the reinforcement.
 
 You can install "Outer-back-plate-reinforcement_4mm-x1.stl" using two M2x12 screws (not exactly sure about the length).

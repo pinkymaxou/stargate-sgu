@@ -14,3 +14,14 @@ The ramp is designed to be removed easily at will. You can add magnets into it i
 Install it on the top, friction alone should be enough to hold it in place but you can glue magnets if you want.
 
 ![](./Assets/top-cover_4mm-x1-install.png)
+
+## Install side ramp covers 
+
+If they hold by themselves just by friction then don't glue them, it's covenient to be able to remove them when working in the electronic zone under the ramp.
+
+- Side-ramp-cover-L_4mm-x1.stl 
+- Side-ramp-cover-R_4mm-x1.stl
+
+![](./Assets/Side-ramp-cover-L_install.png)
+
+***TODO: how to add lightning to the ramp***
