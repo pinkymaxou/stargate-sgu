@@ -13,6 +13,7 @@ Optimize it would require making a second gate to test new optimization. I'm no 
 Still writing the print and assembly manual, more will come later including the source code and wiring diagrams to operate the system.
 
 ![](./Readme-Assets/stargate-thumbnail.png)
+![](./Readme-Assets/stargate-thumbnail2.png)
 
 
 # Parts to print
