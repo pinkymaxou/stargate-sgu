@@ -77,10 +77,20 @@ You can use an M3x25 screws to secure it in place but friction should be enough.
 
 ![](./Assets/Outer-assembly-part7.png)
 
-## Install the last part.
+## Install the reinforcement.
 
 You can install "Outer-back-plate-reinforcement_4mm-x1.stl" using two M2x12 screws (not exactly sure about the length).
+The base is designed to allow the mecanism to be removed freely.
 
 ![](./Assets/Outer-back-plate-reinforcement-1.png)
 
 ![](./Assets/Outer-back-plate-reinforcement-2.png)
+
+## Install back-cover (Outer-back-cover_4mm-x1.stl)
+
+This part is designed to accommodate pretty much any barel jack or connector. 
+But you have to design it yourself, use "Outer-back-cover-plug_4mm-x1.stl" as a template.
+You can glue it to "Outer-back-cover_4mm-x1.stl" using gorilla glue.
+The back cover is designed to hold using M2x15 screws. It is screwed into plastic because it doesn't needs real structural integrity.
+
+![](./Assets/Outer-back-cover_4mm-x1-install1.png)
