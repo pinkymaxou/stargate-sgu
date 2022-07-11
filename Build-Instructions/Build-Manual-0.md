@@ -4,16 +4,16 @@
 
 | Description | Quantity | URL 
 |---|---|---|
-| MOSFET P Channel | 1 | https://www.aliexpress.com/item/32884055864.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| LEDs WS2812B | 100 | https://www.aliexpress.com/item/1005002657432751.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| Copper tape  | 1 | https://www.aliexpress.com/item/1005002822966859.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| Plexiglass 20x20cm (recommend buying spare)  | 1 | https://www.aliexpress.com/item/32833660352.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd |
-| 4x2 mm magnets  | 160 | https://www.aliexpress.com/item/1005002591601630.html?spm=a2g0o.9042311.0.0.3dbd4c4dx9x0BJ |
-| Privacy film  | 25x25 cm at least | https://www.aliexpress.com/item/32967449727.html?spm=a2g0o.9042311.0.0.27424c4dzn6Avn |
+| MOSFET P Channel | 1 | https://www.aliexpress.com/item/32884055864.html |
+| LEDs WS2812B | 100 | https://www.aliexpress.com/item/1005002657432751.html |
+| Copper tape  | 1 | https://www.aliexpress.com/item/1005002822966859.html |
+| Plexiglass 20x20cm (recommend buying spare)  | 1 | https://www.aliexpress.com/item/32833660352.html |
+| 4x2 mm magnets  | 160 | https://www.aliexpress.com/item/1005002591601630.html |
+| Privacy film  | 25x25 cm at least | https://www.aliexpress.com/item/32967449727.html |
 | 693ZZ bearings (8mm wide, 4mm thick, 3mm inner)  | 9 |  https://www.aliexpress.com/item/557757520.html |
-| M5Stack Official M5Stamp Pico | 1 |  https://www.aliexpress.com/item/1005003449579749.html?spm=a2g0o.productlist.0.0.1c9d2fabovp8Jp |
+| M5Stack Official M5Stamp Pico | 1 |  https://www.aliexpress.com/item/1005003449579749.html |
 | LiPo Charger with 5v boost |   | https://www.aliexpress.com/item/4000935870120.html |
-| LiPo battery | 4x 100mA  | https://www.aliexpress.com/item/32853990764.html?spm=a2g0o.9042311.0.0.3dbd4c4do7ZfMd (any will do as long as it fit into the ring) |
+| LiPo battery | 4x 100mA  | https://www.aliexpress.com/item/32853990764.html (any will do as long as it fit into the ring) |
 | ESP32 | 1 | Any with enough output pin will do. But don't buy node MCU they sucks |
 | Fermion DFPlayer Pro Mini MP3 | 1 | https://www.aliexpress.com/item/4000394488862.html |
 | DRV8825 Stepper Motor Controller | 1 | 
@@ -21,8 +21,7 @@
 | Capacitor kit | |
 | A few schottky diodes | |
 | All kind of wires | (24 to 26 AWG mostly) |
-| 12 volts adapter, at least 2A | 1 |
-| 12 volts to 5 volts step converter | 1 |
+| 12 volts to 5 volts step converter (2A) | 1 | https://www.aliexpress.com/item/1005001534795169.html
 | NEMA 14 stepper | 1 | https://www.amazon.ca/0-9deg-steps-Precision-Stepper-15-6oz/dp/B00PNEPZQC
 | 12 mm tactile switch | 1 | 
 | Hall-Effect Sensor Digital 3144 | 1 | https://www.aliexpress.com/item/32823025060.html (Any will do as long as it's digital)
