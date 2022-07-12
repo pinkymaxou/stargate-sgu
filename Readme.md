@@ -119,3 +119,12 @@ Still writing the print and assembly manual, more will come later including the 
 | Truss#1_4mm-x1.stl | 1
 | Truss#2_4mm-x1.stl | 1
 | TOTAL | 42
+
+## Wormhole
+
+| File name | Count |
+|---|---|
+| Wormhole.stl | 1
+| Outer-rim.stl | 1
+| Filter.stl | 1
+| TOTAL | 3
