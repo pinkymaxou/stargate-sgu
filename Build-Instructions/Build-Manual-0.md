@@ -5,18 +5,19 @@
 | Description | Quantity | URL 
 |---|---|---|
 | MOSFET P Channel | 1 | https://www.aliexpress.com/item/32884055864.html |
+| NPN Transistor (BC337) | 1 |  |
 | LEDs WS2812B | 100 | https://www.aliexpress.com/item/1005002657432751.html |
 | Copper tape  | 1 | https://www.aliexpress.com/item/1005002822966859.html |
-| Plexiglass 20x20cm (recommend buying spare)  | 1 | https://www.aliexpress.com/item/32833660352.html |
+| Plexiglass 20x20cm (recommend buying spare)  | 1 + 1 spare | https://www.aliexpress.com/item/32833660352.html |
 | 4x2 mm magnets  | 160 | https://www.aliexpress.com/item/1005002591601630.html |
 | Privacy film  | 25x25 cm at least | https://www.aliexpress.com/item/32967449727.html |
 | 693ZZ bearings (8mm wide, 4mm thick, 3mm inner)  | 9 |  https://www.aliexpress.com/item/557757520.html |
 | M5Stack Official M5Stamp Pico | 1 |  https://www.aliexpress.com/item/1005003449579749.html |
 | LiPo Charger with 5v boost |   | https://www.aliexpress.com/item/4000935870120.html |
 | LiPo battery | 4x 100mA  | https://www.aliexpress.com/item/32853990764.html (any will do as long as it fit into the ring) |
-| ESP32 | 1 | Any with enough output pin will do. But don't buy node MCU they sucks |
+| ESP32, example: Lolin32 | 1 | Any with enough output pin will do. |
 | Fermion DFPlayer Pro Mini MP3 | 1 | https://www.aliexpress.com/item/4000394488862.html |
-| DRV8825 Stepper Motor Controller | 1 | 
+| DRV8825 Stepper Motor Controller | 1 | https://www.amazon.ca/-/fr/DRV8825-remplacement-TMC2208-Dissipateur-thermique/dp/B095LRJR2S |
 | Resistors kit | |
 | Capacitor kit | |
 | A few schottky diodes | |
@@ -25,14 +26,15 @@
 | NEMA 14 stepper | 1 | https://www.amazon.ca/0-9deg-steps-Precision-Stepper-15-6oz/dp/B00PNEPZQC
 | 12 mm tactile switch | 1 | 
 | Hall-Effect Sensor Digital 3144 | 1 | https://www.aliexpress.com/item/32823025060.html (Any will do as long as it's digital)
+| JST Connecteur Kit 2.54 mm | 1 | https://www.amazon.ca/Bestgle-Connector-JST-XHP-Housing-Adapter/dp/B07MBCLPBK/ref=asc_df_B07MBCLPBK/
 
 ## Mechnical parts
 
-| Description | Quantity | URL 
-|---|---|---|
-| Servo 9g | 1 |  
-| M2 screws kit | 1 | 
-| M3 screws kit | 1 |  
+| Description | Quantity | URL |Comments
+|---|---|---|---|
+| Servo 9g | 1 | https://www.amazon.ca/-/fr/Servo-num%C3%A9rique-Micro-Metal-mod%C3%A8le/dp/B07FPJYM5T | We used cheap one but they proved to be problematic, one died suddently and the other draw too much current sometime. You may have to invest in something better.
+| M2 screws kit | 1 | https://www.amazon.ca/-/fr/Hilitchi-Assortiment-hexagonale-acier-inoxydable/dp/B014ONS02S | You needs several lengths
+| M3 screws kit | 1 | https://www.amazon.ca/Assortiment-cruciformes-cylindrique-acier-inoxydable/dp/B075RCVVYN/ | You needs several lengths
 
 ## 3D Printing parts
 
