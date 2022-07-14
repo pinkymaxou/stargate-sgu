@@ -24,4 +24,10 @@ If they hold by themselves just by friction then don't glue them, it's covenient
 
 ![](./Assets/Side-ramp-cover-L_install.png)
 
-***TODO: how to add lightning to the ramp***
+## Lamp lightning
+
+- You need to cut a 12 white led strip into two 18 cm strips. 
+- Wire them in parallel and add a connector to it.
+- 
+
+![](./Assets/ramp-light-install.png)
