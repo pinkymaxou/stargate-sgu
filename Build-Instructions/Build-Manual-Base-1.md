@@ -62,8 +62,15 @@ Glue side covers, you needs to use clamp and maybe tape. Use painter tape where 
 
 - Side-back-cover-L_4mm-x1.stl
 - Side-back-cover-R_4mm-x1.stl
+- Side-overcover-L_4mm-x1.stl
+- Side-overcover-R_4mm-x1.stl
 
- ![](./Assets/Outer-assembly-part5.png)
+![](./Assets/Outer-assembly-part5.png)
+
+Overcovers are not mandatory, they correct a mistake I made on the side cover STL. 
+I could have corrected it but I feared I would introduce more errors.
+
+![](./Assets/install-overcovers-x2.png)
 
 ## Install RingMotor assembly in place
 

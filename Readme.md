@@ -31,7 +31,6 @@ Still writing the print and assembly manual, more will come later including the 
 | Light-chevron-cover-0.2mm-x9.stl | 9
 | Magnet-ring-0.2mm-x1.stl | 1
 | Module-With_wheel-0.2mm_x18.stl | 18
-| SGUv8-Ring.f3d | 1
 | Stargate-Back-0.2mm_x1.stl | 1
 | Stargate-Back-Transparent-PwrSw_0.2mm-x1 | 1
 | Stargate-Back-Transparent-ResetBtn_0.2mm-x1 | 1
@@ -75,7 +74,7 @@ Still writing the print and assembly manual, more will come later including the 
 | Symbols/symbol-template9_0.2mm-x1.stl | 1
 | symbol-light-guide_0.2mm-x36.stl | 36
 | Lower-bridge-0.4mm-x1.stl | 1
-| TOTAL | 149
+| TOTAL | 148
 
 ## Base
 
@@ -118,7 +117,9 @@ Still writing the print and assembly manual, more will come later including the 
 | top-cover_4mm-x1.stl | 1
 | Truss#1_4mm-x1.stl | 1
 | Truss#2_4mm-x1.stl | 1
-| TOTAL | 42
+| Side-overcover-L_4mm-x1.stl | 1
+| Side-overcover-R_4mm-x1.stl | 1
+| TOTAL | 44
 
 ## Wormhole
 
