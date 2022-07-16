@@ -29,12 +29,41 @@ The ring shouldn't be assembled, you need to remove 9 allens screws behind the r
 
 ![](./Assets/mirror-film.png)
 
+## Glue LEDs in place on "Wormhole.stl"
 
+Use canopy glue to glue all leds in place. Use a sharpie to write each LEDs number. It is not visible so it's not really a problem.
+
+LEDs 47 and 48 are missing on this photo because we didn't plan to use them but we did in the end.
+
+![](./Assets/glue-led-wormhole.png)
+
+## Solder leds
+
+As you can see it's not perfectly optimized, because 47 and 48 were planed to not be installed but were in the end. But if you want to use a better pattern you can you will just need to slightly change the code to make it works.
+
+![](./Assets/Wormhole-solder-leds.png)
 
 ## Glue the filter
 
 The filter "Wormhole-filter.stl" is just a white PLA filter to diffuse light and make it more uniform. It is recommended to test it for real before gluing.
+If you are ready to glue the filter, then you shouldn't use canopy glue because capilarity make glue do where it shouldn't.
 
+It's not a structural part, it doesn't need an incredible bond so you can just use hot glue and spread it using a toothpick.
 
+Example of ruined filter:
+
+![](./Assets/runned-filter.jpg)
 
 ## Glue "Wormhole-outer-rim.stl"
+
+Glue it using gorilla glue on the outside part of the "Wormhole-outer-rim.stl".
+Use clamp to be sure it hold in place until glue is completely cured. 
+
+![](./Assets/install-wormhole-outer-rim.png)
+
+## Glue "Wormhole.stl" to "Wormhole-outer-rim.stl"
+
+Glue wormhole behind the outer rim using canopy glue but not too much to be sure it will not drip where it shouldn't.
+You don't need to put a lot of glue, a few spot is more than enough it's not a structural part also it could be useful to not overglue if you need to dismantle it later.
+
+![](./Assets/glue-wormhole-behind.png)
