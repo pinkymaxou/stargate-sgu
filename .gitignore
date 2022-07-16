@@ -1,3 +1,16 @@
 /Source/ring-fw/components/SGU
 /Source/ring-factory/components/FastLED-idf
 /Source/ring-fw/components/FastLED-idf
+/Source/base-fw/build
+/Source/base-fw/components/led_strip
+/Source/base-fw/components/SGU
+/Source/tools/source/embeddedgen/.vs
+/Source/tools/source/embeddedgen/src/bin
+/Source/tools/source/embeddedgen/src/obj
+/Source/ring-fw/build
+/Source/ring-factory/build
+/Source/base-fw/main/EmbeddedFiles.bin
+/Source/base-fw/main/EmbeddedFiles.c
+/Source/base-fw/main/secretconfig.h
+/Source/base-fw/main/EmbeddedFiles.h
+/Source/base-fw/main/EmbeddedFiles.txt

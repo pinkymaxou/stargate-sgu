@@ -1,0 +1,46 @@
+#ifndef _FWCONFIG_H
+#define _FWCONFIG_H
+
+#include "driver/gpio.h"
+
+#include "secretconfig.h"
+
+#define FWCONFIG_SOFTAP_WIFI_SSID_BASE ("SGU-Base-%02X%02X%02X")
+#define FWCONFIG_SOFTAP_WIFI_PASS      ""
+#define FWCONFIG_SOFTAP_WIFI_CHANNEL   0
+#define FWCONFIG_SOFTAP_MAX_CONN       10
+
+#define FWCONFIG_RING_IPADDRESS "192.168.66.250"
+
+#define FWCONFIG_SOFTAP_MAXIMUM_RETRY 10000
+
+// Motor control
+#define FWCONFIG_STEPPER_DIR_PIN GPIO_NUM_33
+#define FWCONFIG_STEPPER_STEP_PIN GPIO_NUM_25
+#define FWCONFIG_STEPPER_SLP_PIN GPIO_NUM_26
+
+// Hall sensor to detect home position
+#define FWCONFIG_HOMESENSOR_PIN GPIO_NUM_32
+
+// Servo-motor
+#define FWCONFIG_SERVOMOTOR_PIN GPIO_NUM_21
+
+// Ramp led control
+#define FWCONFIG_RAMPLED_PIN GPIO_NUM_22
+
+// External button (input only)
+#define FWCONFIG_UIBUTTON_PIN GPIO_NUM_39
+
+// Wormhole LEDs
+#define FWCONFIG_WORMHOLELEDS_PIN GPIO_NUM_19
+#define FWCONFIG_WORMHOLELEDS_RMTCHANNEL RMT_CHANNEL_0
+#define FWCONFIG_WORMHOLELEDS_LEDCOUNT 48
+
+// Mp3 music player
+#define FWCONFIG_MP3PLAYER_RX2TXD GPIO_NUM_16
+#define FWCONFIG_MP3PLAYER_TX2RXD GPIO_NUM_17
+
+// Sanity led
+#define FWCONFIG_SANITY_PIN GPIO_NUM_5
+
+#endif
