@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "embeddedgen": {
+      "commandName": "Project",
+      "commandLineArgs": "-i \"K:\\Projects\\Git\\electronics\\projects\\stargate-sgu\\base-fw\\assets\" -o \"K:\\Projects\\Git\\electronics\\projects\\stargate-sgu\\base-fw\\main\" -c \"K:\\Projects\\Git\\electronics\\projects\\stargate-sgu\\base-fw\\EmbeddedFiles.gzip.config\""
+    }
+  }
+}

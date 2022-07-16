@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "embeddedgen", "src\embeddedgen.csproj", "{4189D0C3-BE87-406D-B182-DC7E3B99DB8C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4189D0C3-BE87-406D-B182-DC7E3B99DB8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4189D0C3-BE87-406D-B182-DC7E3B99DB8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4189D0C3-BE87-406D-B182-DC7E3B99DB8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4189D0C3-BE87-406D-B182-DC7E3B99DB8C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6EB825D5-6D32-46C6-9027-A26A6445C4CE}
+	EndGlobalSection
+EndGlobal

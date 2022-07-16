@@ -1,0 +1,97 @@
+// 20220627212301
+// http://192.168.5.216/api/getsettingsjson
+
+{
+  "Entries": [
+    {
+      "key": "Clamp.LockedPWM",
+      "value": 1250,
+      "info": {
+        "desc": "Servo motor locked PWM",
+        "min": 1000,
+        "max": 2000
+      }
+    },
+    {
+      "key": "Clamp.ReleasPWM",
+      "value": 1050,
+      "info": {
+        "desc": "Servo motor released PWM",
+        "min": 1000,
+        "max": 2000
+      }
+    },
+    {
+      "key": "Ring.HomeOffset",
+      "value": -25,
+      "info": {
+        "desc": "Offset relative to home sensor",
+        "min": -500,
+        "max": 500
+      }
+    },
+    {
+      "key": "Ring.SlowDelta",
+      "value": 300,
+      "info": {
+        "desc": "Encoder delta in slow move mode",
+        "min": 0,
+        "max": 800
+      }
+    },
+    {
+      "key": "Ring.SymBright",
+      "value": 15,
+      "info": {
+        "desc": "Symbol brightness",
+        "min": 3,
+        "max": 50
+      }
+    },
+    {
+      "key": "StepPerRot",
+      "value": 7334,
+      "info": {
+        "desc": "How many step per rotation",
+        "min": 0,
+        "max": 64000
+      }
+    },
+    {
+      "key": "GateTimeoutS",
+      "value": 300,
+      "info": {
+        "desc": "Timeout (s) before the gate close",
+        "min": 10,
+        "max": 2520
+      }
+    },
+    {
+      "key": "Home.MaxSteps",
+      "value": 8000,
+      "info": {
+        "desc": "Maximum step for homing process",
+        "min": 0,
+        "max": 64000
+      }
+    },
+    {
+      "key": "Ramp.LightOn",
+      "value": 10,
+      "info": {
+        "desc": "Ramp illumination ON (percent)",
+        "min": 0,
+        "max": 100
+      }
+    },
+    {
+      "key": "Ramp.LightOff",
+      "value": 0,
+      "info": {
+        "desc": "Ramp illumination OFF (percent)",
+        "min": 0,
+        "max": 100
+      }
+    }
+  ]
+}

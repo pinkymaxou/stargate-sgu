@@ -1,0 +1,237 @@
+#include "Settings.h"
+#include "nvs.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include <assert.h>
+#include "cJSON.h"
+#include "esp_log.h"
+#include <string.h>
+
+#define TAG "SETTINGS"
+#define PARTITION_NAME "nvs"
+
+typedef enum
+{
+    ETYPE_Int32,
+} ETYPE;
+
+typedef union
+{
+    struct
+    {
+       int32_t s32Min;
+       int32_t s32Max;
+       int32_t s32Default;
+    } sInt32;
+    struct
+    {
+       float fMin;
+       float fMax;
+       float fDefault;
+    } sFloat;
+} UConfig;
+
+typedef struct
+{
+    const char* szKey;
+    const char* szDesc;
+    ETYPE eType;
+    UConfig uConfig;
+} SSettingEntry;
+
+static SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
+{
+    [SETTINGS_EENTRY_ClampLockedPWM] =          { .szKey = "Clamp.LockedPWM",   .eType = ETYPE_Int32, .szDesc = "Servo motor locked PWM",             .uConfig = { .sInt32 = { .s32Min = 1000, .s32Max = 2000, .s32Default = 1250 } }  },
+    [SETTINGS_EENTRY_ClampReleasedPWM] =        { .szKey = "Clamp.ReleasPWM",   .eType = ETYPE_Int32, .szDesc = "Servo motor released PWM",           .uConfig = { .sInt32 = { .s32Min = 1000, .s32Max = 2000, .s32Default = 1000 } }  },
+    [SETTINGS_EENTRY_RingHomeOffset] =          { .szKey = "Ring.HomeOffset",   .eType = ETYPE_Int32, .szDesc = "Offset relative to home sensor",     .uConfig = { .sInt32 = { .s32Min = -500, .s32Max = 500, .s32Default = -55 } }  },
+    [SETTINGS_EENTRY_RingSlowDelta] =           { .szKey = "Ring.SlowDelta",    .eType = ETYPE_Int32, .szDesc = "Encoder delta in slow move mode",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 800, .s32Default = 300 } }  },
+    [SETTINGS_EENTRY_RingSymbolBrightness] =    { .szKey = "Ring.SymBright",    .eType = ETYPE_Int32, .szDesc = "Symbol brightness",                  .uConfig = { .sInt32 = { .s32Min = 3, .s32Max = 50, .s32Default = 15 } }  },
+    [SETTINGS_EENTRY_StepPerRotation] =         { .szKey = "StepPerRot",        .eType = ETYPE_Int32, .szDesc = "How many step per rotation",         .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 64000, .s32Default = 7334 } }  },
+    [SETTINGS_EENTRY_GateOpenedTimeout] =       { .szKey = "GateTimeoutS",      .eType = ETYPE_Int32, .szDesc = "Timeout (s) before the gate close",  .uConfig = { .sInt32 = { .s32Min = 10, .s32Max = 42*60, .s32Default = 300 } }  },
+    [SETTINGS_EENTRY_HomeMaximumStepTicks] =    { .szKey = "Home.MaxSteps",     .eType = ETYPE_Int32, .szDesc = "Maximum step for homing process",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 64000, .s32Default = 8000 } }  },
+    [SETTINGS_EENTRY_RampOnPercent] =           { .szKey = "Ramp.LightOn",      .eType = ETYPE_Int32, .szDesc = "Ramp illumination ON (percent)",     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 30 } }  },
+    [SETTINGS_EENTRY_RampOffPercent] =          { .szKey = "Ramp.LightOff",     .eType = ETYPE_Int32, .szDesc = "Ramp illumination OFF (percent)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 0 } }  }
+};
+
+static const SSettingEntry* GetSettingEntry(SETTINGS_EENTRY eEntry);
+static bool GetSettingEntryByKey(const char* szKey, SETTINGS_EENTRY* peEntry);
+
+//static StaticSemaphore_t m_xSemaphoreCreateMutex;
+//static SemaphoreHandle_t m_xSemaphoreHandle;
+static nvs_handle_t m_sNVS;
+
+void SETTINGS_Init()
+{
+    //m_xSemaphoreHandle = xSemaphoreCreateMutexStatic(&m_xSemaphoreCreateMutex);
+    //configASSERT( m_xSemaphoreHandle );
+    ESP_ERROR_CHECK(nvs_open(PARTITION_NAME, NVS_READWRITE, &m_sNVS));
+}
+
+void SETTINGS_Load()
+{
+    //xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
+    //xSemaphoreGive(m_xSemaphoreHandle);
+}
+
+void SETTINGS_Save()
+{
+    //xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
+    ESP_ERROR_CHECK(nvs_commit(m_sNVS));
+    //xSemaphoreGive(m_xSemaphoreHandle);
+}
+
+int32_t SETTINGS_GetValueInt32(SETTINGS_EENTRY eEntry)
+{
+    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
+    assert(pEnt != NULL && pEnt->eType == ETYPE_Int32);
+    int32_t s32 = 0;
+    /* s32 >= pEnt->uConfig.sInt32.s32Min &&
+       s32 <= pEnt->uConfig.sInt32.s32Max*/
+    if (nvs_get_i32(m_sNVS, pEnt->szKey, &s32) == ESP_OK)
+        return s32;
+    return pEnt->uConfig.sInt32.s32Default;
+}
+
+SETTINGS_ESETRET SETTINGS_SetValueInt32(SETTINGS_EENTRY eEntry, bool bIsDryRun, int32_t s32NewValue)
+{
+    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
+    assert(pEnt != NULL && pEnt->eType == ETYPE_Int32);
+    if (s32NewValue < pEnt->uConfig.sInt32.s32Min || s32NewValue > pEnt->uConfig.sInt32.s32Max)
+        return SETTINGS_ESETRET_InvalidRange;
+    if (!bIsDryRun)
+    {
+        const esp_err_t err = nvs_set_i32(m_sNVS, pEnt->szKey, s32NewValue);
+        ESP_ERROR_CHECK_WITHOUT_ABORT(err);
+        if (err != ESP_OK)
+            return SETTINGS_ESETRET_CannotSet;
+    }
+    return SETTINGS_ESETRET_OK;
+}
+
+const char* SETTINGS_ExportJSON()
+{
+    cJSON* pRoot = cJSON_CreateObject();
+    if (pRoot == NULL)
+        goto ERROR;
+
+    cJSON* pEntries = cJSON_AddArrayToObject(pRoot, "Entries");
+
+    for(int i = 0; i < SETTINGS_EENTRY_Count; i++)
+    {
+        SETTINGS_EENTRY eEntry = (SETTINGS_EENTRY)i;
+        const SSettingEntry* pEntry = GetSettingEntry( eEntry );
+
+        cJSON* pEntryJSON = cJSON_CreateObject();
+        cJSON_AddItemToObject(pEntryJSON, "key", cJSON_CreateString(pEntry->szKey));
+
+        cJSON* pEntryInfoJSON = cJSON_CreateObject();
+
+        if (pEntry->eType == ETYPE_Int32)
+        {
+            cJSON_AddItemToObject(pEntryJSON, "value", cJSON_CreateNumber(SETTINGS_GetValueInt32(eEntry)));
+            cJSON_AddItemToObject(pEntryInfoJSON, "desc", cJSON_CreateString(pEntry->szDesc));
+            cJSON_AddItemToObject(pEntryInfoJSON, "min", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Min));
+            cJSON_AddItemToObject(pEntryInfoJSON, "max", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Max));
+        }
+        cJSON_AddItemToObject(pEntryJSON, "info", pEntryInfoJSON);
+
+        cJSON_AddItemToArray(pEntries, pEntryJSON);
+    }
+    const char* pStr = cJSON_Print(pRoot);
+    cJSON_Delete(pRoot);
+    return pStr;
+    ERROR:
+    cJSON_Delete(pRoot);
+    return NULL;
+}
+
+bool SETTINGS_ImportJSON(const char* szJSON)
+{
+    bool bRet = true;
+    cJSON* pRoot = cJSON_Parse(szJSON);
+
+    cJSON* pEntriesArray = cJSON_GetObjectItem(pRoot, "Entries");
+    if (!cJSON_IsArray(pEntriesArray))
+    {
+        ESP_LOGE(TAG, "Entries array is not valid");
+        goto ERROR;
+    }
+
+    for(int pass = 0; pass < 2; pass++)
+    {
+        const bool bIsDryRun = pass == 0;
+
+        for(int i = 0; i < cJSON_GetArraySize(pEntriesArray); i++)
+        {
+            cJSON* pEntryJSON = cJSON_GetArrayItem(pEntriesArray, i);
+
+            cJSON* pKeyJSON = cJSON_GetObjectItem(pEntryJSON, "key");
+            if (pKeyJSON == NULL || !cJSON_IsString(pKeyJSON))
+            {
+                ESP_LOGE(TAG, "Cannot find JSON key element");
+                goto ERROR;
+            }
+
+            cJSON* pValueJSON = cJSON_GetObjectItem(pEntryJSON, "value");
+            if (pValueJSON == NULL)
+            {
+                ESP_LOGE(TAG, "Value is absent from json");
+                goto ERROR;
+            }
+
+            SETTINGS_EENTRY eEntry;
+            if (!GetSettingEntryByKey(pKeyJSON->valuestring, &eEntry))
+            {
+                ESP_LOGE(TAG, "Key: '%s' is not valid", pKeyJSON->valuestring);
+                goto ERROR;
+            }
+
+            const SSettingEntry* pSettingEntry = GetSettingEntry(eEntry);
+
+            if (pSettingEntry->eType == ETYPE_Int32)
+            {
+                if (!cJSON_IsNumber(pValueJSON))
+                {
+                    ESP_LOGE(TAG, "JSON value type is invalid, not a number");
+                    goto ERROR;
+                }
+                int32_t s32 = pValueJSON->valueint;
+                SETTINGS_ESETRET eSetRet;
+                if ((eSetRet = SETTINGS_SetValueInt32(eEntry, bIsDryRun, s32)) != SETTINGS_ESETRET_OK)
+                {
+                    ESP_LOGE(TAG, "Unable to set value for key: %s, bIsDryRun: %d, ret: %d", pSettingEntry->szKey, bIsDryRun, eSetRet);
+                    goto ERROR;
+                }
+            }
+        }
+    }
+
+    bRet = true;
+    ESP_LOGI(TAG, "Import JSON completed");
+    goto END;
+    ERROR:
+    bRet = false;
+    END:
+    cJSON_free(pRoot);
+    return bRet;
+}
+
+static const SSettingEntry* GetSettingEntry(SETTINGS_EENTRY eEntry)
+{
+    if ( (int)eEntry < 0 || (int)eEntry >= SETTINGS_EENTRY_Count )
+        return NULL;
+    return &m_sConfigEntries[(int)eEntry];
+}
+
+static bool GetSettingEntryByKey(const char* szKey, SETTINGS_EENTRY* peEntry)
+{
+    for(int i = 0; i < SETTINGS_EENTRY_Count; i++)
+    {
+        if (strcmp(m_sConfigEntries[i].szKey, szKey) == 0)
+        {
+            *peEntry = (SETTINGS_EENTRY)i;
+            return true;
+        }
+    }
+    return false;
+}
