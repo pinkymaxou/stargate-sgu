@@ -126,6 +126,6 @@ Still writing the print and assembly manual, more will come later including the 
 | File name | Count |
 |---|---|
 | Wormhole.stl | 1
-| Outer-rim.stl | 1
-| Filter.stl | 1
+| Wormhole-outer-rim.stl | 1
+| Wormhole-filter.stl | 1
 | TOTAL | 3

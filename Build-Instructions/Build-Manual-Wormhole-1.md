@@ -29,3 +29,12 @@ The ring shouldn't be assembled, you need to remove 9 allens screws behind the r
 
 ![](./Assets/mirror-film.png)
 
+
+
+## Glue the filter
+
+The filter "Wormhole-filter.stl" is just a white PLA filter to diffuse light and make it more uniform. It is recommended to test it for real before gluing.
+
+
+
+## Glue "Wormhole-outer-rim.stl"
