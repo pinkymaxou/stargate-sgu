@@ -1,5 +1,5 @@
 **Warning**: This project contains several hundred parts to print and hundreds hours of print. 
-If you go decide to take this path you will suffer a lot, you may lost some compatriot in the battle.
+If you decide to take this path you will suffer a lot, you may lost some compatriot in the battle.
 You will no longer be the same after that, it could also cause hair loss.
 
 # Stargate Universe
@@ -15,6 +15,19 @@ Still writing the print and assembly manual, more will come later including the 
 ![](./Readme-Assets/stargate-thumbnail.png)
 ![](./Readme-Assets/stargate-thumbnail2.png)
 
+# Knowns issues
+
+- I used 1A 12v to 5v, the servo motor moving can cause brownout.
+- Running the wormhole continously seems to prevent correct charge of the ring and cause weird glitches. May be caused by unsufficient 12v to 5v converter amperage.
+
+# Copyrights
+
+Some fonts:
+|File | Info
+|---|---
+| stargateuniverse.woff | Created by : Gilles Nuytens (http://www.thescifiworld.net/fonts.htm)
+| eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
+| ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
 
 # Parts to print
 
