@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "otauploader": {
-      "commandName": "Project",
-      "commandLineArgs": "--input \"K:\\Projects\\Git\\electronics\\projects\\stargate-sgu\\base-fw\\build\\base-fw.bin\" --destaddr http://192.168.5.179/ota/upload"
-    }
-  }
-}
