@@ -12,6 +12,8 @@ Optimize it would require making a second gate to test new optimization. I'm no 
 
 Still writing the print and assembly manual, more will come later including the source code and wiring diagrams to operate the system.
 
+Inspired partly by: https://thestargateproject.com/build-a-stargate-and-dhd-3d-printed/
+
 ![](./Readme-Assets/stargate-thumbnail.png)
 ![](./Readme-Assets/stargate-thumbnail2.png)
 
