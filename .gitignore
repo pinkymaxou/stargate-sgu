@@ -14,3 +14,6 @@
 /Source/base-fw/main/secretconfig.h
 /Source/base-fw/main/EmbeddedFiles.h
 /Source/base-fw/main/EmbeddedFiles.txt
+/Source/base-fw/sdkconfig.old
+/Source/ring-factory/sdkconfig.old
+/Source/ring-fw/sdkconfig.old
