@@ -47,6 +47,8 @@ Use 4x M3x10 screws to install the stepper bracket on the stepper.
 
 ![](./Assets/Stepper-bracket.png)
 
+![](./Assets/PXL_20220713_150509600~01.jpg)
+
 ## Install "Stepper-mount-1_4mm-x1.stl" to "Stepper-mount-2_4mm-x1.stl"
 
 Use 4x M2x15 screw and 4x M2 nuts to install to hold both parts together.
