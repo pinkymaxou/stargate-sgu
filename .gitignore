@@ -13,3 +13,6 @@
 /Source/base-fw/main/EmbeddedFiles.txt
 __pycache__/
 *.pyc
+/Source/base-fw/sdkconfig.old
+/Source/ring-factory/sdkconfig.old
+/Source/ring-fw/sdkconfig.old
