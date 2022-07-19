@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from pathlib import Path
-import gzip, math, re
+import gzip, math, re, os
 
 parser = ArgumentParser(description="SGU Embedded Gen")
 parser.add_argument("-i", "--inputpath", required=True, help="Input path (files to embed)")
@@ -24,9 +24,12 @@ def BinToHexArray(data):
     return "\n".join(output)
 
 class PackedFile:
-    def __init__(self, path, compress=False):
+    def __init__(self, inputpath, path, compress=False):
+        # Relative path should remove the input path and keep the relative part
+        relpath = os.path.relpath(str(path).replace("\\", "/"), inputpath.replace("\\", "/")).replace("\\", "/")
+
         self.path = Path(path)  # Path object
-        self.relpath = str(self.path).replace("\\", "/")  # Relative normalized path
+        self.relpath = relpath  # Relative normalized path
         self.keyname = "EF_EFILE_%s" % re.sub("[^a-zA-Z0-9]", "_", self.relpath).upper()
         self.blob = self.path.open("rb").read()  # Binary data including padding
         self.size = len(self.blob)  # real size before compression/padding
@@ -59,7 +62,7 @@ try:
     files = []
 
     for file in diInput.rglob("*.*"):
-        myfile = PackedFile(file, len([p for p in [file, *file.parents] if p in compressFiles]) > 0)
+        myfile = PackedFile(args.inputpath, file, len([p for p in [file, *file.parents] if p in compressFiles]) > 0)
         files.append(myfile)
         print(f"Adding file: {myfile.relpath} {'(compressed)' if myfile.compressed else ''}")
 
