@@ -13,24 +13,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
     - name: Build (ring-factory)
-      uses: docker/build-push-action@v2
+      uses: espressif/esp-idf-ci-action@v1
       with:
-        context: ./Source/ring-factory
+        esp_idf_version: v4.4
+        path: ./Source/ring-factory
+        target: esp32
         tags: stargate-sgu:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        load: true
 
-
-    - name: Build (base-fw)
-      uses: docker/build-push-action@v2
-      with:
-        context: ./Source/base-fw
-        tags: stargate-sgu:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        load: true
