@@ -24,3 +24,13 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         load: true
+
+
+    - name: Build (base-fw)
+      uses: docker/build-push-action@v2
+      with:
+        context: ./Source/base-fw
+        tags: stargate-sgu:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        load: true
