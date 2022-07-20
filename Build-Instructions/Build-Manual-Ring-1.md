@@ -3,6 +3,7 @@
 - Print "Stargate-Front-0.2mm_x1.stl" using 0.2 mm nozzle. Recommend using Tree Support with BRIM, no raft. May takes ~40h to print.
 
 ![](./Assets/Stargate-Front.png)
+
 ![](./Assets/Stargate-Front-0.2vs0.4.png)
 
 - Print "Stargate-Back-0.2mm_x1.stl" using 0.2 mm nozzle . Recommend using Tree Support with BRIM, no raft. May takes ~40h to print.
@@ -84,12 +85,14 @@ Ensure the holes are clear and everything fit. Then glue them in place, pour gor
 
 # Assemble bearing modules
 
+- Ordered bearing comes with not so great grease, put some WD40 or Jig-A-Loo into bearings. Be careful, Jig-A-Loo attack PLA a little bit, if you clean the part with a towel the color of the PLA stain the paper so ...
 - Modules are made of two part meant to mesh together and hold the bearing in sandwitch.
 The part is printed 18 times so you will have 9 modules.
-So the tolerance are very tight, you will have to use a lot of force to insert the bearing. If it's not hard to insert then something is wrong and you may need to change the design of the part. We suggest you to use a wrench or c-clamp to force two part together.
+So the tolerance are very tight, you will have to use a lot of force to insert the bearing. If it's not hard to insert then something is wrong and you may need to change the design of the part or trying print it with lower resolution. We suggest you to use a wrench or c-clamp to force two part together.
 - Use gorilla glue to glue both part together and use clamp to hold parts
 
 ![](./Assets/Module-With_wheel-0.2mm_x18-2.png)
+
 ![](./Assets/Module-With_wheel-0.2mm_x18-real.png)
 
 - Insert the completed modules in their final spaces to ensure everything fit in place.
