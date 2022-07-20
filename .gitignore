@@ -4,9 +4,6 @@
 /Source/base-fw/build
 /Source/base-fw/components/led_strip
 /Source/base-fw/components/SGU
-/Source/tools/source/embeddedgen/.vs
-/Source/tools/source/embeddedgen/src/bin
-/Source/tools/source/embeddedgen/src/obj
 /Source/ring-fw/build
 /Source/ring-factory/build
 /Source/base-fw/main/EmbeddedFiles.bin
@@ -14,6 +11,8 @@
 /Source/base-fw/main/secretconfig.h
 /Source/base-fw/main/EmbeddedFiles.h
 /Source/base-fw/main/EmbeddedFiles.txt
+__pycache__/
+*.pyc
 /Source/base-fw/sdkconfig.old
 /Source/ring-factory/sdkconfig.old
 /Source/ring-fw/sdkconfig.old
