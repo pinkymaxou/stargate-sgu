@@ -24,6 +24,20 @@
 #define API_GETSETTINGSJSON_URI "/api/getsettingsjson"
 #define API_POSTSETTINGSJSON_URI "/api/setsettingsjson"
 
+#define ACTION_POST_STOP "/action/stop"
+#define ACTION_POST_RINGGOTOFACTORY "/action/ringgotofactory"
+#define ACTION_POST_REBOOT "/action/reboot"
+#define ACTION_POST_RINGCHEVRONERROR "/action/ringchevronerror"
+#define ACTION_POST_ACTIVEWORMHOLE "/action/activewormhole"
+#define ACTION_POST_RINGTURNOFF "/action/ringturnoff"
+#define ACTION_POST_RAMPLIGHTOFF "/action/ramplightoff"
+#define ACTION_POST_RAMPLIGHTON "/action/ramplighton"
+#define ACTION_POST_MANUALRAMPLIGHT "/action/manualramplight"
+#define ACTION_POST_DIAL "/action/dial"
+#define ACTION_POST_LOCKCLAMP "/action/lockclamp"
+#define ACTION_POST_RELEASECLAMP "/action/releaseclamp"
+#define ACTION_POST_GOHOME "/action/gohome"
+
 static esp_err_t api_get_handler(httpd_req_t *req);
 static esp_err_t api_post_handler(httpd_req_t *req);
 
@@ -161,15 +175,15 @@ static esp_err_t file_post_handler(httpd_req_t *req)
 
     ESP_LOGI(TAG, "file_post_handler, url: %s", req->uri);
 
-    if (strcmp(req->uri, "/action/gohome") == 0)
+    if (strcmp(req->uri, ACTION_POST_GOHOME) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_GoHome, NULL);
-    else if (strcmp(req->uri, "/action/releaseclamp") == 0)
+    else if (strcmp(req->uri, ACTION_POST_RELEASECLAMP) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualReleaseClamp, NULL);
-    else if (strcmp(req->uri, "/action/lockclamp") == 0)
+    else if (strcmp(req->uri, ACTION_POST_LOCKCLAMP) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualLockClamp, NULL);
-    else if (strcmp(req->uri, "/action/stop") == 0)
+    else if (strcmp(req->uri, ACTION_POST_STOP) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_Stop, NULL);
-    else if (strcmp(req->uri, "/action/dial") == 0)
+    else if (strcmp(req->uri, ACTION_POST_DIAL) == 0)
     {
         char content[100+1];
         size_t recv_size = MIN(req->content_len, sizeof(content)-1);
@@ -199,7 +213,7 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         if (!GATECONTROL_DoAction(GATECONTROL_EMODE_Dial, &uModeArg))
             goto ERROR;
     }
-    else if (strcmp(req->uri, "/action/manualramplight") == 0)
+    else if (strcmp(req->uri, ACTION_POST_MANUALRAMPLIGHT) == 0)
     {
         char content[100+1];
         size_t recv_size = MIN(req->content_len, sizeof(content)-1);
@@ -222,30 +236,28 @@ static esp_err_t file_post_handler(httpd_req_t *req)
 
         GPIO_SetRampLightPerc((float)pKeyJSON->valueint / 100.0f);
     }
-    else if (strcmp(req->uri, "/action/ramplighton") == 0)
+    else if (strcmp(req->uri, ACTION_POST_RAMPLIGHTON) == 0)
         GPIO_SetRampLightOnOff(true);
-    else if (strcmp(req->uri, "/action/ramplightoff") == 0)
+    else if (strcmp(req->uri, ACTION_POST_RAMPLIGHTOFF) == 0)
         GPIO_SetRampLightOnOff(false);
-    else if (strcmp(req->uri, "/action/ringturnoff") == 0)
+    else if (strcmp(req->uri, ACTION_POST_RINGTURNOFF) == 0)
     {
         ESP_LOGI(TAG, "GateControl ring turn off");
         SGUBRCOMM_TurnOff(&g_sSGUBRCOMMHandle);
     }
-    else if (strcmp(req->uri, "/action/activewormhole") == 0)
+    else if (strcmp(req->uri, ACTION_POST_ACTIVEWORMHOLE) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, NULL);
-    else if (strcmp(req->uri, "/action/ringchevronerror") == 0)
+    else if (strcmp(req->uri, ACTION_POST_RINGCHEVRONERROR) == 0)
     {
         ESP_LOGI(TAG, "GateControl ring chevron error");
         SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite);
     }
-    else if (strcmp(req->uri, "/action/ringgotofactory") == 0)
+    else if (strcmp(req->uri, ACTION_POST_RINGGOTOFACTORY) == 0)
     {            
         ESP_LOGI(TAG, "GateControl ring goto factory");
         SGUBRCOMM_GotoFactory(&g_sSGUBRCOMMHandle);
     }
-    else if (strcmp(req->uri, "/action/stop") == 0)
-        GATECONTROL_DoAction(GATECONTROL_EMODE_Stop, NULL);
-    else if (strcmp(req->uri, "/action/reboot") == 0)
+    else if (strcmp(req->uri, ACTION_POST_REBOOT) == 0)
         BASEFW_RequestReboot();
     else
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Unknown request");
