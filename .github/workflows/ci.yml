@@ -19,5 +19,4 @@ jobs:
         esp_idf_version: v4.4
         path: ./Source/ring-factory
         target: esp32
-        tags: stargate-sgu:latest
 
