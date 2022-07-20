@@ -9,9 +9,9 @@ extern "C" {
 #include <stdbool.h>
 #include "SGUBRProtocol.h"
 #include "esp_netif.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/Task.h"
-#include "freertos/semphr.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/semphr.h>
 
 typedef enum
 {
