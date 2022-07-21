@@ -22,7 +22,7 @@ Inspired partly by: https://thestargateproject.com/build-a-stargate-and-dhd-3d-p
 - I used 1A 12v to 5v, the servo motor moving can cause brownout.
 - Running the wormhole continously seems to prevent correct charge of the ring and cause weird glitches. May be caused by unsufficient 12v to 5v converter amperage.
 
-# Copyrights
+# Copyrights & Thanks
 
 Some fonts:
 |File | Info
