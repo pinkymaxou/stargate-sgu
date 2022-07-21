@@ -6,4 +6,7 @@ cmake_minimum_required(VERSION 3.5)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 set(EXTRA_COMPONENT_DIRS "${CMAKE_CURRENT_LIST_DIR}/../common/components")
+
+# COMMAND python "../tools/embeddedgen.py" -i ${CMAKE_SOURCE_DIR}/../main/www -o ${CMAKE_SOURCE_DIR}/../main
+
 project(base-fw)

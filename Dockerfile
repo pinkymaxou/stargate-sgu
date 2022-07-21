@@ -8,3 +8,5 @@ ADD . /app
 
 # Build
 RUN . /opt/esp/idf/export.sh
+
+# CMD [ "python", "./test.py"]
