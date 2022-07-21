@@ -2,9 +2,6 @@ name: ci
 
 on:
   push:
-    branches:
-      - 'pinkymaxou-patch-1'
-  pull_request:
     branches: [ master ]
 
 jobs:
