@@ -16,3 +16,5 @@ __pycache__/
 /Source/base-fw/sdkconfig.old
 /Source/ring-factory/sdkconfig.old
 /Source/ring-fw/sdkconfig.old
+Source/base-fw/.vscode/settings.json
+Source/ring-factory/.vscode/settings.json

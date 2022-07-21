@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "Servo.h"
+#include <stddef.h>
 
 typedef enum
 {
@@ -18,6 +19,10 @@ typedef enum
     SETTINGS_EENTRY_RampOnPercent,
     SETTINGS_EENTRY_RampOffPercent,
 
+    SETTINGS_EENTRY_WSTAIsActive,
+    SETTINGS_EENTRY_WSTASSID,
+    SETTINGS_EENTRY_WSTAPass,
+
     SETTINGS_EENTRY_Count
 } SETTINGS_EENTRY;
 
@@ -28,12 +33,24 @@ typedef enum
     SETTINGS_ESETRET_InvalidRange = 2
 } SETTINGS_ESETRET;
 
+typedef enum
+{
+    SETTINGS_EFLAGS_None = 0,
+    SETTINGS_EFLAGS_Secret = 1,      // Indicate it cannot be retrieved, only set
+    SETTINGS_EFLAGS_NeedsReboot = 2
+} SETTINGS_EFLAGS;
+
+#define SETTINGS_GETVALUESTRING_MAXLEN (100)
+
 void SETTINGS_Init();
 void SETTINGS_Load();
 void SETTINGS_Save();
 
 int32_t SETTINGS_GetValueInt32(SETTINGS_EENTRY eEntry);
 SETTINGS_ESETRET SETTINGS_SetValueInt32(SETTINGS_EENTRY eEntry, bool bIsDryRun, int32_t s32NewValue);
+
+void SETTINGS_GetValueString(SETTINGS_EENTRY eEntry, char* out_value, size_t* length);
+SETTINGS_ESETRET SETTINGS_SetValueString(SETTINGS_EENTRY eEntry, bool bIsDryRun, const char* szValue);
 
 const char* SETTINGS_ExportJSON();
 bool SETTINGS_ImportJSON(const char* szJSON);

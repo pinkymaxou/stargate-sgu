@@ -13,6 +13,7 @@
 typedef enum
 {
     ETYPE_Int32,
+    ETYPE_String
 } ETYPE;
 
 typedef union
@@ -29,6 +30,10 @@ typedef union
        float fMax;
        float fDefault;
     } sFloat;
+    struct
+    {
+       char* szDefault;
+    } sString;
 } UConfig;
 
 typedef struct
@@ -37,6 +42,7 @@ typedef struct
     const char* szDesc;
     ETYPE eType;
     UConfig uConfig;
+    SETTINGS_EFLAGS eFlags;
 } SSettingEntry;
 
 static SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
@@ -50,8 +56,15 @@ static SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_GateOpenedTimeout] =       { .szKey = "GateTimeoutS",      .eType = ETYPE_Int32, .szDesc = "Timeout (s) before the gate close",  .uConfig = { .sInt32 = { .s32Min = 10, .s32Max = 42*60, .s32Default = 300 } }  },
     [SETTINGS_EENTRY_HomeMaximumStepTicks] =    { .szKey = "Home.MaxSteps",     .eType = ETYPE_Int32, .szDesc = "Maximum step for homing process",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 64000, .s32Default = 8000 } }  },
     [SETTINGS_EENTRY_RampOnPercent] =           { .szKey = "Ramp.LightOn",      .eType = ETYPE_Int32, .szDesc = "Ramp illumination ON (percent)",     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 30 } }  },
-    [SETTINGS_EENTRY_RampOffPercent] =          { .szKey = "Ramp.LightOff",     .eType = ETYPE_Int32, .szDesc = "Ramp illumination OFF (percent)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 0 } }  }
+    [SETTINGS_EENTRY_RampOffPercent] =          { .szKey = "Ramp.LightOff",     .eType = ETYPE_Int32, .szDesc = "Ramp illumination OFF (percent)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 0 } }  },
+
+    // WiFi Station related
+    [SETTINGS_EENTRY_WSTAIsActive] =            { .szKey = "WSTA.IsActive",     .eType = ETYPE_Int32, .szDesc = "Wifi is active",                     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 1, .s32Default = 0 } },   .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
+    [SETTINGS_EENTRY_WSTASSID] =                { .szKey = "WSTA.SSID",         .eType = ETYPE_String,.szDesc = "WiFi (SSID)",                        .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
+    [SETTINGS_EENTRY_WSTAPass] =                { .szKey = "WSTA.Pass",         .eType = ETYPE_String,.szDesc = "WiFi password",                      .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_Secret | SETTINGS_EFLAGS_NeedsReboot }
 };
+
+
 
 static const SSettingEntry* GetSettingEntry(SETTINGS_EENTRY eEntry);
 static bool GetSettingEntryByKey(const char* szKey, SETTINGS_EENTRY* peEntry);
@@ -108,6 +121,36 @@ SETTINGS_ESETRET SETTINGS_SetValueInt32(SETTINGS_EENTRY eEntry, bool bIsDryRun, 
     return SETTINGS_ESETRET_OK;
 }
 
+void SETTINGS_GetValueString(SETTINGS_EENTRY eEntry, char* out_value, size_t* length)
+{
+    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
+    assert(pEnt != NULL && pEnt->eType == ETYPE_String);
+
+    if (nvs_get_str(m_sNVS, pEnt->szKey, out_value, length) != ESP_OK)
+    {
+        // Default value if it cannot retrieve it ...
+        if (pEnt->uConfig.sString.szDefault != NULL)
+        {
+            *length = strlen(pEnt->uConfig.sString.szDefault);
+            strncpy(out_value, pEnt->uConfig.sString.szDefault, *length);
+        }
+    }
+}
+
+SETTINGS_ESETRET SETTINGS_SetValueString(SETTINGS_EENTRY eEntry, bool bIsDryRun, const char* szValue)
+{
+    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
+    assert(pEnt != NULL && pEnt->eType == ETYPE_String);
+    if (!bIsDryRun)
+    {
+        const esp_err_t err = nvs_set_str(m_sNVS, pEnt->szKey, szValue);
+        ESP_ERROR_CHECK_WITHOUT_ABORT(err);
+        if (err != ESP_OK)
+            return SETTINGS_ESETRET_CannotSet;
+    }
+    return SETTINGS_ESETRET_OK;
+}
+
 const char* SETTINGS_ExportJSON()
 {
     cJSON* pRoot = cJSON_CreateObject();
@@ -126,13 +169,31 @@ const char* SETTINGS_ExportJSON()
 
         cJSON* pEntryInfoJSON = cJSON_CreateObject();
 
+        // Description and flags apply everywhere
+        cJSON_AddItemToObject(pEntryInfoJSON, "desc", cJSON_CreateString(pEntry->szDesc));
+        cJSON_AddItemToObject(pEntryInfoJSON, "flag_reboot", cJSON_CreateNumber((pEntry->eFlags & SETTINGS_EFLAGS_NeedsReboot)? 1 : 0));
+
         if (pEntry->eType == ETYPE_Int32)
         {
-            cJSON_AddItemToObject(pEntryJSON, "value", cJSON_CreateNumber(SETTINGS_GetValueInt32(eEntry)));
-            cJSON_AddItemToObject(pEntryInfoJSON, "desc", cJSON_CreateString(pEntry->szDesc));
+            if ((pEntry->eFlags & SETTINGS_EFLAGS_Secret) != SETTINGS_EFLAGS_Secret)
+                cJSON_AddItemToObject(pEntryJSON, "value", cJSON_CreateNumber(SETTINGS_GetValueInt32(eEntry)));
+
+            cJSON_AddItemToObject(pEntryInfoJSON, "default", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Default));
             cJSON_AddItemToObject(pEntryInfoJSON, "min", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Min));
             cJSON_AddItemToObject(pEntryInfoJSON, "max", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Max));
         }
+        else if (pEntry->eType == ETYPE_String)
+        {
+            char value[SETTINGS_GETVALUESTRING_MAXLEN+1] = {0,};
+            size_t length = SETTINGS_GETVALUESTRING_MAXLEN;
+            if ((pEntry->eFlags & SETTINGS_EFLAGS_Secret) != SETTINGS_EFLAGS_Secret)
+            {
+                SETTINGS_GetValueString(eEntry, value, &length);
+                cJSON_AddItemToObject(pEntryJSON, "value", cJSON_CreateString(value));
+            }
+            cJSON_AddItemToObject(pEntryInfoJSON, "default", cJSON_CreateString(pEntry->uConfig.sString.szDefault));
+        }
+
         cJSON_AddItemToObject(pEntryJSON, "info", pEntryInfoJSON);
 
         cJSON_AddItemToArray(pEntries, pEntryJSON);
@@ -175,8 +236,10 @@ bool SETTINGS_ImportJSON(const char* szJSON)
             cJSON* pValueJSON = cJSON_GetObjectItem(pEntryJSON, "value");
             if (pValueJSON == NULL)
             {
-                ESP_LOGE(TAG, "Value is absent from json");
-                goto ERROR;
+                // We just ignore changing the setting if the value property is not there.
+                // it allows us to handle secret cases.
+                ESP_LOGD(TAG, "JSON value is not there, skipping it");
+                continue;
             }
 
             SETTINGS_EENTRY eEntry;
@@ -198,6 +261,22 @@ bool SETTINGS_ImportJSON(const char* szJSON)
                 int32_t s32 = pValueJSON->valueint;
                 SETTINGS_ESETRET eSetRet;
                 if ((eSetRet = SETTINGS_SetValueInt32(eEntry, bIsDryRun, s32)) != SETTINGS_ESETRET_OK)
+                {
+                    ESP_LOGE(TAG, "Unable to set value for key: %s, bIsDryRun: %d, ret: %d", pSettingEntry->szKey, bIsDryRun, eSetRet);
+                    goto ERROR;
+                }
+            }
+            else if (pSettingEntry->eType == ETYPE_String)
+            {
+                if (!cJSON_IsString(pValueJSON))
+                {
+                    ESP_LOGE(TAG, "JSON value type is invalid, not a string");
+                    goto ERROR;
+                }
+                
+                const char* str = pValueJSON->valuestring;
+                SETTINGS_ESETRET eSetRet;
+                if ((eSetRet = SETTINGS_SetValueString(eEntry, bIsDryRun, str)) != SETTINGS_ESETRET_OK)
                 {
                     ESP_LOGE(TAG, "Unable to set value for key: %s, bIsDryRun: %d, ret: %d", pSettingEntry->szKey, bIsDryRun, eSetRet);
                     goto ERROR;
