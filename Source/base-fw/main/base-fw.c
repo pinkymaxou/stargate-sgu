@@ -85,7 +85,9 @@ static void wifi_init_all(void)
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
+    const bool isWiFiSTA = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WSTAIsActive) == 1;
+    if (isWiFiSTA)
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
 
     // Access point mode
     esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
@@ -129,42 +131,46 @@ static void wifi_init_all(void)
     //ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
 
-
     // Soft Access Point Mode
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
              wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
 
-    esp_event_handler_instance_t instance_any_id;
-    esp_event_handler_instance_t instance_got_ip;
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifistation_event_handler,
-                                                        NULL,
-                                                        &instance_any_id));
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-                                                        IP_EVENT_STA_GOT_IP,
-                                                        &wifistation_event_handler,
-                                                        NULL,
-                                                        &instance_got_ip));
+    if (isWiFiSTA)
+    {
+        esp_event_handler_instance_t instance_any_id;
+        esp_event_handler_instance_t instance_got_ip;
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                            ESP_EVENT_ANY_ID,
+                                                            &wifistation_event_handler,
+                                                            NULL,
+                                                            &instance_any_id));
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                            IP_EVENT_STA_GOT_IP,
+                                                            &wifistation_event_handler,
+                                                            NULL,
+                                                            &instance_got_ip));
 
-    wifi_config_t wifi_configSTA = {
-        .sta = {
-            .ssid = FWCONFIG_STA_WIFI_SSID,
-            .password = FWCONFIG_STA_WIFI_PASS,
-            /* Setting a password implies station will connect to all security modes including WEP/WPA.
-             * However these modes are deprecated and not advisable to be used. Incase your Access point
-             * doesn't support WPA2, these mode can be enabled by commenting below line */
-	     .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+        wifi_config_t wifi_configSTA = {
+            .sta = {
+                .threshold.authmode = WIFI_AUTH_WPA2_PSK,
 
-            .pmf_cfg = {
-                .capable = true,
-                .required = false
+                .pmf_cfg = {
+                    .capable = true,
+                    .required = false
+                },
             },
-        },
-    };
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_configSTA) );
+        };
+        
+        size_t staSSIDLength = 32;
+        SETTINGS_GetValueString(SETTINGS_EENTRY_WSTASSID, (char*)wifi_configSTA.sta.ssid, &staSSIDLength);
+        
+        size_t staPassLength = 64;
+        SETTINGS_GetValueString(SETTINGS_EENTRY_WSTAPass, (char*)wifi_configSTA.sta.password, &staPassLength);
+        
+        ESP_LOGI(TAG, "STA mode is active, attempt to connect to ssid: %s", wifi_configSTA.sta.ssid);
 
-    //ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
+        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_configSTA) );
+    }
 
     // Start AP + STA
     ESP_ERROR_CHECK(esp_wifi_start() );

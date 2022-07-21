@@ -1,7 +1,7 @@
 #include "Wormhole.h"
 #include "GPIO.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/Task.h"
+#include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "FWConfig.h"
 #include "Settings.h"
