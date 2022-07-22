@@ -23,6 +23,10 @@ typedef enum
     SETTINGS_EENTRY_WSTASSID,
     SETTINGS_EENTRY_WSTAPass,
 
+    SETTINGS_EENTRY_AnimPrelockDelayMS,
+    SETTINGS_EENTRY_AnimPostlockDelayMS,
+    SETTINGS_EENTRY_AnimPredialDelayMS,
+
     SETTINGS_EENTRY_Count
 } SETTINGS_EENTRY;
 

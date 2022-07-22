@@ -154,7 +154,7 @@ static void GateControlTask( void *pvParameters )
             GPIO_StartStepper();
             GPIO_ReleaseClamp();
             SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
-            vTaskDelay(pdMS_TO_TICKS(2500));
+            vTaskDelay(pdMS_TO_TICKS(SETTINGS_GetValueInt32(SETTINGS_EENTRY_AnimPredialDelayMS)));
 
             const int32_t s32StepPerRotation = SETTINGS_GetValueInt32(SETTINGS_EENTRY_StepPerRotation);
             const uint32_t u32SymbBright = (uint32_t)SETTINGS_GetValueInt32(SETTINGS_EENTRY_RingSymbolBrightness);
@@ -184,9 +184,9 @@ static void GateControlTask( void *pvParameters )
                 MoveRelative(s32Move);
                 m_s32Count = s32TicksTarget;
 
-                vTaskDelay(pdMS_TO_TICKS(750));
+                vTaskDelay(pdMS_TO_TICKS(SETTINGS_GetValueInt32(SETTINGS_EENTRY_AnimPrelockDelayMS)));
                 SGUBRCOMM_LightUpLED(&g_sSGUBRCOMMHandle, u32SymbBright, u32SymbBright, u32SymbBright, SGUHELPER_SymbolIndexToLedIndex(u8SymbolIndex));
-                vTaskDelay(pdMS_TO_TICKS(1250));
+                vTaskDelay(pdMS_TO_TICKS(SETTINGS_GetValueInt32(SETTINGS_EENTRY_AnimPostlockDelayMS)));
             }
 
             // Stop stepper and servos ...
