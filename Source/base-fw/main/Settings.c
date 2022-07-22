@@ -10,6 +10,20 @@
 #define TAG "SETTINGS"
 #define PARTITION_NAME "nvs"
 
+// JSON entries
+#define JSON_ENTRIES_NAME "entries"
+
+#define JSON_ENTRY_KEY_NAME "key"
+#define JSON_ENTRY_VALUE_NAME "value"
+
+#define JSON_ENTRY_INFO_NAME "info"
+
+#define JSON_ENTRY_INFO_DESC_NAME "desc"
+#define JSON_ENTRY_INFO_DEFAULT_NAME "default"
+#define JSON_ENTRY_INFO_MIN_NAME "min"
+#define JSON_ENTRY_INFO_MAX_NAME "max"
+#define JSON_ENTRY_INFO_FLAG_REBOOT_NAME "flag_reboot"
+
 typedef enum
 {
     ETYPE_Int32,
@@ -61,7 +75,12 @@ static SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     // WiFi Station related
     [SETTINGS_EENTRY_WSTAIsActive] =            { .szKey = "WSTA.IsActive",     .eType = ETYPE_Int32, .szDesc = "Wifi is active",                     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 1, .s32Default = 0 } },   .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
     [SETTINGS_EENTRY_WSTASSID] =                { .szKey = "WSTA.SSID",         .eType = ETYPE_String,.szDesc = "WiFi (SSID)",                        .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
-    [SETTINGS_EENTRY_WSTAPass] =                { .szKey = "WSTA.Pass",         .eType = ETYPE_String,.szDesc = "WiFi password",                      .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_Secret | SETTINGS_EFLAGS_NeedsReboot }
+    [SETTINGS_EENTRY_WSTAPass] =                { .szKey = "WSTA.Pass",         .eType = ETYPE_String,.szDesc = "WiFi password",                      .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_Secret | SETTINGS_EFLAGS_NeedsReboot },
+
+    // Animation delay
+    [SETTINGS_EENTRY_AnimPrelockDelayMS] =      { .szKey = "dial.anim1",        .eType = ETYPE_Int32, .szDesc = "Delay before locking the chevron (ms)",   .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 6000, .s32Default = 750 } }  },
+    [SETTINGS_EENTRY_AnimPostlockDelayMS] =     { .szKey = "dial.anim2",        .eType = ETYPE_Int32, .szDesc = "Delay after locking the chevron (ms)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 6000, .s32Default = 1250 } }  },
+    [SETTINGS_EENTRY_AnimPredialDelayMS] =      { .szKey = "dial.anim3",        .eType = ETYPE_Int32, .szDesc = "Delay before starting to dial (ms)",      .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 10000, .s32Default = 2500 } }  },
 };
 
 static const SSettingEntry* GetSettingEntry(SETTINGS_EENTRY eEntry);
@@ -155,7 +174,7 @@ const char* SETTINGS_ExportJSON()
     if (pRoot == NULL)
         goto ERROR;
 
-    cJSON* pEntries = cJSON_AddArrayToObject(pRoot, "Entries");
+    cJSON* pEntries = cJSON_AddArrayToObject(pRoot, JSON_ENTRIES_NAME);
 
     for(int i = 0; i < SETTINGS_EENTRY_Count; i++)
     {
@@ -163,9 +182,13 @@ const char* SETTINGS_ExportJSON()
         const SSettingEntry* pEntry = GetSettingEntry( eEntry );
 
         cJSON* pEntryJSON = cJSON_CreateObject();
-        cJSON_AddItemToObject(pEntryJSON, "key", cJSON_CreateString(pEntry->szKey));
+        cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_KEY_NAME, cJSON_CreateString(pEntry->szKey));
 
         cJSON* pEntryInfoJSON = cJSON_CreateObject();
+        
+        // Description and flags apply everywhere
+        cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DESC_NAME, cJSON_CreateString(pEntry->szDesc));
+        cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_FLAG_REBOOT_NAME, cJSON_CreateNumber((pEntry->eFlags & SETTINGS_EFLAGS_NeedsReboot)? 1 : 0));
 
         // Description and flags apply everywhere
         cJSON_AddItemToObject(pEntryInfoJSON, "desc", cJSON_CreateString(pEntry->szDesc));
@@ -174,11 +197,11 @@ const char* SETTINGS_ExportJSON()
         if (pEntry->eType == ETYPE_Int32)
         {
             if ((pEntry->eFlags & SETTINGS_EFLAGS_Secret) != SETTINGS_EFLAGS_Secret)
-                cJSON_AddItemToObject(pEntryJSON, "value", cJSON_CreateNumber(SETTINGS_GetValueInt32(eEntry)));
+                cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_VALUE_NAME, cJSON_CreateNumber(SETTINGS_GetValueInt32(eEntry)));
 
-            cJSON_AddItemToObject(pEntryInfoJSON, "default", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Default));
-            cJSON_AddItemToObject(pEntryInfoJSON, "min", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Min));
-            cJSON_AddItemToObject(pEntryInfoJSON, "max", cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Max));
+            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DEFAULT_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Default));
+            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_MIN_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Min));
+            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_MAX_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Max));
         }
         else if (pEntry->eType == ETYPE_String)
         {
@@ -187,16 +210,16 @@ const char* SETTINGS_ExportJSON()
             if ((pEntry->eFlags & SETTINGS_EFLAGS_Secret) != SETTINGS_EFLAGS_Secret)
             {
                 SETTINGS_GetValueString(eEntry, value, &length);
-                cJSON_AddItemToObject(pEntryJSON, "value", cJSON_CreateString(value));
+                cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_VALUE_NAME, cJSON_CreateString(value));
             }
-            cJSON_AddItemToObject(pEntryInfoJSON, "default", cJSON_CreateString(pEntry->uConfig.sString.szDefault));
+            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DEFAULT_NAME, cJSON_CreateString(pEntry->uConfig.sString.szDefault));
         }
 
-        cJSON_AddItemToObject(pEntryJSON, "info", pEntryInfoJSON);
+        cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_INFO_NAME, pEntryInfoJSON);
 
         cJSON_AddItemToArray(pEntries, pEntryJSON);
     }
-    const char* pStr = cJSON_Print(pRoot);
+    const char* pStr =  cJSON_PrintUnformatted(pRoot);
     cJSON_Delete(pRoot);
     return pStr;
     ERROR:
@@ -209,7 +232,7 @@ bool SETTINGS_ImportJSON(const char* szJSON)
     bool bRet = true;
     cJSON* pRoot = cJSON_Parse(szJSON);
 
-    cJSON* pEntriesArray = cJSON_GetObjectItem(pRoot, "Entries");
+    cJSON* pEntriesArray = cJSON_GetObjectItem(pRoot, JSON_ENTRIES_NAME);
     if (!cJSON_IsArray(pEntriesArray))
     {
         ESP_LOGE(TAG, "Entries array is not valid");
@@ -224,14 +247,14 @@ bool SETTINGS_ImportJSON(const char* szJSON)
         {
             cJSON* pEntryJSON = cJSON_GetArrayItem(pEntriesArray, i);
 
-            cJSON* pKeyJSON = cJSON_GetObjectItem(pEntryJSON, "key");
+            cJSON* pKeyJSON = cJSON_GetObjectItem(pEntryJSON, JSON_ENTRY_KEY_NAME);
             if (pKeyJSON == NULL || !cJSON_IsString(pKeyJSON))
             {
                 ESP_LOGE(TAG, "Cannot find JSON key element");
                 goto ERROR;
             }
 
-            cJSON* pValueJSON = cJSON_GetObjectItem(pEntryJSON, "value");
+            cJSON* pValueJSON = cJSON_GetObjectItem(pEntryJSON, JSON_ENTRY_VALUE_NAME);
             if (pValueJSON == NULL)
             {
                 // We just ignore changing the setting if the value property is not there.
