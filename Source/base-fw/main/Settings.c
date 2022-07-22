@@ -64,8 +64,6 @@ static SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_WSTAPass] =                { .szKey = "WSTA.Pass",         .eType = ETYPE_String,.szDesc = "WiFi password",                      .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_Secret | SETTINGS_EFLAGS_NeedsReboot }
 };
 
-
-
 static const SSettingEntry* GetSettingEntry(SETTINGS_EENTRY eEntry);
 static bool GetSettingEntryByKey(const char* szKey, SETTINGS_EENTRY* peEntry);
 
