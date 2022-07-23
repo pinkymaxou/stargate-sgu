@@ -14,7 +14,7 @@ Still writing the print and assembly manual, more will come later including the 
 
 Inspired partly by: https://thestargateproject.com/build-a-stargate-and-dhd-3d-printed/
 
-![](./Readme-Assets/stargate-thumbnail.png)
+![](./Readme-Assets/stargate-thumbnail3.jpg)
 ![](./Readme-Assets/stargate-thumbnail2.png)
 
 # Knowns issues
