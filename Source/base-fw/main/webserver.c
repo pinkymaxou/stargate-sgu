@@ -24,6 +24,8 @@
 #define API_GETSETTINGSJSON_URI "/api/getsettingsjson"
 #define API_POSTSETTINGSJSON_URI "/api/setsettingsjson"
 
+#define API_GETSYSINFOJSON_URI "/api/getsysinfo"
+
 #define ACTION_POST_STOP "/action/stop"
 #define ACTION_POST_RINGGOTOFACTORY "/action/ringgotofactory"
 #define ACTION_POST_REBOOT "/action/reboot"
@@ -49,7 +51,13 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req);
 
 static const EF_SFile* GetFile(const char* strFilename);
 
+static const char* GetSysInfo();
+static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len);
+
 static uint8_t m_u8Buffers[HTTPSERVER_BUFFERSIZE];
+
+/*! @brief this variable is set by linker script, don't rename it. It contains app image informations. */
+extern const esp_app_desc_t esp_app_desc;
 
 static const httpd_uri_t m_sHttpUI = {
     .uri       = "/*",
@@ -283,9 +291,19 @@ static esp_err_t api_get_handler(httpd_req_t *req)
     {
         pExportJSON = SETTINGS_ExportJSON();
 
-        if (httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
+        if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
         {
-            ESP_LOGE(TAG, "Unable to send JSON data");
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
+            goto END;
+        }
+    }
+    else if (strcmp(req->uri, API_GETSYSINFOJSON_URI) == 0)
+    {
+        pExportJSON = GetSysInfo();
+       
+        if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
+        {
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
             goto END;
         }
     }
@@ -297,6 +315,7 @@ static esp_err_t api_get_handler(httpd_req_t *req)
     END:
     if (pExportJSON != NULL)
         free(pExportJSON);
+
     httpd_resp_set_hdr(req, "Connection", "close");
     httpd_resp_send_chunk(req, NULL, 0);
     return ESP_OK;
@@ -445,4 +464,82 @@ static const EF_SFile* GetFile(const char* strFilename)
     }
 
     return NULL;
+}
+
+static const char* GetSysInfo()
+{
+    cJSON* pRoot = NULL;
+
+    char buff[100];
+    pRoot = cJSON_CreateObject();
+    if (pRoot == NULL)
+    {
+        goto ERROR;
+    }
+    cJSON* pEntries = cJSON_AddArrayToObject(pRoot, "infos");
+
+    // Firmware
+    cJSON* pEntryJSON1 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON1, "name", cJSON_CreateString("Firmware"));
+    cJSON_AddItemToObject(pEntryJSON1, "value", cJSON_CreateString(esp_app_desc.version));
+    cJSON_AddItemToArray(pEntries, pEntryJSON1);
+
+    // Compile Time
+    cJSON* pEntryJSON2 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON2, "name", cJSON_CreateString("Compile Time"));
+    sprintf(buff, "%s %s", /*0*/esp_app_desc.date, /*0*/esp_app_desc.time);
+    cJSON_AddItemToObject(pEntryJSON2, "value", cJSON_CreateString(buff));
+    cJSON_AddItemToArray(pEntries, pEntryJSON2);
+
+    // SHA256
+    cJSON* pEntryJSON3 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON3, "name", cJSON_CreateString("SHA256"));
+    char elfSHA256[sizeof(esp_app_desc.app_elf_sha256)*2 + 1] = {0,};
+    ToHexString(elfSHA256, esp_app_desc.app_elf_sha256, sizeof(esp_app_desc.app_elf_sha256));
+    cJSON_AddItemToObject(pEntryJSON3, "value", cJSON_CreateString(elfSHA256));
+    cJSON_AddItemToArray(pEntries, pEntryJSON3);
+
+    // IDF
+    cJSON* pEntryJSON4 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON4, "name", cJSON_CreateString("IDF"));
+    cJSON_AddItemToObject(pEntryJSON4, "value", cJSON_CreateString(esp_app_desc.idf_ver));
+    cJSON_AddItemToArray(pEntries, pEntryJSON4);
+
+    // WiFi-AP
+    cJSON* pEntryJSON5 = cJSON_CreateObject();
+    uint8_t u8Macs[6];
+    cJSON_AddItemToObject(pEntryJSON5, "name", cJSON_CreateString("WiFi.AP"));
+    esp_read_mac(u8Macs, ESP_MAC_WIFI_SOFTAP);
+    sprintf(buff, "%02X:%02X:%02X:%02X:%02X:%02X", /*0*/u8Macs[0], /*1*/u8Macs[1], /*2*/u8Macs[2], /*3*/u8Macs[3], /*4*/u8Macs[4], /*5*/u8Macs[5]);
+    cJSON_AddItemToObject(pEntryJSON5, "value", cJSON_CreateString(buff));
+    cJSON_AddItemToArray(pEntries, pEntryJSON5);
+
+    // WiFi-STA
+    cJSON* pEntryJSON6 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON6, "name", cJSON_CreateString("WiFi.STA"));
+    esp_read_mac(u8Macs, ESP_MAC_WIFI_STA);
+    sprintf(buff, "%02X:%02X:%02X:%02X:%02X:%02X", /*0*/u8Macs[0], /*1*/u8Macs[1], /*2*/u8Macs[2], /*3*/u8Macs[3], /*4*/u8Macs[4], /*5*/u8Macs[5]);
+    cJSON_AddItemToObject(pEntryJSON6, "value", cJSON_CreateString(buff));
+    cJSON_AddItemToArray(pEntries, pEntryJSON6);
+
+    // WiFi-BT
+    cJSON* pEntryJSON7 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON7, "name", cJSON_CreateString("WiFi.STA"));
+    esp_read_mac(u8Macs, ESP_MAC_BT);
+    sprintf(buff, "%02X:%02X:%02X:%02X:%02X:%02X", /*0*/u8Macs[0], /*1*/u8Macs[1], /*2*/u8Macs[2], /*3*/u8Macs[3], /*4*/u8Macs[4], /*5*/u8Macs[5]);
+    cJSON_AddItemToObject(pEntryJSON7, "value", cJSON_CreateString(buff));
+    cJSON_AddItemToArray(pEntries, pEntryJSON7);
+
+    const char* pStr =  cJSON_PrintUnformatted(pRoot);
+    cJSON_Delete(pRoot);
+    return pStr;
+    ERROR:
+    cJSON_Delete(pRoot);
+    return NULL;
+}
+
+static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len)
+{
+    for (uint32_t i = 0; i < len; i++)
+        sprintf(dstHexString + (i * 2), "%02X", data[i]);
 }
