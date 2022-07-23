@@ -1,13 +1,12 @@
-// 20220627212301
-// http://192.168.5.216/api/getsettingsjson
-
 {
-  "Entries": [
+  "entries": [
     {
       "key": "Clamp.LockedPWM",
       "value": 1250,
       "info": {
         "desc": "Servo motor locked PWM",
+        "flag_reboot": 0,
+        "default": 1250,
         "min": 1000,
         "max": 2000
       }
@@ -17,6 +16,8 @@
       "value": 1050,
       "info": {
         "desc": "Servo motor released PWM",
+        "flag_reboot": 0,
+        "default": 1000,
         "min": 1000,
         "max": 2000
       }
@@ -26,6 +27,8 @@
       "value": -25,
       "info": {
         "desc": "Offset relative to home sensor",
+        "flag_reboot": 0,
+        "default": -55,
         "min": -500,
         "max": 500
       }
@@ -35,6 +38,8 @@
       "value": 300,
       "info": {
         "desc": "Encoder delta in slow move mode",
+        "flag_reboot": 0,
+        "default": 300,
         "min": 0,
         "max": 800
       }
@@ -44,6 +49,8 @@
       "value": 15,
       "info": {
         "desc": "Symbol brightness",
+        "flag_reboot": 0,
+        "default": 15,
         "min": 3,
         "max": 50
       }
@@ -53,6 +60,8 @@
       "value": 7334,
       "info": {
         "desc": "How many step per rotation",
+        "flag_reboot": 0,
+        "default": 7334,
         "min": 0,
         "max": 64000
       }
@@ -62,6 +71,8 @@
       "value": 300,
       "info": {
         "desc": "Timeout (s) before the gate close",
+        "flag_reboot": 0,
+        "default": 300,
         "min": 10,
         "max": 2520
       }
@@ -71,6 +82,8 @@
       "value": 8000,
       "info": {
         "desc": "Maximum step for homing process",
+        "flag_reboot": 0,
+        "default": 8000,
         "min": 0,
         "max": 64000
       }
@@ -80,6 +93,8 @@
       "value": 10,
       "info": {
         "desc": "Ramp illumination ON (percent)",
+        "flag_reboot": 0,
+        "default": 30,
         "min": 0,
         "max": 100
       }
@@ -89,8 +104,82 @@
       "value": 0,
       "info": {
         "desc": "Ramp illumination OFF (percent)",
+        "flag_reboot": 0,
+        "default": 0,
         "min": 0,
         "max": 100
+      }
+    },
+    {
+      "key": "WH.MaxBright",
+      "value": 180,
+      "info": {
+        "desc": "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)",
+        "flag_reboot": 0,
+        "default": 180,
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "key": "WSTA.IsActive",
+      "value": 1,
+      "info": {
+        "desc": "Wifi is active",
+        "flag_reboot": 1,
+        "default": 0,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "key": "WSTA.SSID",
+      "value": "Potatoes",
+      "info": {
+        "desc": "WiFi (SSID)",
+        "flag_reboot": 1,
+        "default": ""
+      }
+    },
+    {
+      "key": "WSTA.Pass",
+      "info": {
+        "desc": "WiFi password",
+        "flag_reboot": 1,
+        "default": ""
+      }
+    },
+    {
+      "key": "dial.anim1",
+      "value": 750,
+      "info": {
+        "desc": "Delay before locking the chevron (ms)",
+        "flag_reboot": 0,
+        "default": 750,
+        "min": 0,
+        "max": 6000
+      }
+    },
+    {
+      "key": "dial.anim2",
+      "value": 1250,
+      "info": {
+        "desc": "Delay after locking the chevron (ms)",
+        "flag_reboot": 0,
+        "default": 1250,
+        "min": 0,
+        "max": 6000
+      }
+    },
+    {
+      "key": "dial.anim3",
+      "value": 2500,
+      "info": {
+        "desc": "Delay before starting to dial (ms)",
+        "flag_reboot": 0,
+        "default": 2500,
+        "min": 0,
+        "max": 10000
       }
     }
   ]

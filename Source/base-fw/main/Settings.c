@@ -72,6 +72,8 @@ static SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_RampOnPercent] =           { .szKey = "Ramp.LightOn",      .eType = ETYPE_Int32, .szDesc = "Ramp illumination ON (percent)",     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 30 } }  },
     [SETTINGS_EENTRY_RampOffPercent] =          { .szKey = "Ramp.LightOff",     .eType = ETYPE_Int32, .szDesc = "Ramp illumination OFF (percent)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 0 } }  },
 
+    [SETTINGS_EENTRY_WormholeMaxBrightness] =   { .szKey = "WH.MaxBright",      .eType = ETYPE_Int32, .szDesc = "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 255, .s32Default = 180 } }  },
+
     // WiFi Station related
     [SETTINGS_EENTRY_WSTAIsActive] =            { .szKey = "WSTA.IsActive",     .eType = ETYPE_Int32, .szDesc = "Wifi is active",                     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 1, .s32Default = 0 } },   .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
     [SETTINGS_EENTRY_WSTASSID] =                { .szKey = "WSTA.SSID",         .eType = ETYPE_String,.szDesc = "WiFi (SSID)",                        .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
