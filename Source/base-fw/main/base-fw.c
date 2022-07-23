@@ -188,6 +188,7 @@ void app_main(void)
     ESP_ERROR_CHECK(ret);
 
     SETTINGS_Init();
+
     //SETTINGS_Load();
 
     // Need to be high ...

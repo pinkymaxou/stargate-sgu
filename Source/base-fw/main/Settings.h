@@ -13,11 +13,16 @@ typedef enum
     SETTINGS_EENTRY_RingHomeOffset,
     SETTINGS_EENTRY_RingSlowDelta,
     SETTINGS_EENTRY_RingSymbolBrightness,
+    
     SETTINGS_EENTRY_StepPerRotation,
     SETTINGS_EENTRY_GateOpenedTimeout,
+    
     SETTINGS_EENTRY_HomeMaximumStepTicks,
+
     SETTINGS_EENTRY_RampOnPercent,
     SETTINGS_EENTRY_RampOffPercent,
+
+    SETTINGS_EENTRY_WormholeMaxBrightness,
 
     SETTINGS_EENTRY_WSTAIsActive,
     SETTINGS_EENTRY_WSTASSID,
