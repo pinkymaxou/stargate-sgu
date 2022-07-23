@@ -31,6 +31,17 @@ Some fonts:
 | eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
 
+# Included softwares
+
+| Name | Description |
+|---|---|
+| base-fw | Base control firmware |
+| ring-factory | Basic firmware to upload firmware into ring |
+| ring-fw | Ring firmware |
+| tools/otauploader.py | Do upload using HTTP for OTA |
+| tools/embeddedgen.py | Generate embedded resources |
+
+
 # Parts to print
 
 ##  Ring
