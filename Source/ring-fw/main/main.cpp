@@ -523,6 +523,7 @@ void app_main(void)
             GPIO_EnableHoldPowerPin(false);
 
             ESP_LOGW(TAG, "Time to die, let me die in peace");
+            m_bIsSuicide = false;
         }
 
         vTaskDelay(pdMS_TO_TICKS(250));
