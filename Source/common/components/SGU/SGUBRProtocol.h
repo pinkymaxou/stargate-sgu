@@ -15,6 +15,7 @@ typedef enum
     SGUBRPROTOCOL_ECMD_UpdateLight = 2,
     SGUBRPROTOCOL_ECMD_ChevronsLightning = 3,
     SGUBRPROTOCOL_ECMD_GotoFactory = 4,
+    SGUBRPROTOCOL_ECMD_GotoOTAMode = 5,
 } SGUBRPROTOCOL_ECMD;
 
 typedef struct
@@ -58,6 +59,8 @@ typedef void(*fnChevronsLightning)(const SGUBRPROTOCOL_SChevronsLightningArg* ps
 
 typedef void(*fnGotoFactory)();
 
+typedef void(*fnGotoOTAMode)(void);
+
 typedef struct
 {
     fnKeepAlive fnKeepAliveHandler;
@@ -67,6 +70,8 @@ typedef struct
     fnChevronsLightning fnChevronsLightningHandler;
 
     fnGotoFactory fnGotoFactoryHandler;
+
+    fnGotoOTAMode fnGotoOTAModeHandler;
 } SGUBRPROTOCOL_SConfig;
 
 typedef struct
@@ -84,6 +89,7 @@ uint32_t SGUBRPROTOCOL_EncTurnOff(uint8_t* u8Dst, uint16_t u16MaxLen);
 uint32_t SGUBRPROTOCOL_EncUpdateLight(uint8_t* u8Dst, uint16_t u16MaxLen, const SGUBRPROTOCOL_SUpdateLightArg* psArg);
 uint32_t SGUBRPROTOCOL_EncChevronLightning(uint8_t* u8Dst, uint16_t u16MaxLen, const SGUBRPROTOCOL_SChevronsLightningArg* psArg);
 uint32_t SGUBRPROTOCOL_EncGotoFactory(uint8_t* u8Dst, uint16_t u16MaxLen);
+uint32_t SGUBRPROTOCOL_EncGotoOTAMode(uint8_t* u8Dst, uint16_t u16MaxLen);
 
 #ifdef __cplusplus
 }

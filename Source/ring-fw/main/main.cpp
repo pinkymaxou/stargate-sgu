@@ -44,13 +44,20 @@ static const char *TAG = "Main";
 const uint8_t m_u8BroadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 static volatile bool m_bIsSuicide = false;
-static volatile long m_lAutoOffTicks = xTaskGetTickCount();
-static volatile uint32_t m_u32AutoOffTimeoutMs = FWCONFIG_HOLDPOWER_DELAY_MS;
+static volatile TickType_t m_lAutoOffTicks = xTaskGetTickCount();
+static volatile TickType_t m_ulAutoOffTimeoutMs = FWCONFIG_HOLDPOWER_DELAY_MS;
 
 // Chevron animation
 static volatile int32_t m_s32ChevronAnim = -1;
 
 static esp_pm_lock_handle_t m_lockHandle;
+
+// These should survive to reset
+static const uint8_t u8MagicNumber_OTAMode[4] = { 0xA0, 0xBA, 0xDC, 0xC0  };
+
+static bool m_bIsOTAMode = false;
+
+static RTC_IRAM_ATTR uint8_t m_u8StartModes[4];
 
 extern "C" {
     void app_main();
@@ -61,6 +68,7 @@ extern "C" {
     static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg);
     static void SGUBRChevronsLightningHandler(const SGUBRPROTOCOL_SChevronsLightningArg* psChevronLightningArg);
     static void SGUBRGotoFactory();
+    static void SGUBRGotoOTAMode();
 }
 
 static const SGUBRPROTOCOL_SConfig m_sConfig =
@@ -69,7 +77,8 @@ static const SGUBRPROTOCOL_SConfig m_sConfig =
     .fnTurnOffHandler = SGUBRTurnOffHandler,
     .fnUpdateLightHandler = SGUBRUpdateLightHandler,
     .fnChevronsLightningHandler = SGUBRChevronsLightningHandler,
-    .fnGotoFactoryHandler = SGUBRGotoFactory
+    .fnGotoFactoryHandler = SGUBRGotoFactory,
+    .fnGotoOTAModeHandler = SGUBRGotoOTAMode
 };
 
 static SGUBRCOMM_SHandle m_sSGUBRCommHandle;
@@ -88,53 +97,59 @@ static void InitESPNOW()
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    /*
-    // Access point mode
-    esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
+    if (m_bIsOTAMode)
+    {
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
+    
+        // Access point mode
+        esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
 
-    esp_netif_ip_info_t ipInfo;
-    IP4_ADDR(&ipInfo.ip, 192, 168, 55, 1);
-	IP4_ADDR(&ipInfo.gw, 192, 168, 55, 1);
-	IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
-	esp_netif_dhcps_stop(wifiAP);
-	esp_netif_set_ip_info(wifiAP, &ipInfo);
-	esp_netif_dhcps_start(wifiAP);
+        esp_netif_ip_info_t ipInfo;
+        IP4_ADDR(&ipInfo.ip, 192, 168, 55, 1);
+        IP4_ADDR(&ipInfo.gw, 192, 168, 55, 1);
+        IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
+        esp_netif_dhcps_stop(wifiAP);
+        esp_netif_set_ip_info(wifiAP, &ipInfo);
+        esp_netif_dhcps_start(wifiAP);
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        NULL));
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                            ESP_EVENT_ANY_ID,
+                                                            &wifi_event_handler,
+                                                            NULL,
+                                                            NULL));
 
-    wifi_config_t wifi_configAP = {
-        .ap = {
-            .channel = FWCONFIG_SOFTAP_WIFI_CHANNEL,
-            .max_connection = FWCONFIG_SOFTAP_MAX_CONN,
-        },
-    };
-    wifi_configAP.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+        wifi_config_t wifi_configAP = {
+            .ap = {
+                .channel = FWCONFIG_SOFTAP_WIFI_CHANNEL,
+                .max_connection = FWCONFIG_SOFTAP_MAX_CONN,
+            },
+        };
+        wifi_configAP.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
 
-    uint8_t macAddr[6];
-    esp_read_mac(macAddr, ESP_MAC_WIFI_SOFTAP);
-    sprintf((char*)wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_SSID_BASE, macAddr[3], macAddr[4], macAddr[5]);
-    int n = strlen((const char*)wifi_configAP.ap.ssid);
-    wifi_configAP.ap.ssid_len = n;
+        uint8_t macAddr[6];
+        esp_read_mac(macAddr, ESP_MAC_WIFI_SOFTAP);
+        sprintf((char*)wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_SSID_BASE, macAddr[3], macAddr[4], macAddr[5]);
+        int n = strlen((const char*)wifi_configAP.ap.ssid);
+        wifi_configAP.ap.ssid_len = n;
 
-    if (strlen((const char*)FWCONFIG_SOFTAP_WIFI_PASS) == 0) {
-        wifi_configAP.ap.authmode = WIFI_AUTH_OPEN;
+        if (strlen((const char*)FWCONFIG_SOFTAP_WIFI_PASS) == 0) {
+            wifi_configAP.ap.authmode = WIFI_AUTH_OPEN;
+        }
+        else
+        {
+            strcpy((char*)wifi_configAP.ap.password, FWCONFIG_SOFTAP_WIFI_PASS);
+        }
+
+        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
+        
+        ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
+                wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
     }
     else
     {
-        strcpy((char*)wifi_configAP.ap.password, FWCONFIG_SOFTAP_WIFI_PASS);
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     }
 
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
-    
-    ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-             wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
-
-*/
     // Soft Access Point Mode
     esp_netif_t* wifiSTA = esp_netif_create_default_wifi_sta();
 
@@ -194,7 +209,7 @@ static void LedRefreshTask(void *pvParameters)
     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
     {
         if ((i % 5) == 0)
-            m_leds[i] = CRGB(3, 3, 3);
+            m_leds[i] = CRGB(10, 10, 10);
         else
             m_leds[i] = CRGB::Black;
     }
@@ -250,7 +265,7 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(255, 0, 0);
+                            m_leds[i] = CRGB(220, 0, 0);
                         else
                             m_leds[i] = CRGB::Black;
                     }
@@ -276,7 +291,7 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(255, 0, 0);
+                            m_leds[i] = CRGB(220, 0, 0);
                         else
                             m_leds[i] = CRGB::Black;
                     }
@@ -344,7 +359,7 @@ static void ResetAutoOffTicks()
 static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAliveArg)
 {
     ESP_LOGI(TAG, "BLE Keep Alive received, resetting timer. Time out set at: %u", /*0*/psKeepAliveArg->u32MaximumTimeMS);
-    m_u32AutoOffTimeoutMs = psKeepAliveArg->u32MaximumTimeMS;
+    m_ulAutoOffTimeoutMs = psKeepAliveArg->u32MaximumTimeMS + (psKeepAliveArg->u32MaximumTimeMS/2);
     ResetAutoOffTicks();
 }
 
@@ -404,52 +419,27 @@ static void SGUBRGotoFactory()
     ResetAutoOffTicks();
 }
 
+static void SGUBRGotoOTAMode()
+{
+    ESP_LOGI(TAG, "Goto OTA mode");
+    
+    memcpy(m_u8StartModes, u8MagicNumber_OTAMode, 4);
+
+    esp_restart();
+    ResetAutoOffTicks();
+}
+
 static void MainTask(void *pvParameters)
 {
-    long switchTicks = 0;
+    ESP_LOGI(TAG, "MainTask started ...");
 
     while(true)
     {
+        // The function is blocking so it's fine
         SGUBRCOMM_Process(&m_sSGUBRCommHandle);
 
-        if (!m_bIsSuicide)
-        {
-            const bool bSwitchState = gpio_get_level((gpio_num_t)FWCONFIG_SWITCH_PIN);
-            if (!bSwitchState) // Up
-            {
-                if (switchTicks == 0)
-                    switchTicks = xTaskGetTickCount();
-
-                // If we hold the switch long enough it stop the process.
-                if ( (xTaskGetTickCount() - switchTicks) > pdMS_TO_TICKS(FWCONFIG_SWITCH_HOLDDELAY_MS))
-                {
-                    m_bIsSuicide = true;
-                    switchTicks = 0; // Reset;
-                }
-            }
-            else
-                switchTicks = 0; // Reset
-
-            // Kill the power after 10 minutes maximum
-            if ((xTaskGetTickCount() - m_lAutoOffTicks) > pdMS_TO_TICKS(m_u32AutoOffTimeoutMs))
-            {
-                m_bIsSuicide = true;
-            }
-        }
-
-        // Means cutting to power to itself.
-        if (m_bIsSuicide)
-        {
-            // Release the power pin
-            m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff;
-            // Delay for animation before stop
-            vTaskDelay(pdMS_TO_TICKS(2500));
-
-            GPIO_EnableHoldPowerPin(false);
-        }
-
-        // 4 HZ
-        vTaskDelay(pdMS_TO_TICKS(250));
+        // 100 HZ
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
@@ -467,6 +457,13 @@ void app_main(void)
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    m_bIsOTAMode = memcmp(m_u8StartModes, u8MagicNumber_OTAMode, 4) == 0;
+    memset(m_u8StartModes, 0, 4);
+    if (m_bIsOTAMode)
+    {
+        ESP_LOGI(TAG, "OTA mode is activated");
+    }
 
     GPIO_Init();
     GPIO_EnableHoldPowerPin(true);
@@ -486,4 +483,49 @@ void app_main(void)
     // Create task on CPU one ... to not interfere with FastLED
     // AppMain is created on task 0 by default.
     xTaskCreatePinnedToCore(&MainTask, "MainTask", 4000, NULL, 10, NULL, 1);
+
+    long switchTicks = 0;
+
+    while(true)
+    {
+        if (!m_bIsSuicide)
+        {
+            const bool bSwitchState = gpio_get_level((gpio_num_t)FWCONFIG_SWITCH_PIN);
+            if (!bSwitchState) // Up
+            {
+                if (switchTicks == 0)
+                    switchTicks = xTaskGetTickCount();
+
+                // If we hold the switch long enough it stop the process.
+                if ( (xTaskGetTickCount() - switchTicks) > pdMS_TO_TICKS(FWCONFIG_SWITCH_HOLDDELAY_MS))
+                {
+                    m_bIsSuicide = true;
+                    switchTicks = 0; // Reset;
+                }
+            }
+            else
+                switchTicks = 0; // Reset
+
+            // Kill the power after 10 minutes maximum
+            if ((xTaskGetTickCount() - m_lAutoOffTicks) > pdMS_TO_TICKS(m_ulAutoOffTimeoutMs))
+            {
+                m_bIsSuicide = true;
+            }
+        }
+
+        // Means cutting to power to itself.
+        if (m_bIsSuicide)
+        {
+            // Release the power pin
+            m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff;
+            // Delay for animation before stop
+            vTaskDelay(pdMS_TO_TICKS(2500));
+            GPIO_EnableHoldPowerPin(false);
+
+            ESP_LOGW(TAG, "Time to die, let me die in peace");
+            m_bIsSuicide = false;
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(250));
+    }
 }

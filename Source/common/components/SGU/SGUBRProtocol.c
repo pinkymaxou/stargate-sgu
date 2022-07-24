@@ -71,6 +71,12 @@ bool SGUBRPROTOCOL_Decode(const SGUBRPROTOCOL_SHandle* psHandle, const uint8_t* 
                 psHandle->psConfig->fnGotoFactoryHandler();
             return true;
         }
+        case SGUBRPROTOCOL_ECMD_GotoOTAMode:
+        {
+            if (psHandle->psConfig->fnGotoOTAModeHandler != NULL)
+                psHandle->psConfig->fnGotoOTAModeHandler();
+            return true;
+        }
         case SGUBRPROTOCOL_ECMD_ChevronsLightning:
         {
             // CMD | ANIM ...
@@ -131,6 +137,18 @@ uint32_t SGUBRPROTOCOL_EncGotoFactory(uint8_t* u8Dst, uint16_t u16MaxLen)
     u8Dst[0] = MAGIC0;
     u8Dst[1] = MAGIC1; 
     u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_GotoFactory;
+    return u16ReqLength;
+}
+
+uint32_t SGUBRPROTOCOL_EncGotoOTAMode(uint8_t* u8Dst, uint16_t u16MaxLen)
+{
+    const uint16_t u16ReqLength = MAGIC_LENGTH+1;
+    if (u16MaxLen < u16ReqLength)
+        return 0;
+
+    u8Dst[0] = MAGIC0;
+    u8Dst[1] = MAGIC1; 
+    u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_GotoOTAMode;
     return u16ReqLength;
 }
 
