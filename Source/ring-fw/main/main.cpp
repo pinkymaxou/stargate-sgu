@@ -194,7 +194,7 @@ static void LedRefreshTask(void *pvParameters)
     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
     {
         if ((i % 5) == 0)
-            m_leds[i] = CRGB(3, 3, 3);
+            m_leds[i] = CRGB(10, 10, 10);
         else
             m_leds[i] = CRGB::Black;
     }
@@ -250,7 +250,7 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(255, 0, 0);
+                            m_leds[i] = CRGB(220, 0, 0);
                         else
                             m_leds[i] = CRGB::Black;
                     }
@@ -276,7 +276,7 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(255, 0, 0);
+                            m_leds[i] = CRGB(220, 0, 0);
                         else
                             m_leds[i] = CRGB::Black;
                     }
@@ -344,7 +344,7 @@ static void ResetAutoOffTicks()
 static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAliveArg)
 {
     ESP_LOGI(TAG, "BLE Keep Alive received, resetting timer. Time out set at: %u", /*0*/psKeepAliveArg->u32MaximumTimeMS);
-    m_ulAutoOffTimeoutMs = psKeepAliveArg->u32MaximumTimeMS;
+    m_ulAutoOffTimeoutMs = psKeepAliveArg->u32MaximumTimeMS + (psKeepAliveArg->u32MaximumTimeMS/2);
     ResetAutoOffTicks();
 }
 
