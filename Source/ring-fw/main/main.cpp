@@ -44,8 +44,8 @@ static const char *TAG = "Main";
 const uint8_t m_u8BroadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 static volatile bool m_bIsSuicide = false;
-static volatile long m_lAutoOffTicks = xTaskGetTickCount();
-static volatile uint32_t m_u32AutoOffTimeoutMs = FWCONFIG_HOLDPOWER_DELAY_MS;
+static volatile TickType_t m_lAutoOffTicks = xTaskGetTickCount();
+static volatile TickType_t m_ulAutoOffTimeoutMs = FWCONFIG_HOLDPOWER_DELAY_MS;
 
 // Chevron animation
 static volatile int32_t m_s32ChevronAnim = -1;
@@ -344,7 +344,7 @@ static void ResetAutoOffTicks()
 static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAliveArg)
 {
     ESP_LOGI(TAG, "BLE Keep Alive received, resetting timer. Time out set at: %u", /*0*/psKeepAliveArg->u32MaximumTimeMS);
-    m_u32AutoOffTimeoutMs = psKeepAliveArg->u32MaximumTimeMS;
+    m_ulAutoOffTimeoutMs = psKeepAliveArg->u32MaximumTimeMS;
     ResetAutoOffTicks();
 }
 
@@ -406,50 +406,14 @@ static void SGUBRGotoFactory()
 
 static void MainTask(void *pvParameters)
 {
-    long switchTicks = 0;
+    ESP_LOGI(TAG, "MainTask started ...");
 
     while(true)
     {
         SGUBRCOMM_Process(&m_sSGUBRCommHandle);
 
-        if (!m_bIsSuicide)
-        {
-            const bool bSwitchState = gpio_get_level((gpio_num_t)FWCONFIG_SWITCH_PIN);
-            if (!bSwitchState) // Up
-            {
-                if (switchTicks == 0)
-                    switchTicks = xTaskGetTickCount();
-
-                // If we hold the switch long enough it stop the process.
-                if ( (xTaskGetTickCount() - switchTicks) > pdMS_TO_TICKS(FWCONFIG_SWITCH_HOLDDELAY_MS))
-                {
-                    m_bIsSuicide = true;
-                    switchTicks = 0; // Reset;
-                }
-            }
-            else
-                switchTicks = 0; // Reset
-
-            // Kill the power after 10 minutes maximum
-            if ((xTaskGetTickCount() - m_lAutoOffTicks) > pdMS_TO_TICKS(m_u32AutoOffTimeoutMs))
-            {
-                m_bIsSuicide = true;
-            }
-        }
-
-        // Means cutting to power to itself.
-        if (m_bIsSuicide)
-        {
-            // Release the power pin
-            m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff;
-            // Delay for animation before stop
-            vTaskDelay(pdMS_TO_TICKS(2500));
-
-            GPIO_EnableHoldPowerPin(false);
-        }
-
-        // 4 HZ
-        vTaskDelay(pdMS_TO_TICKS(250));
+        // 10 HZ
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 
@@ -486,4 +450,48 @@ void app_main(void)
     // Create task on CPU one ... to not interfere with FastLED
     // AppMain is created on task 0 by default.
     xTaskCreatePinnedToCore(&MainTask, "MainTask", 4000, NULL, 10, NULL, 1);
+
+    long switchTicks = 0;
+
+    while(true)
+    {
+        if (!m_bIsSuicide)
+        {
+            const bool bSwitchState = gpio_get_level((gpio_num_t)FWCONFIG_SWITCH_PIN);
+            if (!bSwitchState) // Up
+            {
+                if (switchTicks == 0)
+                    switchTicks = xTaskGetTickCount();
+
+                // If we hold the switch long enough it stop the process.
+                if ( (xTaskGetTickCount() - switchTicks) > pdMS_TO_TICKS(FWCONFIG_SWITCH_HOLDDELAY_MS))
+                {
+                    m_bIsSuicide = true;
+                    switchTicks = 0; // Reset;
+                }
+            }
+            else
+                switchTicks = 0; // Reset
+
+            // Kill the power after 10 minutes maximum
+            if ((xTaskGetTickCount() - m_lAutoOffTicks) > pdMS_TO_TICKS(m_ulAutoOffTimeoutMs))
+            {
+                m_bIsSuicide = true;
+            }
+        }
+
+        // Means cutting to power to itself.
+        if (m_bIsSuicide)
+        {
+            // Release the power pin
+            m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff;
+            // Delay for animation before stop
+            vTaskDelay(pdMS_TO_TICKS(2500));
+            GPIO_EnableHoldPowerPin(false);
+
+            ESP_LOGW(TAG, "Time to die, let me die in peace");
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(250));
+    }
 }
