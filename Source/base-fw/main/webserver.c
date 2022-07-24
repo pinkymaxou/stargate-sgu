@@ -524,7 +524,7 @@ static const char* GetSysInfo()
 
     // WiFi-BT
     cJSON* pEntryJSON7 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON7, "name", cJSON_CreateString("WiFi.STA"));
+    cJSON_AddItemToObject(pEntryJSON7, "name", cJSON_CreateString("WiFi.BT"));
     esp_read_mac(u8Macs, ESP_MAC_BT);
     sprintf(buff, "%02X:%02X:%02X:%02X:%02X:%02X", /*0*/u8Macs[0], /*1*/u8Macs[1], /*2*/u8Macs[2], /*3*/u8Macs[3], /*4*/u8Macs[4], /*5*/u8Macs[5]);
     cJSON_AddItemToObject(pEntryJSON7, "value", cJSON_CreateString(buff));
