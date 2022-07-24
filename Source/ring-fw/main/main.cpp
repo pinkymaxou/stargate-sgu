@@ -435,10 +435,11 @@ static void MainTask(void *pvParameters)
 
     while(true)
     {
+        // The function is blocking so it's fine
         SGUBRCOMM_Process(&m_sSGUBRCommHandle);
 
-        // 10 HZ
-        vTaskDelay(pdMS_TO_TICKS(100));
+        // 100 HZ
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
