@@ -52,6 +52,13 @@ static volatile int32_t m_s32ChevronAnim = -1;
 
 static esp_pm_lock_handle_t m_lockHandle;
 
+// These should survive to reset
+static const uint8_t u8MagicNumber_OTAMode[4] = { 0xA0, 0xBA, 0xDC, 0xC0  };
+
+static bool m_bIsOTAMode = false;
+
+static RTC_IRAM_ATTR uint8_t m_u8StartModes[4];
+
 extern "C" {
     void app_main();
     static void ResetAutoOffTicks();
@@ -61,6 +68,7 @@ extern "C" {
     static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg);
     static void SGUBRChevronsLightningHandler(const SGUBRPROTOCOL_SChevronsLightningArg* psChevronLightningArg);
     static void SGUBRGotoFactory();
+    static void SGUBRGotoOTAMode();
 }
 
 static const SGUBRPROTOCOL_SConfig m_sConfig =
@@ -69,7 +77,8 @@ static const SGUBRPROTOCOL_SConfig m_sConfig =
     .fnTurnOffHandler = SGUBRTurnOffHandler,
     .fnUpdateLightHandler = SGUBRUpdateLightHandler,
     .fnChevronsLightningHandler = SGUBRChevronsLightningHandler,
-    .fnGotoFactoryHandler = SGUBRGotoFactory
+    .fnGotoFactoryHandler = SGUBRGotoFactory,
+    .fnGotoOTAModeHandler = SGUBRGotoOTAMode
 };
 
 static SGUBRCOMM_SHandle m_sSGUBRCommHandle;
@@ -88,53 +97,59 @@ static void InitESPNOW()
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    /*
-    // Access point mode
-    esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
+    if (m_bIsOTAMode)
+    {
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
+    
+        // Access point mode
+        esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
 
-    esp_netif_ip_info_t ipInfo;
-    IP4_ADDR(&ipInfo.ip, 192, 168, 55, 1);
-	IP4_ADDR(&ipInfo.gw, 192, 168, 55, 1);
-	IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
-	esp_netif_dhcps_stop(wifiAP);
-	esp_netif_set_ip_info(wifiAP, &ipInfo);
-	esp_netif_dhcps_start(wifiAP);
+        esp_netif_ip_info_t ipInfo;
+        IP4_ADDR(&ipInfo.ip, 192, 168, 55, 1);
+        IP4_ADDR(&ipInfo.gw, 192, 168, 55, 1);
+        IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
+        esp_netif_dhcps_stop(wifiAP);
+        esp_netif_set_ip_info(wifiAP, &ipInfo);
+        esp_netif_dhcps_start(wifiAP);
 
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        NULL));
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                            ESP_EVENT_ANY_ID,
+                                                            &wifi_event_handler,
+                                                            NULL,
+                                                            NULL));
 
-    wifi_config_t wifi_configAP = {
-        .ap = {
-            .channel = FWCONFIG_SOFTAP_WIFI_CHANNEL,
-            .max_connection = FWCONFIG_SOFTAP_MAX_CONN,
-        },
-    };
-    wifi_configAP.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+        wifi_config_t wifi_configAP = {
+            .ap = {
+                .channel = FWCONFIG_SOFTAP_WIFI_CHANNEL,
+                .max_connection = FWCONFIG_SOFTAP_MAX_CONN,
+            },
+        };
+        wifi_configAP.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
 
-    uint8_t macAddr[6];
-    esp_read_mac(macAddr, ESP_MAC_WIFI_SOFTAP);
-    sprintf((char*)wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_SSID_BASE, macAddr[3], macAddr[4], macAddr[5]);
-    int n = strlen((const char*)wifi_configAP.ap.ssid);
-    wifi_configAP.ap.ssid_len = n;
+        uint8_t macAddr[6];
+        esp_read_mac(macAddr, ESP_MAC_WIFI_SOFTAP);
+        sprintf((char*)wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_SSID_BASE, macAddr[3], macAddr[4], macAddr[5]);
+        int n = strlen((const char*)wifi_configAP.ap.ssid);
+        wifi_configAP.ap.ssid_len = n;
 
-    if (strlen((const char*)FWCONFIG_SOFTAP_WIFI_PASS) == 0) {
-        wifi_configAP.ap.authmode = WIFI_AUTH_OPEN;
+        if (strlen((const char*)FWCONFIG_SOFTAP_WIFI_PASS) == 0) {
+            wifi_configAP.ap.authmode = WIFI_AUTH_OPEN;
+        }
+        else
+        {
+            strcpy((char*)wifi_configAP.ap.password, FWCONFIG_SOFTAP_WIFI_PASS);
+        }
+
+        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
+        
+        ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
+                wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
     }
     else
     {
-        strcpy((char*)wifi_configAP.ap.password, FWCONFIG_SOFTAP_WIFI_PASS);
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
     }
 
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
-    
-    ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-             wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
-
-*/
     // Soft Access Point Mode
     esp_netif_t* wifiSTA = esp_netif_create_default_wifi_sta();
 
@@ -404,6 +419,16 @@ static void SGUBRGotoFactory()
     ResetAutoOffTicks();
 }
 
+static void SGUBRGotoOTAMode()
+{
+    ESP_LOGI(TAG, "Goto OTA mode");
+    
+    memcpy(m_u8StartModes, u8MagicNumber_OTAMode, 4);
+
+    esp_restart();
+    ResetAutoOffTicks();
+}
+
 static void MainTask(void *pvParameters)
 {
     ESP_LOGI(TAG, "MainTask started ...");
@@ -431,6 +456,13 @@ void app_main(void)
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    m_bIsOTAMode = memcmp(m_u8StartModes, u8MagicNumber_OTAMode, 4) == 0;
+    memset(m_u8StartModes, 0, 4);
+    if (m_bIsOTAMode)
+    {
+        ESP_LOGI(TAG, "OTA mode is activated");
+    }
 
     GPIO_Init();
     GPIO_EnableHoldPowerPin(true);
