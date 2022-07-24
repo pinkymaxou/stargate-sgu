@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="stylesheet" type="text/css" href="css/content.css">
+        <title>Destiny control</title>
+    </head>
+    <body onLoad="AppLoaded()"">
+		<div id="app">
+            <table>
+                <thead>
+                    <tr>
+                        <td><b>Name</b></td>
+                        <td><b>Value</b></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="entry in entries">
+                        <td>{{ entry.key }}</td>
+                        <td>{{ entry.value }}</td>
+                        <td>{{ entry.info.type }}</td>
+                    </tr>
+                </tbody>
+            </table>
+		</div>
+		
+        <!-- JS -->
+        <script type="text/javascript" src="js/vue.min.js"></script>
+        <script type="text/javascript" src="js/settings.js"></script>
+    </body>  
+</html>
