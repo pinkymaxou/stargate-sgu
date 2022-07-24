@@ -11,7 +11,6 @@ function SendAction(actionURL, data)
   }
 }
 
-
 let allsymbols = [
   { id: 1, imgfile: "img/glyph/01.png", txt: '\u0041' },
   { id: 2, imgfile: "img/glyph/02.png", txt: '\u0042' },
@@ -78,6 +77,7 @@ var currentApp = new Vue({
   {
     symbols: allsymbols,
     alladdresses: alladdresses,
+    sysinfos: [],
   }
 })
 
@@ -127,4 +127,15 @@ function idBtnUpload_Click()
 	};
 	
 	xhr.send(firmwareFile);
+}
+
+function AppLoaded()
+{
+  fetch('./api/getsysinfo')
+    .then((response) => response.json())
+    .then((data) =>
+    {
+      console.log(data);
+      currentApp.sysinfos = data.infos;
+    });
 }
