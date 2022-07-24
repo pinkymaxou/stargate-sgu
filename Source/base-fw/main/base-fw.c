@@ -39,6 +39,9 @@ SGUBRCOMM_SHandle g_sSGUBRCOMMHandle;
 static SGUBRCOMM_SSetting m_sSetting = { .eMode = SGUBRCOMM_EMODE_Base };
 static TickType_t m_xRebootRequestTicks = 0;
 
+static esp_netif_t* m_pWifiSoftAP;
+static esp_netif_t* m_pWifiSTA;
+
 static void wifi_init_all(void);
 static void wifi_init_softap(void);
 
@@ -80,8 +83,6 @@ static void wifistation_event_handler(void* arg, esp_event_base_t event_base, in
 
 static void wifi_init_all(void)
 {
-    esp_netif_create_default_wifi_sta();
-
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
@@ -90,15 +91,15 @@ static void wifi_init_all(void)
         ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
 
     // Access point mode
-    esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
+    m_pWifiSoftAP = esp_netif_create_default_wifi_ap();
 
     esp_netif_ip_info_t ipInfo;
     IP4_ADDR(&ipInfo.ip, 192, 168, 66,1);
 	IP4_ADDR(&ipInfo.gw, 192, 168, 66,1);
 	IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
-	esp_netif_dhcps_stop(wifiAP);
-	esp_netif_set_ip_info(wifiAP, &ipInfo);
-	esp_netif_dhcps_start(wifiAP);
+	esp_netif_dhcps_stop(m_pWifiSoftAP);
+	esp_netif_set_ip_info(m_pWifiSoftAP, &ipInfo);
+	esp_netif_dhcps_start(m_pWifiSoftAP);
 
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
                                                         ESP_EVENT_ANY_ID,
@@ -137,6 +138,8 @@ static void wifi_init_all(void)
 
     if (isWiFiSTA)
     {
+        m_pWifiSTA = esp_netif_create_default_wifi_sta();
+
         esp_event_handler_instance_t instance_any_id;
         esp_event_handler_instance_t instance_got_ip;
         ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
@@ -246,4 +249,15 @@ void app_main(void)
 void BASEFW_RequestReboot()
 {
     m_xRebootRequestTicks = xTaskGetTickCount();
+}
+
+
+void BASEFW_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
+{
+    esp_netif_get_ip_info(m_pWifiSTA, pIPInfo);
+}
+
+void BASEFW_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)
+{
+    esp_netif_get_ip_info(m_pWifiSoftAP, pIPInfo);
 }

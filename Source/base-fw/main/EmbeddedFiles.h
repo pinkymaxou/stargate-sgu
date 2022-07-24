@@ -30,7 +30,7 @@ typedef enum
     EF_EFILE_FONT_COPYRIGHTS_EUROSTILE_EXTENDED2_BOLD_COPYRIGHT_HTML = 8,    /*!< @brief File: font/copyrights/eurostile_extended2_bold_copyright.html (size: 5 KB) */
     EF_EFILE_FONT_COPYRIGHTS_STARGATEUNIVERSE_LISEZ_MOI_TXT = 9,    /*!< @brief File: font/copyrights/stargateuniverse-lisez-moi.txt (size: 2 KB) */
     EF_EFILE_FONT_COPYRIGHTS_STARGATEUNIVERSE_README_TXT = 10,    /*!< @brief File: font/copyrights/stargateuniverse-readme.txt (size: 2 KB) */
-    EF_EFILE_JS_APP_JS = 11,    /*!< @brief File: js/app.js (size: 4 KB) */
+    EF_EFILE_JS_APP_JS = 11,    /*!< @brief File: js/app.js (size: 5 KB) */
     EF_EFILE_JS_VUE_MIN_JS = 12,    /*!< @brief File: js/vue.min.js (size: 92 KB) */
     EF_EFILE_COUNT = 13
 } EF_EFILE;

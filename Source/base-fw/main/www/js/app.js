@@ -77,6 +77,7 @@ var currentApp = new Vue({
   {
     symbols: allsymbols,
     alladdresses: alladdresses,
+    sysinfos: [],
   }
 })
 
@@ -126,4 +127,15 @@ function idBtnUpload_Click()
 	};
 	
 	xhr.send(firmwareFile);
+}
+
+function AppLoaded()
+{
+  fetch('./api/getsysinfo')
+    .then((response) => response.json())
+    .then((data) =>
+    {
+      console.log(data);
+      currentApp.sysinfos = data.infos;
+    });
 }

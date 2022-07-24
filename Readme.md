@@ -14,7 +14,7 @@ Still writing the print and assembly manual, more will come later including the 
 
 Inspired partly by: https://thestargateproject.com/build-a-stargate-and-dhd-3d-printed/
 
-![](./Readme-Assets/stargate-thumbnail.png)
+![](./Readme-Assets/stargate-thumbnail3.jpg)
 ![](./Readme-Assets/stargate-thumbnail2.png)
 
 # Knowns issues
@@ -30,6 +30,17 @@ Some fonts:
 | stargateuniverse.woff | Created by : Gilles Nuytens (http://www.thescifiworld.net/fonts.htm)
 | eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
+
+# Included softwares
+
+| Name | Description |
+|---|---|
+| base-fw | Base control firmware |
+| ring-factory | Basic firmware to upload firmware into ring |
+| ring-fw | Ring firmware |
+| tools/otauploader.py | Do upload using HTTP for OTA |
+| tools/embeddedgen.py | Generate embedded resources |
+
 
 # Parts to print
 
