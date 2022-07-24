@@ -530,6 +530,35 @@ static const char* GetSysInfo()
     cJSON_AddItemToObject(pEntryJSON7, "value", cJSON_CreateString(buff));
     cJSON_AddItemToArray(pEntries, pEntryJSON7);
 
+    // Memory
+    cJSON* pEntryJSON8 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON8, "name", cJSON_CreateString("Memory"));
+    const int freeSize = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+    const int totalSize = heap_caps_get_total_size(MALLOC_CAP_8BIT);
+    
+    sprintf(buff, "%d / %d", /*0*/freeSize, /*1*/totalSize);
+    cJSON_AddItemToObject(pEntryJSON8, "value", cJSON_CreateString(buff));
+    cJSON_AddItemToArray(pEntries, pEntryJSON8);
+
+    // WiFi-station (IP address)
+    cJSON* pEntryJSON9 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON9, "name", cJSON_CreateString("WiFi (STA)"));
+    esp_netif_ip_info_t wifiIpSta;
+    BASEFW_GetWiFiSTAIP(&wifiIpSta);
+    sprintf(buff, IPSTR, IP2STR(&wifiIpSta.ip));
+    cJSON_AddItemToObject(pEntryJSON9, "value", cJSON_CreateString(buff));
+    cJSON_AddItemToArray(pEntries, pEntryJSON9);
+
+    // WiFi-Soft AP (IP address)
+    cJSON* pEntryJSON10 = cJSON_CreateObject();
+    cJSON_AddItemToObject(pEntryJSON10, "name", cJSON_CreateString("WiFi (Soft-AP)"));
+    esp_netif_ip_info_t wifiIpSoftAP;
+    BASEFW_GetWiFiSoftAPIP(&wifiIpSoftAP);
+    sprintf(buff, IPSTR, IP2STR(&wifiIpSoftAP.ip));
+    cJSON_AddItemToObject(pEntryJSON10, "value", cJSON_CreateString(buff));
+    cJSON_AddItemToArray(pEntries, pEntryJSON10);
+
+
     const char* pStr =  cJSON_PrintUnformatted(pRoot);
     cJSON_Delete(pRoot);
     return pStr;
