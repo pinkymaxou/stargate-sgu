@@ -16,12 +16,14 @@
 					<thead>
 						<tr>
 							<td><b>Name</b></td>
+							<td><b>Type</b></td>
 							<td><b>Value</b></td>
 						</tr>
 					</thead>
 					<tbody>
 						<tr v-for="sysinfo in sysinfos">
 							<td>{{ sysinfo.name }}</td>
+							<td>{{ sysinfo.info.type }}</td>
 							<td>{{ sysinfo.value }}</td>
 						</tr>
 					</tbody>
