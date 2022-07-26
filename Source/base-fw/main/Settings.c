@@ -22,6 +22,7 @@
 #define JSON_ENTRY_INFO_DEFAULT_NAME "default"
 #define JSON_ENTRY_INFO_MIN_NAME "min"
 #define JSON_ENTRY_INFO_MAX_NAME "max"
+#define JSON_ENTRY_INFO_TYPE_NAME "type"
 #define JSON_ENTRY_INFO_FLAG_REBOOT_NAME "flag_reboot"
 
 typedef enum
@@ -204,6 +205,7 @@ const char* SETTINGS_ExportJSON()
             cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DEFAULT_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Default));
             cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_MIN_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Min));
             cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_MAX_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Max));
+            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_TYPE_NAME, cJSON_CreateString("int32"));
         }
         else if (pEntry->eType == ETYPE_String)
         {
@@ -215,6 +217,7 @@ const char* SETTINGS_ExportJSON()
                 cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_VALUE_NAME, cJSON_CreateString(value));
             }
             cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DEFAULT_NAME, cJSON_CreateString(pEntry->uConfig.sString.szDefault));
+            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_TYPE_NAME, cJSON_CreateString("string"));
         }
 
         cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_INFO_NAME, pEntryInfoJSON);

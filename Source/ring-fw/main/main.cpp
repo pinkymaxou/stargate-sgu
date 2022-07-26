@@ -354,6 +354,7 @@ static void wifistation_event_handler(void* arg, esp_event_base_t event_base, in
 static void ResetAutoOffTicks()
 {
     m_lAutoOffTicks = xTaskGetTickCount();
+    m_bIsSuicide = false;
 }
 
 static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAliveArg)
@@ -517,7 +518,7 @@ void app_main(void)
         if (m_bIsSuicide)
         {
             // Release the power pin
-            m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff;
+            // m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff;
             // Delay for animation before stop
             vTaskDelay(pdMS_TO_TICKS(2500));
             GPIO_EnableHoldPowerPin(false);

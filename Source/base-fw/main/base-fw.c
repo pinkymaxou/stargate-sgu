@@ -88,7 +88,13 @@ static void wifi_init_all(void)
 
     const bool isWiFiSTA = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WSTAIsActive) == 1;
     if (isWiFiSTA)
+    {
         ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
+    }
+    else
+    {
+        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP) );
+    }
 
     // Access point mode
     m_pWifiSoftAP = esp_netif_create_default_wifi_ap();
@@ -129,7 +135,6 @@ static void wifi_init_all(void)
         wifi_configAP.ap.authmode = WIFI_AUTH_OPEN;
     }
 
-    //ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
 
     // Soft Access Point Mode
