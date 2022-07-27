@@ -18,16 +18,18 @@
 						<button class="dropbtn button-27">Dial</button>
 						<div class="dropdown-content">
 							<button id="idBtGoHome" class="button-27 item" onclick="SendAction('action/gohome')">Homing sequence</button>
+							<button id="idBtActiveWormhole" class="button-27 item" onclick="SendAction('action/activewormhole')">Activate wormhole</button>
 						</div>
 					</li>
 
 					<!-- Clamp control -->
 					<li class="dropdown">
-						<button class="dropbtn button-27">Clamp</button>
+						<button class="dropbtn button-27">Clamp/Ramp</button>
 						<div class="dropdown-content">
 							<button id="idBtReleaseClamp" class="button-27 item" onclick="SendAction('action/releaseclamp')">Release</button>
 							<button id="idBtLockClamp" class="button-27 item" onclick="SendAction('action/lockclamp')">Lock</button>
-							<button id="idBtActiveWormhole" class="button-27 item" onclick="SendAction('action/activewormhole')">Activate wormhole</button>
+							<button id="idBtRampLightON" class="button-27 item" onclick="SendAction('action/ramplighton')">Ramp light (on)</button>
+							<button id="idBtRampLightOFF" class="button-27 item" onclick="SendAction('action/ramplightoff')">Ramp light (off)</button>
 						</div>
 					</li>
 
@@ -37,8 +39,8 @@
 						<div class="dropdown-content">
 							<button id="idBtRingTurnOff" class="button-27 item" onclick="SendAction('action/ringturnoff')">Power Off</button>
 							<button id="idBtRingChevronError" class="button-27 item" onclick="SendAction('action/ringchevronerror')">Chevron Error effect</button>		
-							<button id="idBtRampLightON" class="button-27 item" onclick="SendAction('action/ramplighton')">Ramp light (on)</button>
-							<button id="idBtRampLightOFF" class="button-27 item" onclick="SendAction('action/ramplightoff')">Ramp light (off)</button>
+							<button id="idBtRingChevronFadeIn" class="button-27 item" onclick="SendAction('action/ringchevronfadein')">Chevron (fade-in)</button>		
+							<button id="idBtRingChevronFadeOut" class="button-27 item" onclick="SendAction('action/ringchevronfadeout')">Chevron (fade-out)</button>		
 						</div>
 					</li>
 					<!-- Advanced -->
