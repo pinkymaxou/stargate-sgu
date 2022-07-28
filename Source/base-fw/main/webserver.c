@@ -30,6 +30,8 @@
 #define ACTION_POST_RINGGOTOFACTORY "/action/ringgotofactory"
 #define ACTION_POST_REBOOT "/action/reboot"
 #define ACTION_POST_RINGCHEVRONERROR "/action/ringchevronerror"
+#define ACTION_POST_RINGCHEVRONFADEIN "/action/ringchevronfadein"
+#define ACTION_POST_RINGCHEVRONFADEOUT "/action/ringchevronfadeout"
 #define ACTION_POST_ACTIVEWORMHOLE "/action/activewormhole"
 #define ACTION_POST_RINGTURNOFF "/action/ringturnoff"
 #define ACTION_POST_RAMPLIGHTOFF "/action/ramplightoff"
@@ -259,6 +261,16 @@ static esp_err_t file_post_handler(httpd_req_t *req)
     {
         ESP_LOGI(TAG, "GateControl ring chevron error");
         SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite);
+    }
+    else if (strcmp(req->uri, ACTION_POST_RINGCHEVRONFADEIN) == 0)
+    {
+        ESP_LOGI(TAG, "GateControl ring chevron fade-in");
+        SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
+    }
+    else if (strcmp(req->uri, ACTION_POST_RINGCHEVRONFADEOUT) == 0)
+    {
+        ESP_LOGI(TAG, "GateControl ring chevron fade-out");
+        SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
     }
     else if (strcmp(req->uri, ACTION_POST_RINGGOTOFACTORY) == 0)
     {            
