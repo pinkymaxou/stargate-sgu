@@ -4,7 +4,7 @@ You will no longer be the same after that, it could also cause hair loss.
 
 # Stargate Universe
 
-This project is basically a small stargate made to decorate your desk. It feature lightning for symbols like in the serie and the ring spins.
+This project is basically a small stargate made to decorate your desk. It features lightning for symbols like in the serie and the ring spins.
 https://www.youtube.com/channel/UCcdElKiCrVWVq5p8XVurI4g for more details.
 
 Unfortunately this project went through a lot of trial and error, so there are more parts than it should have especially in the base.
@@ -31,6 +31,13 @@ Some fonts:
 | eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
 
+# Prerequisites
+
+ - Correct knowledge of ESP32 and programming with ESP-IDF
+ - At least 22 x 22 cm printer, capable of printing with 0.2 mm nozzle **Warning: Don't even think of printing it using bigger nozzle, it just won't work.**
+ - Have some knowledge in electronic.
+ - ESP-IDF toolkit installed (tested on IDF 4.4)
+
 # Included softwares
 
 | Name | Description |
@@ -40,7 +47,6 @@ Some fonts:
 | ring-fw | Ring firmware |
 | tools/otauploader.py | Do upload using HTTP for OTA |
 | tools/embeddedgen.py | Generate embedded resources |
-
 
 # Parts to print
 
