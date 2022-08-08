@@ -4,8 +4,6 @@
 
 - Solder the header necessary to easily program the M5Stamp Pico. The header should be accessible when the ring is disassembled.
 
-***WARNING:*** It should be female header soldered to the M5Stamp Pico, but the picture show male header.
-
 ![](./Assets/m5stamp-pico.png)
 
 - Install batteries using hot glue. You don't need to put a lot, just tacking is good enough.
@@ -36,4 +34,4 @@ To start, the gate needs to receive power from power collector (DON'T REVERSE PO
 ## Program again
 
 The bootloader of the factory app is programmed to automatically erase the last firmware if you hold the button for 5s after startup.
-You can put the disconnect the battery using the toggle switch, hold the button, then prime the gate.
+You can disconnect the battery using the toggle switch, hold the button, then prime the gate.

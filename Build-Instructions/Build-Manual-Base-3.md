@@ -13,3 +13,12 @@ Knowns issues:
 The photo is old, I used JST connector later because the job is prettier.
 
 ![](./Assets/circuit-board-example.jpg)
+
+## Program the ESP32
+
+***Warning:*** This chapter won't explain how to program an ESP32, there are plenty of existing tutorial to explain it.
+
+- Connect a USB cable to the base ESP32.
+- Flash "ring-fw" app into it.
+- Connect to "SGU-Base-XXXXXX" Wi-Fi access point without password.
+- Access to http://192.168.4.1 using a browser. You should get access to the control program.
