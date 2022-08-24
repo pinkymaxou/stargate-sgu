@@ -17,9 +17,12 @@
 
 #include <esp_event.h>
 #include <esp_log.h>
+#include <esp_sntp.h>
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "webserver.h"
+#include "mdns.h"
+#include "lwip/apps/netbiosns.h"
 #include "GPIO.h"
 #include "FWConfig.h"
 #include "Settings.h"
@@ -47,6 +50,8 @@ static void wifi_init_softap(void);
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void wifistation_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
+
+static void mdns_sn_init();
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
@@ -168,13 +173,13 @@ static void wifi_init_all(void)
                 },
             },
         };
-        
+
         size_t staSSIDLength = 32;
         SETTINGS_GetValueString(SETTINGS_EENTRY_WSTASSID, (char*)wifi_configSTA.sta.ssid, &staSSIDLength);
-        
+
         size_t staPassLength = 64;
         SETTINGS_GetValueString(SETTINGS_EENTRY_WSTAPass, (char*)wifi_configSTA.sta.password, &staPassLength);
-        
+
         ESP_LOGI(TAG, "STA mode is active, attempt to connect to ssid: %s", wifi_configSTA.sta.ssid);
 
         ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_configSTA) );
@@ -182,6 +187,26 @@ static void wifi_init_all(void)
 
     // Start AP + STA
     ESP_ERROR_CHECK(esp_wifi_start() );
+}
+
+static void mdns_sn_init()
+{
+    ESP_LOGI(TAG, "mdns_sn_init, hostname: '%s', desc: '%s', service: '%s'", FWCONFIG_MDNS_HOSTNAME, FWCONFIG_MDNS_DESCRIPTION, FWCONFIG_MDNS_SERVICENAME);
+
+    mdns_init();
+    mdns_hostname_set(FWCONFIG_MDNS_HOSTNAME);
+    mdns_instance_name_set(FWCONFIG_MDNS_DESCRIPTION);
+
+    mdns_txt_item_t serviceTxtData[] = {
+        {"gate", "stargate-sgu"},
+        {"path", "/"}
+    };
+
+    ESP_ERROR_CHECK(mdns_service_add(FWCONFIG_MDNS_SERVICENAME, "_http", "_tcp", 80, serviceTxtData,
+                                     sizeof(serviceTxtData) / sizeof(serviceTxtData[0])));
+
+    netbiosns_init();
+    netbiosns_set_name(FWCONFIG_MDNS_HOSTNAME);
 }
 
 void app_main(void)
@@ -210,6 +235,12 @@ void app_main(void)
     ESP_LOGI(TAG, "wifi_init_all");
     // wifi_init_softap();
     wifi_init_all();
+
+    mdns_sn_init();
+
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_setservername(0, "pool.ntp.org");
+    sntp_init();
 
     GATECONTROL_Init();
 
