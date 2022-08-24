@@ -7,6 +7,7 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <string.h>
+#include <time.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -52,6 +53,9 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
 static void wifistation_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
 static void mdns_sn_init();
+static void PrintCurrentTime();
+
+static void time_sync_notification_cb(struct timeval *tv);
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
@@ -240,6 +244,8 @@ void app_main(void)
 
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, "pool.ntp.org");
+    sntp_set_time_sync_notification_cb(time_sync_notification_cb);
+    ESP_LOGI(TAG, "Initializing SNTP");
     sntp_init();
 
     GATECONTROL_Init();
@@ -255,8 +261,9 @@ void app_main(void)
 
      // Initialise the xLastWakeTime variable with the current time.
     TickType_t xLastWakeTime = xTaskGetTickCount();
-
     TickType_t xLEDBlinkTicks = xTaskGetTickCount();
+    TickType_t xPrintTimeTicks = 0;
+
     bool bAltern = false;
 
     WEBSERVER_Init();
@@ -272,6 +279,12 @@ void app_main(void)
             GPIO_SetSanityLEDStatus(bAltern);
             bAltern = !bAltern;
             xLEDBlinkTicks = xTaskGetTickCount();
+        }
+
+        if ( (xTaskGetTickCount() - xPrintTimeTicks) > pdMS_TO_TICKS(60*1000) )
+        {
+            PrintCurrentTime();
+            xPrintTimeTicks = xTaskGetTickCount();
         }
 
         if (m_xRebootRequestTicks != 0 && (xTaskGetTickCount() - m_xRebootRequestTicks) > pdMS_TO_TICKS(1500))
@@ -296,4 +309,21 @@ void BASEFW_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
 void BASEFW_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)
 {
     esp_netif_get_ip_info(m_pWifiSoftAP, pIPInfo);
+}
+
+static void PrintCurrentTime()
+{
+    // Set timezone to Eastern Standard Time and print local time
+    time_t now = 0;
+    struct tm timeinfo = { 0 };
+    setenv("TZ", "EST5EDT,M3.2.0/2,M11.1.0", 1);
+    tzset();
+    localtime_r(&now, &timeinfo);
+    ESP_LOGI(TAG, "The current date/time in New York is: %2d:%2d:%2d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+}
+
+static void time_sync_notification_cb(struct timeval* tv)
+{
+    ESP_LOGI(TAG, "Notification of a time synchronization event, sec: %d", (int)tv->tv_sec);
+
 }
