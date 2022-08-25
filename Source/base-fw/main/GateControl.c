@@ -13,6 +13,7 @@
 #include "SGUHelper.h"
 #include "base-fw.h"
 #include "Wormhole.h"
+#include "ClockMode.h"
 #include <stdint.h>
 
 #define TAG "GateControl"
@@ -209,6 +210,11 @@ static void GateControlTask( void *pvParameters )
             SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
             GPIO_SetRampLightOnOff(false);
         }
+        else if (eMode == GATECONTROL_EMODE_ActiveClock)
+        {
+            ESP_LOGI(TAG, "GateControl activate clock mode");
+            CLOCKMODE_Run(&m_bIsStop);
+        }
         else if (eMode == GATECONTROL_EMODE_ManualReleaseClamp)
         {
             ESP_LOGI(TAG, "GateControl release clamp");
@@ -236,7 +242,7 @@ static void GateControlTask( void *pvParameters )
 }
 
 static int32_t GetAbsoluteSymbolTarget(uint8_t u8SymbolIndex, int32_t s32StepPerRotation)
-{            
+{
     const uint32_t u32SymbolLedIndex = SGUHELPER_SymbolIndexToLedIndex(u8SymbolIndex);
     const double dblPercent = (SGUHELPER_LEDIndexToDeg(u32SymbolLedIndex) / 360.0d);
     return dblPercent * (double)s32StepPerRotation;
