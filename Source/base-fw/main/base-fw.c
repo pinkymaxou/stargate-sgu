@@ -281,7 +281,7 @@ void app_main(void)
             xLEDBlinkTicks = xTaskGetTickCount();
         }
 
-        if ( (xTaskGetTickCount() - xPrintTimeTicks) > pdMS_TO_TICKS(60*1000) )
+        if ( (xTaskGetTickCount() - xPrintTimeTicks) > pdMS_TO_TICKS(20*1000) )
         {
             PrintCurrentTime();
             xPrintTimeTicks = xTaskGetTickCount();
@@ -318,12 +318,14 @@ static void PrintCurrentTime()
     struct tm timeinfo = { 0 };
     setenv("TZ", "EST5EDT,M3.2.0/2,M11.1.0", 1);
     tzset();
+    time(&now);
     localtime_r(&now, &timeinfo);
     ESP_LOGI(TAG, "The current date/time in New York is: %2d:%2d:%2d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
 }
 
 static void time_sync_notification_cb(struct timeval* tv)
 {
+    // settimeofday(tv, NULL);
     ESP_LOGI(TAG, "Notification of a time synchronization event, sec: %d", (int)tv->tv_sec);
-
+    PrintCurrentTime();
 }
