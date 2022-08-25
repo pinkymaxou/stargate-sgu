@@ -20,6 +20,8 @@ void CLOCKMODE_Run(volatile bool* pIsCancelled)
     {
         for(int i = 0; i < RING0_COUNT; i++)
         {
+            int trueIndex = m_pRing0[i] - 1;
+
             if (i == ix)
                 GPIO_SetPixel(i, 255, 0, 0);
             else
@@ -29,7 +31,7 @@ void CLOCKMODE_Run(volatile bool* pIsCancelled)
         ix = (ix + 1) % RING0_COUNT;
 
         GPIO_RefreshPixels();
-        vTaskDelay(pdMS_TO_TICKS(20));
+        vTaskDelay(pdMS_TO_TICKS(200));
     }
 
     GPIO_ClearAllPixels();
