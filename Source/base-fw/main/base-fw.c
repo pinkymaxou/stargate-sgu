@@ -226,7 +226,12 @@ void app_main(void)
 
     SETTINGS_Init();
 
-    //SETTINGS_Load();
+    SETTINGS_Load();
+
+    // SETTINGS_SetValueInt32(SETTINGS_EENTRY_WSTAIsActive, false, 1);
+    // SETTINGS_SetValueString(SETTINGS_EENTRY_WSTASSID, false, "");
+    // SETTINGS_SetValueString(SETTINGS_EENTRY_WSTAPass, false, "");
+    // SETTINGS_Save();
 
     // Need to be high ...
     GPIO_Init();
