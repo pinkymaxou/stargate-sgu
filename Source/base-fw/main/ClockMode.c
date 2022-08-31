@@ -2,13 +2,16 @@
 #include <math.h>
 #include "ClockMode.h"
 #include "GPIO.h"
+#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "FWConfig.h"
 #include "Settings.h"
 
-static const int m_pSeconds[] = { 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 47, 48 };
+#define TAG "ClockMode"
+
+static const int m_pSeconds[] = { 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19 }; // , 47, 48
 #define SECONDS_COUNT (sizeof(m_pSeconds)/sizeof(m_pSeconds[0]))
 
 static const int m_pHours[] = { 35, 36, 20, 21, 22, 23 };
@@ -30,11 +33,12 @@ void CLOCKMODE_Run(volatile bool* pIsCancelled)
         time(&now);
         localtime_r(&now, &timeinfo);
 
+        // Hours
         for(int i = 0; i < HOURS_COUNT; i++)
         {
             int trueIndex = m_pHours[i] - 1;
 
-            if (timeinfo.tm_hour & (2 << i))
+            if (((int)timeinfo.tm_hour & (1 << i)))
                 GPIO_SetPixel(trueIndex, 0, 255, 0);
             else
                 GPIO_SetPixel(trueIndex, 40, 40, 40);
@@ -45,7 +49,7 @@ void CLOCKMODE_Run(volatile bool* pIsCancelled)
         {
             int trueIndex = m_pMinutes[i] - 1;
 
-            if (timeinfo.tm_min & (2 << i))
+            if ((int)timeinfo.tm_min & (1 << i))
                 GPIO_SetPixel(trueIndex, 0, 255, 0);
             else
                 GPIO_SetPixel(trueIndex, 40, 40, 40);
