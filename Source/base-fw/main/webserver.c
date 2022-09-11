@@ -33,6 +33,7 @@
 #define ACTION_POST_RINGCHEVRONFADEIN "/action/ringchevronfadein"
 #define ACTION_POST_RINGCHEVRONFADEOUT "/action/ringchevronfadeout"
 #define ACTION_POST_ACTIVEWORMHOLE "/action/activewormhole"
+#define ACTION_POST_ACTIVECLOCK "/action/activeclock"
 #define ACTION_POST_RINGTURNOFF "/action/ringturnoff"
 #define ACTION_POST_RAMPLIGHTOFF "/action/ramplightoff"
 #define ACTION_POST_RAMPLIGHTON "/action/ramplighton"
@@ -257,6 +258,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
     }
     else if (strcmp(req->uri, ACTION_POST_ACTIVEWORMHOLE) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, NULL);
+    else if (strcmp(req->uri, ACTION_POST_ACTIVECLOCK) == 0)
+        GATECONTROL_DoAction(GATECONTROL_EMODE_ActiveClock, NULL);
     else if (strcmp(req->uri, ACTION_POST_RINGCHEVRONERROR) == 0)
     {
         ESP_LOGI(TAG, "GateControl ring chevron error");

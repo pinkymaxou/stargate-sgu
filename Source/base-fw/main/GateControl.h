@@ -14,6 +14,7 @@ typedef enum
     GATECONTROL_EMODE_Dial,
 
     GATECONTROL_EMODE_ManualWormhole,
+    GATECONTROL_EMODE_ActiveClock,
 } GATECONTROL_EMODE;
 
 typedef union

@@ -7,6 +7,7 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <string.h>
+#include <time.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -17,9 +18,12 @@
 
 #include <esp_event.h>
 #include <esp_log.h>
+#include <esp_sntp.h>
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "webserver.h"
+#include "mdns.h"
+#include "lwip/apps/netbiosns.h"
 #include "GPIO.h"
 #include "FWConfig.h"
 #include "Settings.h"
@@ -47,6 +51,11 @@ static void wifi_init_softap(void);
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void wifistation_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
+
+static void mdns_sn_init();
+static void PrintCurrentTime();
+
+static void time_sync_notification_cb(struct timeval *tv);
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
@@ -168,13 +177,13 @@ static void wifi_init_all(void)
                 },
             },
         };
-        
+
         size_t staSSIDLength = 32;
         SETTINGS_GetValueString(SETTINGS_EENTRY_WSTASSID, (char*)wifi_configSTA.sta.ssid, &staSSIDLength);
-        
+
         size_t staPassLength = 64;
         SETTINGS_GetValueString(SETTINGS_EENTRY_WSTAPass, (char*)wifi_configSTA.sta.password, &staPassLength);
-        
+
         ESP_LOGI(TAG, "STA mode is active, attempt to connect to ssid: %s", wifi_configSTA.sta.ssid);
 
         ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_configSTA) );
@@ -182,6 +191,26 @@ static void wifi_init_all(void)
 
     // Start AP + STA
     ESP_ERROR_CHECK(esp_wifi_start() );
+}
+
+static void mdns_sn_init()
+{
+    ESP_LOGI(TAG, "mdns_sn_init, hostname: '%s', desc: '%s', service: '%s'", FWCONFIG_MDNS_HOSTNAME, FWCONFIG_MDNS_DESCRIPTION, FWCONFIG_MDNS_SERVICENAME);
+
+    mdns_init();
+    mdns_hostname_set(FWCONFIG_MDNS_HOSTNAME);
+    mdns_instance_name_set(FWCONFIG_MDNS_DESCRIPTION);
+
+    mdns_txt_item_t serviceTxtData[] = {
+        {"gate", "stargate-sgu"},
+        {"path", "/"}
+    };
+
+    ESP_ERROR_CHECK(mdns_service_add(FWCONFIG_MDNS_SERVICENAME, "_http", "_tcp", 80, serviceTxtData,
+                                     sizeof(serviceTxtData) / sizeof(serviceTxtData[0])));
+
+    netbiosns_init();
+    netbiosns_set_name(FWCONFIG_MDNS_HOSTNAME);
 }
 
 void app_main(void)
@@ -197,7 +226,12 @@ void app_main(void)
 
     SETTINGS_Init();
 
-    //SETTINGS_Load();
+    SETTINGS_Load();
+
+    // SETTINGS_SetValueInt32(SETTINGS_EENTRY_WSTAIsActive, false, 1);
+    // SETTINGS_SetValueString(SETTINGS_EENTRY_WSTASSID, false, "");
+    // SETTINGS_SetValueString(SETTINGS_EENTRY_WSTAPass, false, "");
+    // SETTINGS_Save();
 
     // Need to be high ...
     GPIO_Init();
@@ -210,6 +244,14 @@ void app_main(void)
     ESP_LOGI(TAG, "wifi_init_all");
     // wifi_init_softap();
     wifi_init_all();
+
+    mdns_sn_init();
+
+    sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_setservername(0, "pool.ntp.org");
+    sntp_set_time_sync_notification_cb(time_sync_notification_cb);
+    ESP_LOGI(TAG, "Initializing SNTP");
+    sntp_init();
 
     GATECONTROL_Init();
 
@@ -224,8 +266,9 @@ void app_main(void)
 
      // Initialise the xLastWakeTime variable with the current time.
     TickType_t xLastWakeTime = xTaskGetTickCount();
-
     TickType_t xLEDBlinkTicks = xTaskGetTickCount();
+    TickType_t xPrintTimeTicks = 0;
+
     bool bAltern = false;
 
     WEBSERVER_Init();
@@ -241,6 +284,12 @@ void app_main(void)
             GPIO_SetSanityLEDStatus(bAltern);
             bAltern = !bAltern;
             xLEDBlinkTicks = xTaskGetTickCount();
+        }
+
+        if ( (xTaskGetTickCount() - xPrintTimeTicks) > pdMS_TO_TICKS(20*1000) )
+        {
+            PrintCurrentTime();
+            xPrintTimeTicks = xTaskGetTickCount();
         }
 
         if (m_xRebootRequestTicks != 0 && (xTaskGetTickCount() - m_xRebootRequestTicks) > pdMS_TO_TICKS(1500))
@@ -265,4 +314,23 @@ void BASEFW_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
 void BASEFW_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)
 {
     esp_netif_get_ip_info(m_pWifiSoftAP, pIPInfo);
+}
+
+static void PrintCurrentTime()
+{
+    // Set timezone to Eastern Standard Time and print local time
+    time_t now = 0;
+    struct tm timeinfo = { 0 };
+    setenv("TZ", "EST5EDT,M3.2.0/2,M11.1.0", 1);
+    tzset();
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    ESP_LOGI(TAG, "The current date/time in New York is: %2d:%2d:%2d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+}
+
+static void time_sync_notification_cb(struct timeval* tv)
+{
+    // settimeofday(tv, NULL);
+    ESP_LOGI(TAG, "Notification of a time synchronization event, sec: %d", (int)tv->tv_sec);
+    PrintCurrentTime();
 }
