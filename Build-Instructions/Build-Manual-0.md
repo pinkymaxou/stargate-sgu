@@ -65,6 +65,6 @@ Basically color is up to you, but you will probably needs at least 3 colors.
 | Color | Used for | Description
 |---|---|---|
 | Dark gray or black PLA | Ring | The ring in the serie is almost black if not black. The one I made was gray but not dark enough, if I could do it again I would likely make it black |
-| Transparent PLA | Ring | Used for chevron illumination and light diffusion. It may be possible to use white instead but I suggest you to test it before commiting youtself.
+| Transparent PLA | Ring | Used for chevron illumination and light diffusion. It may be possible to use white instead but I suggest you to test it before commiting yourself.
 | White PLA | Ring/Base | Used for reflector but can be used for any parts that is not visible. (example, bearing module, inner ring, alignment block etc ...)
 | Sand PLA | Base | Sand like color, yes I realise there are many possible color for sand so let's say the same color as egypt pyramid?
