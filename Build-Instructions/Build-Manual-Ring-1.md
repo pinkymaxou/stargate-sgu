@@ -157,6 +157,8 @@ You needs those parts:
 - Use a sharpy to mark the positive and the negative inside the ring.
 - Insert the magnet into "Home-magnet-holder_0.4mm-x1" and glue it in place on "stargate-back" (check the photo for details)
 
+Hall sensor are sensitive to polarity, so you need to test it before attempting to insert it in place.
+
 ![](./Assets/stargate-back-power-collector-zero-magnet.png)
 
 - Mark polarity inside the track using a sharpie. It won't be visible once assembled.
