@@ -117,6 +117,8 @@ You don't need glue. It may be possible you need to sand a bit to insert symbols
 
 ![](./Assets/all-symbols-in-place.jpg)
 
+![](./Assets/gate-symbol-schematic.png)
+
 # Assemble lights reflectors (Light-chevron-cover)
 
 The reflectors are meant to reflect light and give a better effect so it's important to print them with white color.
