@@ -32,7 +32,7 @@
 | Privacy film  | 25x25 cm at least | https://www.aliexpress.com/item/32967449727.html |
 | Copper tape  | 1 | https://www.aliexpress.com/item/1005002822966859.html |
 | Plexiglass 20x20cm (recommend buying spare)  | 1 + 1 spare | https://www.aliexpress.com/item/32833660352.html |
-| Servo 9g | 1 | https://www.amazon.ca/-/fr/Servo-num%C3%A9rique-Micro-Metal-mod%C3%A8le/dp/B07FPJYM5T | We used cheap one but they proved to be problematic, one died suddently and the other draw too much current sometime. You may have to invest in something better.
+| Servo 9g | 1 | https://www.amazon.ca/-/fr/Servo-num%C3%A9rique-Micro-Metal-mod%C3%A8le/dp/B07FPJYM5T | I tried cheap one but they proved to be problematic, one died suddently and the other draw too much current sometime. You may have to invest in something better.
 | M2 screws kit | 1 | https://www.amazon.ca/-/fr/Hilitchi-Assortiment-hexagonale-acier-inoxydable/dp/B014ONS02S | You needs several lengths
 | M3 screws kit | 1 | https://www.amazon.ca/Assortiment-cruciformes-cylindrique-acier-inoxydable/dp/B075RCVVYN/ | You needs several lengths
 
