@@ -117,6 +117,8 @@ You don't need glue. It may be possible you need to sand a bit to insert symbols
 
 ![](./Assets/all-symbols-in-place.jpg)
 
+![](./Assets/gate-symbol-schematic.png)
+
 # Assemble lights reflectors (Light-chevron-cover)
 
 The reflectors are meant to reflect light and give a better effect so it's important to print them with white color.
@@ -156,6 +158,8 @@ You needs those parts:
 - Glue them in place using gorilla glue
 - Use a sharpy to mark the positive and the negative inside the ring.
 - Insert the magnet into "Home-magnet-holder_0.4mm-x1" and glue it in place on "stargate-back" (check the photo for details)
+
+Hall sensor are sensitive to polarity, so you need to test it before attempting to insert it in place.
 
 ![](./Assets/stargate-back-power-collector-zero-magnet.png)
 
