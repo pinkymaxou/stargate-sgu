@@ -154,6 +154,10 @@ static esp_err_t file_get_handler(httpd_req_t *req)
     }
 
     set_content_type_from_file(req, pFile->strFilename);
+    if (EF_ISFILECOMPRESSED(pFile->eFlags))
+    {
+        httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
+    }
 
     uint32_t u32Index = 0;
 
