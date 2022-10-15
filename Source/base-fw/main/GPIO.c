@@ -136,7 +136,7 @@ void GPIO_StopStepper()
 
 void GPIO_ReleaseClamp()
 {
-    mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, SERVO_PWM2PERCENT(SETTINGS_GetValueInt32(SETTINGS_EENTRY_ClampReleasedPWM)));
+    mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, SERVO_PWM2PERCENT(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_ClampReleasedPWM)));
     mcpwm_set_duty_type(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);  //call this each time, if operator was previously in low/high state
     //vTaskDelay(pdMS_TO_TICKS(750));
     // Stopping it prevent the annoying sound of the servo and save some power
@@ -145,7 +145,7 @@ void GPIO_ReleaseClamp()
 
 void GPIO_LockClamp()
 {
-    mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, SERVO_PWM2PERCENT(SETTINGS_GetValueInt32(SETTINGS_EENTRY_ClampLockedPWM)));
+    mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, SERVO_PWM2PERCENT(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_ClampLockedPWM)));
     mcpwm_set_duty_type(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);  //call this each time, if operator was previously in low/high state
     vTaskDelay(pdMS_TO_TICKS(350));
     // Stopping it prevent the annoying sound of the servo and save some power
@@ -167,9 +167,9 @@ void GPIO_SetRampLightPerc(float fltPercent)
 void GPIO_SetRampLightOnOff(bool bIsActive)
 {
     if (bIsActive)
-        GPIO_SetRampLightPerc((float)SETTINGS_GetValueInt32(SETTINGS_EENTRY_RampOnPercent) / 100.0f);
+        GPIO_SetRampLightPerc((float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOnPercent) / 100.0f);
     else
-        GPIO_SetRampLightPerc((float)SETTINGS_GetValueInt32(SETTINGS_EENTRY_RampOffPercent) / 100.0f);
+        GPIO_SetRampLightPerc((float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOffPercent) / 100.0f);
 }
 
 void GPIO_SetSanityLEDStatus(bool bIsLightUp)

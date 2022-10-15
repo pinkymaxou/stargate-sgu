@@ -12,9 +12,8 @@ function AppLoaded()
 
 var currentApp = new Vue({
     el: '#app',
-    data: 
+    data:
     {
         entries: [],
     }
   })
-  
