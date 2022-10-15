@@ -175,10 +175,10 @@ static void GateControlTask( void *pvParameters )
 
                 int32_t s32Move = (s32TicksTarget - m_s32Count);
 
-                int32_t s32Move2 = -1 * ((s32StepPerRotation - s32TicksTarget) + m_s32Count);
+                const int32_t s32Move2 = -1 * ((s32StepPerRotation - s32TicksTarget) + m_s32Count);
                 if (abs(s32Move2) < abs(s32Move))
                     s32Move = s32Move2;
-                int32_t s32Move3 = ((s32StepPerRotation - m_s32Count) + s32TicksTarget);
+                const int32_t s32Move3 = ((s32StepPerRotation - m_s32Count) + s32TicksTarget);
                 if (abs(s32Move3) < abs(s32Move))
                     s32Move = s32Move3;
 

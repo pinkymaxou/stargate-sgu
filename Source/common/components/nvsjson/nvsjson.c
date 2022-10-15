@@ -179,10 +179,6 @@ const char* NVSJSON_ExportJSON(NVSJSON_SHandle* pHandle)
         cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DESC_NAME, cJSON_CreateString(pEntry->szDesc));
         cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_FLAG_REBOOT_NAME, cJSON_CreateNumber((pEntry->eFlags & NVSJSON_EFLAGS_NeedsReboot)? 1 : 0));
 
-        // Description and flags apply everywhere
-        cJSON_AddItemToObject(pEntryInfoJSON, "desc", cJSON_CreateString(pEntry->szDesc));
-        cJSON_AddItemToObject(pEntryInfoJSON, "flag_reboot", cJSON_CreateNumber((pEntry->eFlags & NVSJSON_EFLAGS_NeedsReboot)? 1 : 0));
-
         if (pEntry->eType == NVSJSON_ETYPE_Int32)
         {
             if ((pEntry->eFlags & NVSJSON_EFLAGS_Secret) != NVSJSON_EFLAGS_Secret)
