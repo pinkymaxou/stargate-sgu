@@ -61,6 +61,8 @@ try:
     compressFiles = [Path(file) for file in compressConfig.read_text().splitlines()] if compressConfig else []
     files = []
 
+    # print(compressFiles)
+
     for file in diInput.rglob("*.*"):
         myfile = PackedFile(args.inputpath, file, len([p for p in [file, *file.parents] if p in compressFiles]) > 0)
         files.append(myfile)

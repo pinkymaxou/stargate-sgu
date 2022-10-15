@@ -50,7 +50,7 @@ void WORMHOLE_Open(volatile bool* pIsCancelled)
 
 void WORMHOLE_Run(volatile bool* pIsCancelled, bool bNoTimeLimit)
 {
-    const uint32_t u32MaxBrightness = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WormholeMaxBrightness);
+    const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
 
     const float minF = 0.10f;
     const float maxF = 0.25f;
@@ -64,7 +64,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled, bool bNoTimeLimit)
     // Wait until we get stop command or timeout reached.
     TickType_t xStartTicks = xTaskGetTickCount();
 
-    const uint32_t u32OpenTimeS = SETTINGS_GetValueInt32(SETTINGS_EENTRY_GateOpenedTimeout);
+    const uint32_t u32OpenTimeS = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_GateOpenedTimeout);
 
     while(!*pIsCancelled && (bNoTimeLimit || (xTaskGetTickCount() - xStartTicks) < pdMS_TO_TICKS(1000*u32OpenTimeS)))
     {
@@ -150,7 +150,7 @@ void WORMHOLE_Close(volatile bool* pIsCancelled)
 
 static void DoRing0()
 {
-    const uint32_t u32MaxBrightness = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WormholeMaxBrightness);
+    const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
 
     float whiteMax = 0.5*u32MaxBrightness;
 
@@ -166,7 +166,7 @@ static void DoRing0()
 
 static void DoRing1()
 {
-    const uint32_t u32MaxBrightness = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WormholeMaxBrightness);
+    const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
 
     float whiteMax = 0.5*u32MaxBrightness;
     for(int i = 0; i < sizeof(m_pRing0)/sizeof(int); i++)
@@ -183,7 +183,7 @@ static void DoRing1()
 
 static void DoRing2()
 {
-    const uint32_t u32MaxBrightness = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WormholeMaxBrightness);
+    const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
 
     float whiteMax = 0.5*u32MaxBrightness;
     for(int i = 0; i < sizeof(m_pRing1)/sizeof(int); i++)
@@ -201,7 +201,7 @@ static void DoRing2()
 
 static void DoRing3()
 {
-    const uint32_t u32MaxBrightness = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WormholeMaxBrightness);
+    const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
 
     float whiteMax = 0.5*u32MaxBrightness;
     for(int i = 0; i < sizeof(m_pRing2)/sizeof(int); i++)

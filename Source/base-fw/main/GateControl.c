@@ -99,7 +99,7 @@ static void GateControlTask( void *pvParameters )
             bool bIsFailed = true;
 
             m_s32Count = 0;
-            const uint32_t u32MaxStep = (uint32_t)SETTINGS_GetValueInt32(SETTINGS_EENTRY_HomeMaximumStepTicks);
+            const uint32_t u32MaxStep = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_HomeMaximumStepTicks);
 
             for(int i = 0; i < u32MaxStep; i++)
             {
@@ -111,7 +111,7 @@ static void GateControlTask( void *pvParameters )
                 {
                     ESP_LOGI(TAG, "Go Home - Reached, count: %d", m_s32Count);
                     //ssHome.s32Count = 0;
-                    m_s32Count = SETTINGS_GetValueInt32(SETTINGS_EENTRY_RingHomeOffset);
+                    m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
                     bIsFailed = false;
                     break;
                 }
@@ -155,10 +155,10 @@ static void GateControlTask( void *pvParameters )
             GPIO_StartStepper();
             GPIO_ReleaseClamp();
             SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
-            vTaskDelay(pdMS_TO_TICKS(SETTINGS_GetValueInt32(SETTINGS_EENTRY_AnimPredialDelayMS)));
+            vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPredialDelayMS)));
 
-            const int32_t s32StepPerRotation = SETTINGS_GetValueInt32(SETTINGS_EENTRY_StepPerRotation);
-            const uint32_t u32SymbBright = (uint32_t)SETTINGS_GetValueInt32(SETTINGS_EENTRY_RingSymbolBrightness);
+            const int32_t s32StepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
+            const uint32_t u32SymbBright = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingSymbolBrightness);
 
             for(int i = 0; i < uModeArg.sDialArg.u8SymbolCount; i++)
             {
@@ -175,19 +175,19 @@ static void GateControlTask( void *pvParameters )
 
                 int32_t s32Move = (s32TicksTarget - m_s32Count);
 
-                int32_t s32Move2 = -1 * ((s32StepPerRotation - s32TicksTarget) + m_s32Count);
+                const int32_t s32Move2 = -1 * ((s32StepPerRotation - s32TicksTarget) + m_s32Count);
                 if (abs(s32Move2) < abs(s32Move))
                     s32Move = s32Move2;
-                int32_t s32Move3 = ((s32StepPerRotation - m_s32Count) + s32TicksTarget);
+                const int32_t s32Move3 = ((s32StepPerRotation - m_s32Count) + s32TicksTarget);
                 if (abs(s32Move3) < abs(s32Move))
                     s32Move = s32Move3;
 
                 MoveRelative(s32Move);
                 m_s32Count = s32TicksTarget;
 
-                vTaskDelay(pdMS_TO_TICKS(SETTINGS_GetValueInt32(SETTINGS_EENTRY_AnimPrelockDelayMS)));
+                vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPrelockDelayMS)));
                 SGUBRCOMM_LightUpLED(&g_sSGUBRCOMMHandle, u32SymbBright, u32SymbBright, u32SymbBright, SGUHELPER_SymbolIndexToLedIndex(u8SymbolIndex));
-                vTaskDelay(pdMS_TO_TICKS(SETTINGS_GetValueInt32(SETTINGS_EENTRY_AnimPostlockDelayMS)));
+                vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPostlockDelayMS)));
             }
 
             // Stop stepper and servos ...
@@ -301,7 +301,7 @@ static void MoveTo(int32_t* ps32Count, int32_t s32Target)
 
 static void MoveRelative(int32_t s32RelativeTarget)
 {
-    const uint32_t u32SlowDelta = (uint32_t)SETTINGS_GetValueInt32(SETTINGS_EENTRY_RingSlowDelta);
+    const uint32_t u32SlowDelta = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingSlowDelta);
 
     int32_t s32Target = abs(s32RelativeTarget);
 

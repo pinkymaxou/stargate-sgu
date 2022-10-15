@@ -20,3 +20,5 @@ Source/base-fw/.vscode/settings.json
 Source/ring-factory/.vscode/settings.json
 /.vscode
 Source/ring-fw/.vscode/settings.json
+/Source/base-fw/main/assets/EmbeddedFiles.bin
+/Source/base-fw/main/assets/EmbeddedFiles.txt
