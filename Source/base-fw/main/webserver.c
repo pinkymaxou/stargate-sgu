@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include "GateControl.h"
-#include "EmbeddedFiles.h"
+#include "assets/EmbeddedFiles.h"
 #include "esp_ota_ops.h"
 #include "cJSON.h"
 #include "Settings.h"
