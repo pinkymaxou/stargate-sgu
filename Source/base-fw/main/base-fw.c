@@ -95,7 +95,7 @@ static void wifi_init_all(void)
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    const bool isWiFiSTA = SETTINGS_GetValueInt32(SETTINGS_EENTRY_WSTAIsActive) == 1;
+    const bool isWiFiSTA = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WSTAIsActive) == 1;
     if (isWiFiSTA)
     {
         ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
@@ -179,10 +179,10 @@ static void wifi_init_all(void)
         };
 
         size_t staSSIDLength = 32;
-        SETTINGS_GetValueString(SETTINGS_EENTRY_WSTASSID, (char*)wifi_configSTA.sta.ssid, &staSSIDLength);
+        NVSJSON_GetValueString(&g_sSettingHandle, SETTINGS_EENTRY_WSTASSID, (char*)wifi_configSTA.sta.ssid, &staSSIDLength);
 
         size_t staPassLength = 64;
-        SETTINGS_GetValueString(SETTINGS_EENTRY_WSTAPass, (char*)wifi_configSTA.sta.password, &staPassLength);
+        NVSJSON_GetValueString(&g_sSettingHandle, SETTINGS_EENTRY_WSTAPass, (char*)wifi_configSTA.sta.password, &staPassLength);
 
         ESP_LOGI(TAG, "STA mode is active, attempt to connect to ssid: %s", wifi_configSTA.sta.ssid);
 
@@ -226,12 +226,7 @@ void app_main(void)
 
     SETTINGS_Init();
 
-    SETTINGS_Load();
-
-    // SETTINGS_SetValueInt32(SETTINGS_EENTRY_WSTAIsActive, false, 1);
-    // SETTINGS_SetValueString(SETTINGS_EENTRY_WSTASSID, false, "");
-    // SETTINGS_SetValueString(SETTINGS_EENTRY_WSTAPass, false, "");
-    // SETTINGS_Save();
+    NVSJSON_Load(&g_sSettingHandle);
 
     // Need to be high ...
     GPIO_Init();

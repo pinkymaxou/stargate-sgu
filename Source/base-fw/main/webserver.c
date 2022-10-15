@@ -280,7 +280,7 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
     }
     else if (strcmp(req->uri, ACTION_POST_RINGGOTOFACTORY) == 0)
-    {            
+    {
         ESP_LOGI(TAG, "GateControl ring goto factory");
         SGUBRCOMM_GotoFactory(&g_sSGUBRCOMMHandle);
     }
@@ -308,7 +308,7 @@ static esp_err_t api_get_handler(httpd_req_t *req)
 
     if (strcmp(req->uri, API_GETSETTINGSJSON_URI) == 0)
     {
-        pExportJSON = SETTINGS_ExportJSON();
+        pExportJSON = NVSJSON_ExportJSON(&g_sSettingHandle);
 
         if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
         {
@@ -319,7 +319,7 @@ static esp_err_t api_get_handler(httpd_req_t *req)
     else if (strcmp(req->uri, API_GETSYSINFOJSON_URI) == 0)
     {
         pExportJSON = GetSysInfo();
-       
+
         if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
         {
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
@@ -348,7 +348,7 @@ static esp_err_t api_post_handler(httpd_req_t *req)
         int n = httpd_req_recv(req, (char*)m_u8Buffers, HTTPSERVER_BUFFERSIZE);
         m_u8Buffers[n] = '\0';
 
-        if (!SETTINGS_ImportJSON((const char*)m_u8Buffers))
+        if (!NVSJSON_ImportJSON(&g_sSettingHandle, (const char*)m_u8Buffers))
         {
             ESP_LOGE(TAG, "Unable to import JSON");
             httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Unknown request");
@@ -554,7 +554,7 @@ static const char* GetSysInfo()
     cJSON_AddItemToObject(pEntryJSON8, "name", cJSON_CreateString("Memory"));
     const int freeSize = heap_caps_get_free_size(MALLOC_CAP_8BIT);
     const int totalSize = heap_caps_get_total_size(MALLOC_CAP_8BIT);
-    
+
     sprintf(buff, "%d / %d", /*0*/freeSize, /*1*/totalSize);
     cJSON_AddItemToObject(pEntryJSON8, "value", cJSON_CreateString(buff));
     cJSON_AddItemToArray(pEntries, pEntryJSON8);

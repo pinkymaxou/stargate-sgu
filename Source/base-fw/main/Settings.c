@@ -8,331 +8,46 @@
 #include <string.h>
 
 #define TAG "SETTINGS"
-#define PARTITION_NAME "nvs"
 
-// JSON entries
-#define JSON_ENTRIES_NAME "entries"
+static bool ValidateWifiPassword(const NVSJSON_SSettingEntry* pSettingEntry, const char* szValue);
 
-#define JSON_ENTRY_KEY_NAME "key"
-#define JSON_ENTRY_VALUE_NAME "value"
-
-#define JSON_ENTRY_INFO_NAME "info"
-
-#define JSON_ENTRY_INFO_DESC_NAME "desc"
-#define JSON_ENTRY_INFO_DEFAULT_NAME "default"
-#define JSON_ENTRY_INFO_MIN_NAME "min"
-#define JSON_ENTRY_INFO_MAX_NAME "max"
-#define JSON_ENTRY_INFO_TYPE_NAME "type"
-#define JSON_ENTRY_INFO_FLAG_REBOOT_NAME "flag_reboot"
-
-typedef enum
+static NVSJSON_SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
 {
-    ETYPE_Int32,
-    ETYPE_String
-} ETYPE;
+    [SETTINGS_EENTRY_ClampLockedPWM] =          NVSJSON_INITINT32_RNG("Clamp.LockedPWM", "Servo motor locked PWM",             1250, 1000, 2000, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_ClampReleasedPWM] =        NVSJSON_INITINT32_RNG("Clamp.ReleasPWM", "Servo motor released PWM",           1000, 1000, 2000, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_RingHomeOffset] =          NVSJSON_INITINT32_RNG("Ring.HomeOffset", "Offset relative to home sensor",     -55, -500, 500, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_RingSlowDelta] =           NVSJSON_INITINT32_RNG("Ring.SlowDelta",  "Encoder delta in slow move mode",    300, 0, 800, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_RingSymbolBrightness] =    NVSJSON_INITINT32_RNG("Ring.SymBright",  "Symbol brightness",                  15, 3, 50, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_StepPerRotation] =         NVSJSON_INITINT32_RNG("StepPerRot",      "How many step per rotation",         7334, 0, 64000, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_GateOpenedTimeout] =       NVSJSON_INITINT32_RNG("GateTimeoutS",    "Timeout (s) before the gate close",  300, 10, 42*60, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_HomeMaximumStepTicks] =    NVSJSON_INITINT32_RNG("Home.MaxSteps",   "Maximum step for homing process",    8000, 0, 64000, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_RampOnPercent] =           NVSJSON_INITINT32_RNG("Ramp.LightOn",    "Ramp illumination ON (percent)",     30, 0, 100, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_RampOffPercent] =          NVSJSON_INITINT32_RNG("Ramp.LightOff",   "Ramp illumination OFF (percent)",    0, 0, 100, NVSJSON_EFLAGS_None),
 
-typedef union
-{
-    struct
-    {
-       int32_t s32Min;
-       int32_t s32Max;
-       int32_t s32Default;
-    } sInt32;
-    struct
-    {
-       float fMin;
-       float fMax;
-       float fDefault;
-    } sFloat;
-    struct
-    {
-       char* szDefault;
-    } sString;
-} UConfig;
-
-typedef struct
-{
-    const char* szKey;
-    const char* szDesc;
-    ETYPE eType;
-    UConfig uConfig;
-    SETTINGS_EFLAGS eFlags;
-} SSettingEntry;
-
-static SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
-{
-    [SETTINGS_EENTRY_ClampLockedPWM] =          { .szKey = "Clamp.LockedPWM",   .eType = ETYPE_Int32, .szDesc = "Servo motor locked PWM",             .uConfig = { .sInt32 = { .s32Min = 1000, .s32Max = 2000, .s32Default = 1250 } }  },
-    [SETTINGS_EENTRY_ClampReleasedPWM] =        { .szKey = "Clamp.ReleasPWM",   .eType = ETYPE_Int32, .szDesc = "Servo motor released PWM",           .uConfig = { .sInt32 = { .s32Min = 1000, .s32Max = 2000, .s32Default = 1000 } }  },
-    [SETTINGS_EENTRY_RingHomeOffset] =          { .szKey = "Ring.HomeOffset",   .eType = ETYPE_Int32, .szDesc = "Offset relative to home sensor",     .uConfig = { .sInt32 = { .s32Min = -500, .s32Max = 500, .s32Default = -55 } }  },
-    [SETTINGS_EENTRY_RingSlowDelta] =           { .szKey = "Ring.SlowDelta",    .eType = ETYPE_Int32, .szDesc = "Encoder delta in slow move mode",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 800, .s32Default = 300 } }  },
-    [SETTINGS_EENTRY_RingSymbolBrightness] =    { .szKey = "Ring.SymBright",    .eType = ETYPE_Int32, .szDesc = "Symbol brightness",                  .uConfig = { .sInt32 = { .s32Min = 3, .s32Max = 50, .s32Default = 15 } }  },
-    [SETTINGS_EENTRY_StepPerRotation] =         { .szKey = "StepPerRot",        .eType = ETYPE_Int32, .szDesc = "How many step per rotation",         .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 64000, .s32Default = 7334 } }  },
-    [SETTINGS_EENTRY_GateOpenedTimeout] =       { .szKey = "GateTimeoutS",      .eType = ETYPE_Int32, .szDesc = "Timeout (s) before the gate close",  .uConfig = { .sInt32 = { .s32Min = 10, .s32Max = 42*60, .s32Default = 300 } }  },
-    [SETTINGS_EENTRY_HomeMaximumStepTicks] =    { .szKey = "Home.MaxSteps",     .eType = ETYPE_Int32, .szDesc = "Maximum step for homing process",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 64000, .s32Default = 8000 } }  },
-    [SETTINGS_EENTRY_RampOnPercent] =           { .szKey = "Ramp.LightOn",      .eType = ETYPE_Int32, .szDesc = "Ramp illumination ON (percent)",     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 30 } }  },
-    [SETTINGS_EENTRY_RampOffPercent] =          { .szKey = "Ramp.LightOff",     .eType = ETYPE_Int32, .szDesc = "Ramp illumination OFF (percent)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 100, .s32Default = 0 } }  },
-
-    [SETTINGS_EENTRY_WormholeMaxBrightness] =   { .szKey = "WH.MaxBright",      .eType = ETYPE_Int32, .szDesc = "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 255, .s32Default = 180 } }  },
+    [SETTINGS_EENTRY_WormholeMaxBrightness] =   NVSJSON_INITINT32_RNG("WH.MaxBright",    "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)", 180, 0, 255, NVSJSON_EFLAGS_None),
 
     // WiFi Station related
-    [SETTINGS_EENTRY_WSTAIsActive] =            { .szKey = "WSTA.IsActive",     .eType = ETYPE_Int32, .szDesc = "Wifi is active",                     .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 1, .s32Default = 0 } },   .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
-    [SETTINGS_EENTRY_WSTASSID] =                { .szKey = "WSTA.SSID",         .eType = ETYPE_String,.szDesc = "WiFi (SSID)",                        .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_NeedsReboot  },
-    [SETTINGS_EENTRY_WSTAPass] =                { .szKey = "WSTA.Pass",         .eType = ETYPE_String,.szDesc = "WiFi password",                      .uConfig = { .sString = { .szDefault = "" } },                            .eFlags = SETTINGS_EFLAGS_Secret | SETTINGS_EFLAGS_NeedsReboot },
+    [SETTINGS_EENTRY_WSTAIsActive] =            NVSJSON_INITINT32_RNG("WSTA.IsActive",   "Wifi is active",                     0, 0, 1, NVSJSON_EFLAGS_NeedsReboot),
+    [SETTINGS_EENTRY_WSTASSID] =                NVSJSON_INITSTRING_RNG("WSTA.SSID",      "WiFi (SSID)",                        "", NVSJSON_EFLAGS_NeedsReboot),
+    [SETTINGS_EENTRY_WSTAPass] =                NVSJSON_INITSTRING_VALIDATOR("WSTA.Pass","WiFi password",                      "", ValidateWifiPassword, NVSJSON_EFLAGS_Secret | NVSJSON_EFLAGS_NeedsReboot),
 
     // Animation delay
-    [SETTINGS_EENTRY_AnimPrelockDelayMS] =      { .szKey = "dial.anim1",        .eType = ETYPE_Int32, .szDesc = "Delay before locking the chevron (ms)",   .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 6000, .s32Default = 750 } }  },
-    [SETTINGS_EENTRY_AnimPostlockDelayMS] =     { .szKey = "dial.anim2",        .eType = ETYPE_Int32, .szDesc = "Delay after locking the chevron (ms)",    .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 6000, .s32Default = 1250 } }  },
-    [SETTINGS_EENTRY_AnimPredialDelayMS] =      { .szKey = "dial.anim3",        .eType = ETYPE_Int32, .szDesc = "Delay before starting to dial (ms)",      .uConfig = { .sInt32 = { .s32Min = 0, .s32Max = 10000, .s32Default = 2500 } }  },
+    [SETTINGS_EENTRY_AnimPrelockDelayMS] =      NVSJSON_INITINT32_RNG("dial.anim1",      "Delay before locking the chevron (ms)", 750, 0, 6000, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_AnimPostlockDelayMS] =     NVSJSON_INITINT32_RNG("dial.anim2",      "Delay after locking the chevron (ms)",  1250, 0, 6000, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_AnimPredialDelayMS] =      NVSJSON_INITINT32_RNG("dial.anim3",      "Delay before starting to dial (ms)",    2500, 0, 10000, NVSJSON_EFLAGS_None),
 };
 
-static const SSettingEntry* GetSettingEntry(SETTINGS_EENTRY eEntry);
-static bool GetSettingEntryByKey(const char* szKey, SETTINGS_EENTRY* peEntry);
+NVSJSON_SHandle g_sSettingHandle;
 
-//static StaticSemaphore_t m_xSemaphoreCreateMutex;
-//static SemaphoreHandle_t m_xSemaphoreHandle;
 static nvs_handle_t m_sNVS;
 
 void SETTINGS_Init()
 {
-    //m_xSemaphoreHandle = xSemaphoreCreateMutexStatic(&m_xSemaphoreCreateMutex);
-    //configASSERT( m_xSemaphoreHandle );
-    ESP_ERROR_CHECK(nvs_open(PARTITION_NAME, NVS_READWRITE, &m_sNVS));
+    NVSJSON_Init(&g_sSettingHandle, m_sConfigEntries, SETTINGS_EENTRY_Count);
 }
 
-void SETTINGS_Load()
+static bool ValidateWifiPassword(const NVSJSON_SSettingEntry* pSettingEntry, const char* szValue)
 {
-    //xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
-    //xSemaphoreGive(m_xSemaphoreHandle);
-}
-
-void SETTINGS_Save()
-{
-    //xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
-    ESP_ERROR_CHECK(nvs_commit(m_sNVS));
-    //xSemaphoreGive(m_xSemaphoreHandle);
-}
-
-int32_t SETTINGS_GetValueInt32(SETTINGS_EENTRY eEntry)
-{
-    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
-    assert(pEnt != NULL && pEnt->eType == ETYPE_Int32);
-    int32_t s32 = 0;
-    /* s32 >= pEnt->uConfig.sInt32.s32Min &&
-       s32 <= pEnt->uConfig.sInt32.s32Max*/
-    if (nvs_get_i32(m_sNVS, pEnt->szKey, &s32) == ESP_OK)
-        return s32;
-    return pEnt->uConfig.sInt32.s32Default;
-}
-
-SETTINGS_ESETRET SETTINGS_SetValueInt32(SETTINGS_EENTRY eEntry, bool bIsDryRun, int32_t s32NewValue)
-{
-    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
-    assert(pEnt != NULL && pEnt->eType == ETYPE_Int32);
-    if (s32NewValue < pEnt->uConfig.sInt32.s32Min || s32NewValue > pEnt->uConfig.sInt32.s32Max)
-        return SETTINGS_ESETRET_InvalidRange;
-    if (!bIsDryRun)
-    {
-        const esp_err_t err = nvs_set_i32(m_sNVS, pEnt->szKey, s32NewValue);
-        ESP_ERROR_CHECK_WITHOUT_ABORT(err);
-        if (err != ESP_OK)
-            return SETTINGS_ESETRET_CannotSet;
-    }
-    return SETTINGS_ESETRET_OK;
-}
-
-void SETTINGS_GetValueString(SETTINGS_EENTRY eEntry, char* out_value, size_t* length)
-{
-    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
-    assert(pEnt != NULL && pEnt->eType == ETYPE_String);
-
-    if (nvs_get_str(m_sNVS, pEnt->szKey, out_value, length) != ESP_OK)
-    {
-        // Default value if it cannot retrieve it ...
-        if (pEnt->uConfig.sString.szDefault != NULL)
-        {
-            *length = strlen(pEnt->uConfig.sString.szDefault);
-            strncpy(out_value, pEnt->uConfig.sString.szDefault, *length);
-        }
-    }
-}
-
-SETTINGS_ESETRET SETTINGS_SetValueString(SETTINGS_EENTRY eEntry, bool bIsDryRun, const char* szValue)
-{
-    const SSettingEntry* pEnt = GetSettingEntry(eEntry);
-    assert(pEnt != NULL && pEnt->eType == ETYPE_String);
-    if (!bIsDryRun)
-    {
-        const esp_err_t err = nvs_set_str(m_sNVS, pEnt->szKey, szValue);
-        ESP_ERROR_CHECK_WITHOUT_ABORT(err);
-        if (err != ESP_OK)
-            return SETTINGS_ESETRET_CannotSet;
-    }
-    return SETTINGS_ESETRET_OK;
-}
-
-const char* SETTINGS_ExportJSON()
-{
-    cJSON* pRoot = cJSON_CreateObject();
-    if (pRoot == NULL)
-        goto ERROR;
-
-    cJSON* pEntries = cJSON_AddArrayToObject(pRoot, JSON_ENTRIES_NAME);
-
-    for(int i = 0; i < SETTINGS_EENTRY_Count; i++)
-    {
-        SETTINGS_EENTRY eEntry = (SETTINGS_EENTRY)i;
-        const SSettingEntry* pEntry = GetSettingEntry( eEntry );
-
-        cJSON* pEntryJSON = cJSON_CreateObject();
-        cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_KEY_NAME, cJSON_CreateString(pEntry->szKey));
-
-        cJSON* pEntryInfoJSON = cJSON_CreateObject();
-        
-        // Description and flags apply everywhere
-        cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DESC_NAME, cJSON_CreateString(pEntry->szDesc));
-        cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_FLAG_REBOOT_NAME, cJSON_CreateNumber((pEntry->eFlags & SETTINGS_EFLAGS_NeedsReboot)? 1 : 0));
-
-        if (pEntry->eType == ETYPE_Int32)
-        {
-            if ((pEntry->eFlags & SETTINGS_EFLAGS_Secret) != SETTINGS_EFLAGS_Secret)
-                cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_VALUE_NAME, cJSON_CreateNumber(SETTINGS_GetValueInt32(eEntry)));
-
-            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DEFAULT_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Default));
-            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_MIN_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Min));
-            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_MAX_NAME, cJSON_CreateNumber(pEntry->uConfig.sInt32.s32Max));
-            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_TYPE_NAME, cJSON_CreateString("int32"));
-        }
-        else if (pEntry->eType == ETYPE_String)
-        {
-            char value[SETTINGS_GETVALUESTRING_MAXLEN+1] = {0,};
-            size_t length = SETTINGS_GETVALUESTRING_MAXLEN;
-            if ((pEntry->eFlags & SETTINGS_EFLAGS_Secret) != SETTINGS_EFLAGS_Secret)
-            {
-                SETTINGS_GetValueString(eEntry, value, &length);
-                cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_VALUE_NAME, cJSON_CreateString(value));
-            }
-            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_DEFAULT_NAME, cJSON_CreateString(pEntry->uConfig.sString.szDefault));
-            cJSON_AddItemToObject(pEntryInfoJSON, JSON_ENTRY_INFO_TYPE_NAME, cJSON_CreateString("string"));
-        }
-
-        cJSON_AddItemToObject(pEntryJSON, JSON_ENTRY_INFO_NAME, pEntryInfoJSON);
-
-        cJSON_AddItemToArray(pEntries, pEntryJSON);
-    }
-    const char* pStr =  cJSON_PrintUnformatted(pRoot);
-    cJSON_Delete(pRoot);
-    return pStr;
-    ERROR:
-    cJSON_Delete(pRoot);
-    return NULL;
-}
-
-bool SETTINGS_ImportJSON(const char* szJSON)
-{
-    bool bRet = true;
-    cJSON* pRoot = cJSON_Parse(szJSON);
-
-    cJSON* pEntriesArray = cJSON_GetObjectItem(pRoot, JSON_ENTRIES_NAME);
-    if (!cJSON_IsArray(pEntriesArray))
-    {
-        ESP_LOGE(TAG, "Entries array is not valid");
-        goto ERROR;
-    }
-
-    for(int pass = 0; pass < 2; pass++)
-    {
-        const bool bIsDryRun = pass == 0;
-
-        for(int i = 0; i < cJSON_GetArraySize(pEntriesArray); i++)
-        {
-            cJSON* pEntryJSON = cJSON_GetArrayItem(pEntriesArray, i);
-
-            cJSON* pKeyJSON = cJSON_GetObjectItem(pEntryJSON, JSON_ENTRY_KEY_NAME);
-            if (pKeyJSON == NULL || !cJSON_IsString(pKeyJSON))
-            {
-                ESP_LOGE(TAG, "Cannot find JSON key element");
-                goto ERROR;
-            }
-
-            cJSON* pValueJSON = cJSON_GetObjectItem(pEntryJSON, JSON_ENTRY_VALUE_NAME);
-            if (pValueJSON == NULL)
-            {
-                // We just ignore changing the setting if the value property is not there.
-                // it allows us to handle secret cases.
-                ESP_LOGD(TAG, "JSON value is not there, skipping it");
-                continue;
-            }
-
-            SETTINGS_EENTRY eEntry;
-            if (!GetSettingEntryByKey(pKeyJSON->valuestring, &eEntry))
-            {
-                ESP_LOGE(TAG, "Key: '%s' is not valid", pKeyJSON->valuestring);
-                goto ERROR;
-            }
-
-            const SSettingEntry* pSettingEntry = GetSettingEntry(eEntry);
-
-            if (pSettingEntry->eType == ETYPE_Int32)
-            {
-                if (!cJSON_IsNumber(pValueJSON))
-                {
-                    ESP_LOGE(TAG, "JSON value type is invalid, not a number");
-                    goto ERROR;
-                }
-                int32_t s32 = pValueJSON->valueint;
-                SETTINGS_ESETRET eSetRet;
-                if ((eSetRet = SETTINGS_SetValueInt32(eEntry, bIsDryRun, s32)) != SETTINGS_ESETRET_OK)
-                {
-                    ESP_LOGE(TAG, "Unable to set value for key: %s, bIsDryRun: %d, ret: %d", pSettingEntry->szKey, bIsDryRun, eSetRet);
-                    goto ERROR;
-                }
-            }
-            else if (pSettingEntry->eType == ETYPE_String)
-            {
-                if (!cJSON_IsString(pValueJSON))
-                {
-                    ESP_LOGE(TAG, "JSON value type is invalid, not a string");
-                    goto ERROR;
-                }
-                
-                const char* str = pValueJSON->valuestring;
-                SETTINGS_ESETRET eSetRet;
-                if ((eSetRet = SETTINGS_SetValueString(eEntry, bIsDryRun, str)) != SETTINGS_ESETRET_OK)
-                {
-                    ESP_LOGE(TAG, "Unable to set value for key: %s, bIsDryRun: %d, ret: %d", pSettingEntry->szKey, bIsDryRun, eSetRet);
-                    goto ERROR;
-                }
-            }
-        }
-    }
-
-    bRet = true;
-    ESP_LOGI(TAG, "Import JSON completed");
-    goto END;
-    ERROR:
-    bRet = false;
-    END:
-    cJSON_free(pRoot);
-    return bRet;
-}
-
-static const SSettingEntry* GetSettingEntry(SETTINGS_EENTRY eEntry)
-{
-    if ( (int)eEntry < 0 || (int)eEntry >= SETTINGS_EENTRY_Count )
-        return NULL;
-    return &m_sConfigEntries[(int)eEntry];
-}
-
-static bool GetSettingEntryByKey(const char* szKey, SETTINGS_EENTRY* peEntry)
-{
-    for(int i = 0; i < SETTINGS_EENTRY_Count; i++)
-    {
-        if (strcmp(m_sConfigEntries[i].szKey, szKey) == 0)
-        {
-            *peEntry = (SETTINGS_EENTRY)i;
-            return true;
-        }
-    }
-    return false;
+    const size_t n = strlen(szValue);
+    return n > 8 || n == 0;
 }
