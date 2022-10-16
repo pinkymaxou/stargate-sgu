@@ -11,7 +11,7 @@
     <body>
 		<div id="app">
 			<!-- Action bar -->
-			<div>
+			<div id="headermenu">
 				<ul>
 					<!-- Dial control -->
 					<li class="dropdown">
@@ -57,7 +57,7 @@
 			</div>
 
 			<div class="flex-container">
-				<div style="overflow-y: scroll; height: 90vh;">
+				<div style="overflow-y: scroll; ">
 					<div v-for="addr in alladdresses">
 						<button class="sguaddrbtn" @click="SendAction('action/dial', addr.symbolIndexes)">
 							<p style="margin: 0.15em; font-weight: bold; color: black;">{{ addr.name }}</p>
@@ -68,7 +68,7 @@
 						</button>
 					</div>
 				</div>
-				<div class="colstatus" style="height: 90vh;">
+				<div class="colstatus">
 					<div><img src="img/stargate-sgu.png" style="width: auto; height: auto"></div>
 				</div>
 			</div>
