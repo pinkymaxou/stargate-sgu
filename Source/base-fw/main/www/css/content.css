@@ -25,15 +25,34 @@ body {
 
 .flex-container > div {
   background-color: black;
-  margin: 10px;
+  margin: 0px;
   padding: 10px;
   font-size: 30px;
+}
+
+.colstatus {
+  background-color: red; 
+  flex-grow: 1;
+}
+
+.sguaddrbtn {
+  width: 100%;
+  margin: 0.01rem;
+  padding: 0.5rem;
+  background-color: aqua;
+  border-radius: 0.2rem;
+  border-color: black;
+  border-radius: 0.5rem;
+}
+
+.sguaddrbtn:hover {
+  background-color: white;
 }
 
 /* CSS */
 .button-27 {
   appearance: none;
-  background-color: #000000;
+  background-color: aqua;
   border: 2px solid #1A1A1A;
   border-radius: 10px;
   box-sizing: border-box;
@@ -79,16 +98,6 @@ body {
 }
 
 
-.sguaddrbtn {
-  margin: 0.05rem;
-  padding: 0.5rem;
-  background-color: white;
-  border-radius: 0.2rem;
-  border-color: black;
-}
-
-
-
 ul {
   list-style-type: none;
   margin: 0;
@@ -103,7 +112,7 @@ li {
 
 li a, .dropbtn {
   display: inline-block;
-  color: white;
+  color: black;
   text-align: center;
   text-decoration: none;
 }
@@ -119,12 +128,13 @@ li.dropdown {
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #f9f9f9;
+  background-color: black;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
 }
 
 .dropdown-content .item {
+  color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
