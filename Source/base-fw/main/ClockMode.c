@@ -21,8 +21,13 @@ static const int m_pMinutes[] = { 31, 12, 11, 10, 9, 27 };
 #define MINUTES_COUNT (sizeof(m_pMinutes)/sizeof(m_pMinutes[0]))
 
 
+static const int m_pCenters[] = { 46, 45, 44, 41 };
+#define CENTERS_COUNT (sizeof(m_pCenters)/sizeof(m_pCenters[0]))
+
 void CLOCKMODE_Run(volatile bool* pIsCancelled)
 {
+    const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
+
     GPIO_ClearAllPixels();
     GPIO_RefreshPixels();
 
@@ -39,7 +44,7 @@ void CLOCKMODE_Run(volatile bool* pIsCancelled)
             int trueIndex = m_pHours[i] - 1;
 
             if (((int)timeinfo.tm_hour & (1 << i)))
-                GPIO_SetPixel(trueIndex, 0, 255, 0);
+                GPIO_SetPixel(trueIndex, 0, u32MaxBrightness, 0);
             else
                 GPIO_SetPixel(trueIndex, 40, 40, 40);
         }
@@ -50,7 +55,7 @@ void CLOCKMODE_Run(volatile bool* pIsCancelled)
             int trueIndex = m_pMinutes[i] - 1;
 
             if ((int)timeinfo.tm_min & (1 << i))
-                GPIO_SetPixel(trueIndex, 0, 255, 0);
+                GPIO_SetPixel(trueIndex, 0, u32MaxBrightness, 0);
             else
                 GPIO_SetPixel(trueIndex, 40, 40, 40);
         }
@@ -63,9 +68,19 @@ void CLOCKMODE_Run(volatile bool* pIsCancelled)
             int trueIndex = m_pSeconds[i] - 1;
 
             if (i < (int)fltSeconds)
-                GPIO_SetPixel(trueIndex, 255, 0, 255);
+                GPIO_SetPixel(trueIndex, u32MaxBrightness, 0, u32MaxBrightness);
             else
                 GPIO_SetPixel(trueIndex, 10, 10, 10);
+        }
+
+        for(int i = 0; i < CENTERS_COUNT; i++)
+        {
+            int trueIndex = m_pCenters[i] - 1;
+
+            if (timeinfo.tm_hour >= 12)
+                GPIO_SetPixel(trueIndex, u32MaxBrightness, u32MaxBrightness, u32MaxBrightness);
+            else
+                GPIO_SetPixel(trueIndex, u32MaxBrightness, u32MaxBrightness, 0);
         }
 
         GPIO_RefreshPixels();

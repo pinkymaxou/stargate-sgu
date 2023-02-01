@@ -17,7 +17,7 @@
 #define TAG "webserver"
 
 /* Max length a file path can have on storage */
-#define HTTPSERVER_BUFFERSIZE (1024*6)
+#define HTTPSERVER_BUFFERSIZE (1024*10)
 
 #define DEFAULT_RELATIVE_URI "/index.html"
 
@@ -304,6 +304,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
 
 static esp_err_t api_get_handler(httpd_req_t *req)
 {
+    esp_err_t err = ESP_OK;
+
     char* pExportJSON = NULL;
 
     if (strcmp(req->uri, API_GETSETTINGSJSON_URI) == 0)
@@ -313,7 +315,7 @@ static esp_err_t api_get_handler(httpd_req_t *req)
         if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
         {
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
-            goto END;
+            goto ERROR;
         }
     }
     else if (strcmp(req->uri, API_GETSYSINFOJSON_URI) == 0)
@@ -323,45 +325,67 @@ static esp_err_t api_get_handler(httpd_req_t *req)
         if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
         {
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
-            goto END;
+            goto ERROR;
         }
     }
     else
     {
         ESP_LOGE(TAG, "api_get_handler, url: %s", req->uri);
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Unknown request");
+        goto ERROR;
     }
+    goto END;
+    ERROR:
+    err = ESP_FAIL;
     END:
     if (pExportJSON != NULL)
         free(pExportJSON);
 
     httpd_resp_set_hdr(req, "Connection", "close");
     httpd_resp_send_chunk(req, NULL, 0);
-    return ESP_OK;
+    return err;
 }
 
 static esp_err_t api_post_handler(httpd_req_t *req)
 {
+    esp_err_t err = ESP_OK;
+
     ESP_LOGI(TAG, "api_post_handler, url: %s", req->uri);
     if (strcmp(req->uri, API_POSTSETTINGSJSON_URI) == 0)
     {
-        int n = httpd_req_recv(req, (char*)m_u8Buffers, HTTPSERVER_BUFFERSIZE);
+        int n = 0;
+        while(1)
+        {
+            int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
+            if (reqN <= 0)
+            {
+                ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+                break;
+            }
+            n += reqN;
+        }
         m_u8Buffers[n] = '\0';
 
         if (!NVSJSON_ImportJSON(&g_sSettingHandle, (const char*)m_u8Buffers))
         {
             ESP_LOGE(TAG, "Unable to import JSON");
             httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Unknown request");
+            goto ERROR;
         }
     }
     else
     {
         ESP_LOGE(TAG, "api_post_handler, url: %s", req->uri);
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Unknown request");
+        goto ERROR;
     }
+    goto END;
+    ERROR:
+    err = ESP_FAIL;
+    END:
     httpd_resp_set_hdr(req, "Connection", "close");
     httpd_resp_send_chunk(req, NULL, 0);
-    return ESP_OK;
+    return err;
 }
 
 static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
