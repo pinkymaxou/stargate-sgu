@@ -32,14 +32,15 @@
 
 #define SGU_GATTS_TAG "SGU-GATTS"
 
+#define LED_OUTPUT_MAX (220)
+#define LED_OUTPUT_IDLE (100)
+
 static void InitWS1228B();
 static void InitESPNOW();
 
 static CRGB m_leds[FWCONFIG_WS1228B_LEDCOUNT] = { CRGB::Black };
 
 static const char *TAG = "Main";
-
-#define PREPARE_BUF_MAX_SIZE 1024
 
 const uint8_t m_u8BroadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
@@ -100,7 +101,7 @@ static void InitESPNOW()
     if (m_bIsOTAMode)
     {
         ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
-    
+
         // Access point mode
         esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
 
@@ -141,7 +142,7 @@ static void InitESPNOW()
         }
 
         ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
-        
+
         ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
                 wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
     }
@@ -185,7 +186,7 @@ static void InitESPNOW()
         },
     };
     strcpy((char*)wifi_configSTA.sta.ssid, FWCONFIG_MASTERBASE_SSID);
-    
+
     if (strlen(FWCONFIG_MASTERBASE_PASS) == 0)
     {
         wifi_configSTA.sta.threshold.authmode = WIFI_AUTH_OPEN;
@@ -209,7 +210,7 @@ static void LedRefreshTask(void *pvParameters)
     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
     {
         if ((i % 5) == 0)
-            m_leds[i] = CRGB(10, 10, 10);
+            m_leds[i] = CRGB(LED_OUTPUT_IDLE, LED_OUTPUT_IDLE, LED_OUTPUT_IDLE);
         else
             m_leds[i] = CRGB::Black;
     }
@@ -228,7 +229,7 @@ static void LedRefreshTask(void *pvParameters)
                 case SGUBRPROTOCOL_ECHEVRONANIM_FadeIn:
                 {
                     ESP_LOGI(TAG, "Animation / FadeIn");
-                    for(int brightness = 0; brightness < 220; brightness += 10)
+                    for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
                     {
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
@@ -245,7 +246,7 @@ static void LedRefreshTask(void *pvParameters)
                 case SGUBRPROTOCOL_ECHEVRONANIM_FadeOut:
                 {
                     ESP_LOGI(TAG, "Animation / FadeOut");
-                    for(int brightness = 220; brightness >= 0; brightness -= 10)
+                    for(int brightness = LED_OUTPUT_MAX; brightness >= 0; brightness -= 10)
                     {
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
@@ -265,7 +266,7 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(220, 0, 0);
+                            m_leds[i] = CRGB(LED_OUTPUT_MAX, 0, 0);
                         else
                             m_leds[i] = CRGB::Black;
                     }
@@ -273,12 +274,12 @@ static void LedRefreshTask(void *pvParameters)
                     FastLED.show();
                     vTaskDelay(pdMS_TO_TICKS(1500));
 
-                    for(int brightness = 0; brightness < 220; brightness += 10)
+                    for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
                     {
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
-                                m_leds[i] = CRGB(220, brightness, brightness);
+                                m_leds[i] = CRGB(LED_OUTPUT_MAX, brightness, brightness);
                         }
                         FastLED.show();
                         vTaskDelay(pdMS_TO_TICKS(50));
@@ -291,7 +292,7 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(220, 0, 0);
+                            m_leds[i] = CRGB(LED_OUTPUT_MAX, 0, 0);
                         else
                             m_leds[i] = CRGB::Black;
                     }
@@ -299,7 +300,7 @@ static void LedRefreshTask(void *pvParameters)
                     FastLED.show();
                     vTaskDelay(pdMS_TO_TICKS(1500));
 
-                    for(int brightness = 220; brightness >= 0; brightness -= 10)
+                    for(int brightness = LED_OUTPUT_MAX; brightness >= 0; brightness -= 10)
                     {
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
@@ -423,7 +424,7 @@ static void SGUBRGotoFactory()
 static void SGUBRGotoOTAMode()
 {
     ESP_LOGI(TAG, "Goto OTA mode");
-    
+
     memcpy(m_u8StartModes, u8MagicNumber_OTAMode, 4);
 
     esp_restart();
@@ -459,6 +460,7 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
+    // Check if the magic number is right, then clear the flag.
     m_bIsOTAMode = memcmp(m_u8StartModes, u8MagicNumber_OTAMode, 4) == 0;
     memset(m_u8StartModes, 0, 4);
     if (m_bIsOTAMode)

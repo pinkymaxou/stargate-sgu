@@ -66,6 +66,9 @@ static void GateControlTask( void *pvParameters )
 {
     ESP_LOGI(TAG, "GateControl task started");
 
+    GATECONTROL_DoAction(GATECONTROL_EMODE_GoHome, NULL);
+    GPIO_SetRampLightOnOff(true);
+    
 	while(1)
 	{
         // Clear the wormhole
