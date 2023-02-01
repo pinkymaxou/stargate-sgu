@@ -41,6 +41,7 @@
 #define ACTION_POST_DIAL "/action/dial"
 #define ACTION_POST_LOCKCLAMP "/action/lockclamp"
 #define ACTION_POST_RELEASECLAMP "/action/releaseclamp"
+#define ACTION_POST_AUTOCALIBRATION "/action/autocalibration"
 #define ACTION_POST_GOHOME "/action/gohome"
 
 static esp_err_t api_get_handler(httpd_req_t *req);
@@ -198,6 +199,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualLockClamp, NULL);
     else if (strcmp(req->uri, ACTION_POST_STOP) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_Stop, NULL);
+    else if (strcmp(req->uri, ACTION_POST_AUTOCALIBRATION) == 0)
+        GATECONTROL_DoAction(GATECONTROL_EMODE_AutoCalibration, NULL);
     else if (strcmp(req->uri, ACTION_POST_DIAL) == 0)
     {
         char content[100+1];

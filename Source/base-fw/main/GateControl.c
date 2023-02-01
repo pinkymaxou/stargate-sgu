@@ -38,7 +38,6 @@ static StaticSemaphore_t m_xSemaphoreCreateMutex;
 static SemaphoreHandle_t m_xSemaphoreHandle;
 
 static TaskHandle_t m_sGateControlHandle;
-static UBaseType_t m_uxPriority;
 
 static int32_t m_s32Count = 0;
 
@@ -46,6 +45,7 @@ static void GateControlTask( void *pvParameters );
 static void MoveTo(int32_t* ps32Count, int32_t s32Target);
 static void MoveRelative(int32_t s32RelativeTarget);
 static int32_t GetAbsoluteSymbolTarget(uint8_t u8SymbolIndex, int32_t s32StepPerRotation);
+static void AutoCalibrate();
 
 void GATECONTROL_Init()
 {
@@ -56,7 +56,7 @@ void GATECONTROL_Init()
 void GATECONTROL_Start()
 {
 	// Create task to respond to SPI queries
-	if (xTaskCreatePinnedToCore(GateControlTask, "gatecontrol", GATECONTROL_STACKSIZE, (void*)NULL, m_uxPriority, &m_sGateControlHandle, GATECONTROL_COREID) != pdPASS )
+	if (xTaskCreatePinnedToCore(GateControlTask, "gatecontrol", GATECONTROL_STACKSIZE, (void*)NULL, FWCONFIG_GATECONTROL_TASKPRIORITY, &m_sGateControlHandle, GATECONTROL_COREID) != pdPASS )
 	{
 		ESP_ERROR_CHECK(ESP_FAIL);
 	}
@@ -91,7 +91,7 @@ static void GateControlTask( void *pvParameters )
             SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
             ESP_LOGI(TAG, "Go Home - started");
 
-            SSMHome ssHome = { .ttLastTicks = xTaskGetTickCount(), .bLastIsHome = !gpio_get_level(FWCONFIG_HOMESENSOR_PIN) };
+            SSMHome ssHome = { .ttLastTicks = xTaskGetTickCount(), .bLastIsHome = GPIO_IsHomeActive() };
 
             vTaskDelay(pdMS_TO_TICKS(750));
 
@@ -103,10 +103,10 @@ static void GateControlTask( void *pvParameters )
 
             for(int i = 0; i < u32MaxStep; i++)
             {
-                GPIO_StepMotorCW();
+                GPIO_StepMotorCCW();
                 m_s32Count++;
 
-                const bool bIsHome = !gpio_get_level(FWCONFIG_HOMESENSOR_PIN);
+                const bool bIsHome = GPIO_IsHomeActive();
                 if (!ssHome.bLastIsHome && bIsHome)
                 {
                     ESP_LOGI(TAG, "Go Home - Reached, count: %d", m_s32Count);
@@ -145,10 +145,15 @@ static void GateControlTask( void *pvParameters )
 
             ESP_LOGI(TAG, "Go Home - ended");
         }
+        else if (eMode == GATECONTROL_EMODE_AutoCalibration)
+        {
+            AutoCalibrate();
+        }
         else if (eMode == GATECONTROL_EMODE_Dial)
         {
             bool bIsSuccess = true;
 
+            // Animation off ...
             GPIO_SetRampLightOnOff(true);
             WORMHOLE_FullStop();
 
@@ -312,7 +317,7 @@ static void MoveRelative(int32_t s32RelativeTarget)
         int accel = u32SlowDelta;
         while(s32Target > 0)
         {
-            GPIO_StepMotorCW();
+            GPIO_StepMotorCCW();
             s32Target--;
 
             if (accel > 0)
@@ -327,7 +332,7 @@ static void MoveRelative(int32_t s32RelativeTarget)
         int accel = u32SlowDelta;
         while(s32Target > 0)
         {
-            GPIO_StepMotorCCW();
+            GPIO_StepMotorCW();
             s32Target--;
 
             if (accel > 0)
@@ -335,4 +340,121 @@ static void MoveRelative(int32_t s32RelativeTarget)
             vTaskDelay(pdMS_TO_TICKS((accel > 0 || s32Target < u32SlowDelta) ? 3 : 1));
         }
     }
+}
+
+static void AutoCalibrate()
+{
+    const char* szError = "Unknown";
+
+    ESP_LOGI(TAG, "[Autocalibration] started");
+
+    // Move until it's outside
+    GPIO_StartStepper();
+    GPIO_ReleaseClamp();
+
+    const int32_t s32AttemptCount = 8;
+    int32_t s32StepCount = 0;
+
+    const TickType_t ttStartAll = xTaskGetTickCount();
+
+    for(int i = 0; i < s32AttemptCount; i++)
+    {
+        // Move until the home detection is off ...
+        TickType_t ttStart = xTaskGetTickCount();
+        while(1)
+        {
+            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
+            {
+                szError = "Timeout";
+                goto ERROR;
+            }
+
+            if (GPIO_IsHomeActive())
+            {
+                ESP_LOGI(TAG, "[Autocalibration] On home switch");
+                break;
+            }
+
+            GPIO_StepMotorCCW();
+            vTaskDelay(pdMS_TO_TICKS(1));
+        }
+
+        // Move until the home detection is off ...
+        ttStart = xTaskGetTickCount();
+        while(1)
+        {
+            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
+            {
+                szError = "Timeout";
+                goto ERROR;
+            }
+
+            if (!GPIO_IsHomeActive())
+            {
+                ESP_LOGI(TAG, "[Autocalibration] Out of home switch");
+                break;
+            }
+
+            GPIO_StepMotorCCW();
+            vTaskDelay(pdMS_TO_TICKS(1));
+        }
+
+        // Move until the home detection is off ...
+        int count = 0;
+
+        ttStart = xTaskGetTickCount();
+        while(1)
+        {
+            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
+            {
+                szError = "Timeout";
+                goto ERROR;
+            }
+
+            if (GPIO_IsHomeActive())
+            {
+                ESP_LOGI(TAG, "[Autocalibration] In home switch");
+                break;
+            }
+            GPIO_StepMotorCCW();
+            count++;
+            vTaskDelay(pdMS_TO_TICKS(1));
+        }
+
+        // Move until the home detection is off ...
+        ttStart = xTaskGetTickCount();
+        int countGap = 0;
+        while(1)
+        {
+            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
+            {
+                szError = "Timeout";
+                goto ERROR;
+            }
+
+            if (!GPIO_IsHomeActive())
+            {
+                ESP_LOGI(TAG, "[Autocalibration] Out of home switch (second part)");
+                break;
+            }
+
+            GPIO_StepMotorCCW();
+            countGap++;
+            vTaskDelay(pdMS_TO_TICKS(1));
+        }
+
+        s32StepCount += count + countGap;
+        ESP_LOGI(TAG, "[Autocalibration] #%d, count: %d, gap: %d, tick count: %d", i+1, count, countGap, count + countGap);
+    }
+
+    const int32_t s32StepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
+
+    ESP_LOGI(TAG, "[Autocalibration] After %d turn, it got: %d, avg: %.2f, last saved ticks per rotation: %d, rotation time: %.2f ms",
+        s32AttemptCount, s32StepCount, (float)s32StepCount / (float)s32AttemptCount,
+        s32StepPerRotation,
+        ((float)pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll) / (float)s32AttemptCount) );
+    return true;
+    ERROR:
+    ESP_LOGE(TAG, "[Autocalibration] Error: %s", szError);
+    return false;
 }

@@ -90,7 +90,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled, bool bNoTimeLimit)
                     break;
             }
 
-            GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, u32MaxBrightness), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, u32MaxBrightness), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, u32MaxBrightness));
+            GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255));
 
             const float fInc = 0.005f + ( 0.01f * (esp_random() % 100) ) * 0.001f;
 

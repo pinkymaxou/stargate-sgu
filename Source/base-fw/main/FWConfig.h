@@ -3,6 +3,9 @@
 
 #include "driver/gpio.h"
 
+#define FWCONFIG_GATECONTROL_TASKPRIORITY (2)
+
+// Soft access point
 #define FWCONFIG_SOFTAP_WIFI_SSID_BASE ("SGU-Base-%02X%02X%02X")
 #define FWCONFIG_SOFTAP_WIFI_PASS      ""
 #define FWCONFIG_SOFTAP_WIFI_CHANNEL   0
