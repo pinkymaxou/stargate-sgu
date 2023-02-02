@@ -58,7 +58,7 @@
 			<div class="flex-container">
 				<div>
 					<div v-for="addr in alladdresses">
-						<button class="sguaddrbtn" @click="SendAction('action/dial', addr.symbolIndexes)">
+						<button class="sguaddrbtn" @click="DialGate(addr.symbolIndexes)">
 							<p style="margin: 0.15em; font-weight: bold; color: black;">{{ addr.name }}</p>
 							<span v-for="symbolIndex in addr.symbolIndexes">
 								<!-- <img v-bind:src="GetSymbolIndex(symbolIndex).imgfile"> -->
