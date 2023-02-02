@@ -153,10 +153,9 @@ static void GateControlTask( void *pvParameters )
             if (bIsSuccess)
             {
                 ESP_LOGI(TAG, "Dial done!");
-
-                WORMHOLE_Open(&m_bIsStop);
                 const WORMHOLE_SArg sArg = { .eType = uModeArg.sDialArg.eWormholeType, .bNoTimeLimit = false };
-                WORMHOLE_Run(&m_bIsStop, &sArg);
+                WORMHOLE_Open(&sArg, &m_bIsStop);
+                WORMHOLE_Run(&m_bIsStop);
                 WORMHOLE_Close(&m_bIsStop);
             }
             else
@@ -187,9 +186,9 @@ static void GateControlTask( void *pvParameters )
         else if (eMode == GATECONTROL_EMODE_ManualWormhole)
         {
             ESP_LOGI(TAG, "GateControl manual wormhole");
-            WORMHOLE_Open(&m_bIsStop);
             const WORMHOLE_SArg sArg = { .eType = uModeArg.sManualWormhole.eWormholeType, .bNoTimeLimit = true };
-            WORMHOLE_Run(&m_bIsStop, &sArg);
+            WORMHOLE_Open(&sArg, &m_bIsStop);
+            WORMHOLE_Run(&m_bIsStop);
             WORMHOLE_Close(&m_bIsStop);
         }
 
