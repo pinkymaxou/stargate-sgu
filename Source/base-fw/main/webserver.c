@@ -189,6 +189,21 @@ static esp_err_t file_post_handler(httpd_req_t *req)
 {
     cJSON* root = NULL;
 
+    int n = 0;
+    while(1)
+    {
+        int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
+        if (reqN <= 0)
+        {
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            break;
+        }
+        n += reqN;
+    }
+    m_u8Buffers[n] = '\0';
+
+    ESP_LOGI(TAG, "Receiving content: %s", m_u8Buffers);
+
     ESP_LOGI(TAG, "file_post_handler, url: %s", req->uri);
 
     if (strcmp(req->uri, ACTION_POST_GOHOME) == 0)
@@ -203,16 +218,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         GATECONTROL_DoAction(GATECONTROL_EMODE_AutoCalibration, NULL);
     else if (strcmp(req->uri, ACTION_POST_DIAL) == 0)
     {
-        char content[256+1];
-        size_t recv_size = MIN(req->content_len, sizeof(content)-1);
-        int n = httpd_req_recv(req, (char*)content, recv_size);
-        if (n <= 0) {  /* 0 return value indicates connection closed */
-            goto ERROR;
-        }
-        content[n] = 0; // End
-        ESP_LOGI(TAG, "Receiving content: %s", content);
         // Decode JSON
-        root = cJSON_Parse(content);
+        root = cJSON_Parse((const char*)m_u8Buffers);
         if (root == NULL || !cJSON_IsObject(root))
         {
             ESP_LOGE(TAG, "cJSON_IsObject");
@@ -247,16 +254,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
     }
     else if (strcmp(req->uri, ACTION_POST_MANUALRAMPLIGHT) == 0)
     {
-        char content[100+1];
-        size_t recv_size = MIN(req->content_len, sizeof(content)-1);
-        int n = httpd_req_recv(req, (char*)content, recv_size);
-        if (n <= 0) {  /* 0 return value indicates connection closed */
-            goto ERROR;
-        }
-        content[n] = 0; // End
-        ESP_LOGI(TAG, "Receiving content: %s", content);
         // Decode JSON
-        root = cJSON_Parse(content);
+        root = cJSON_Parse((const char*)m_u8Buffers);
         if (root == NULL)
             goto ERROR;
         cJSON* pKeyJSON = cJSON_GetObjectItem(root, "light_perc");
@@ -278,7 +277,18 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         SGUBRCOMM_TurnOff(&g_sSGUBRCOMMHandle);
     }
     else if (strcmp(req->uri, ACTION_POST_ACTIVEWORMHOLE) == 0)
-        GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, NULL);
+    {
+        // Decode JSON
+        root = cJSON_Parse((const char*)m_u8Buffers);
+        if (root == NULL)
+            goto ERROR;
+        GATECONTROL_UModeArg uModeArg;
+        cJSON* cJsonWormhole = cJSON_GetObjectItem(root, "wormhole");
+        if (cJsonWormhole)
+            uModeArg.sManualWormhole.eWormholeType = (WORMHOLE_ETYPE)cJsonWormhole->valueint;
+        else uModeArg.sManualWormhole.eWormholeType = WORMHOLE_ETYPE_NormalSGU;
+        GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, &uModeArg);
+    }
     else if (strcmp(req->uri, ACTION_POST_ACTIVECLOCK) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ActiveClock, NULL);
     else if (strcmp(req->uri, ACTION_POST_RINGCHEVRONERROR) == 0)
@@ -367,22 +377,22 @@ static esp_err_t api_post_handler(httpd_req_t *req)
 {
     esp_err_t err = ESP_OK;
 
+    int n = 0;
+    while(1)
+    {
+        int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
+        if (reqN <= 0)
+        {
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            break;
+        }
+        n += reqN;
+    }
+    m_u8Buffers[n] = '\0';
+
     ESP_LOGI(TAG, "api_post_handler, url: %s", req->uri);
     if (strcmp(req->uri, API_POSTSETTINGSJSON_URI) == 0)
     {
-        int n = 0;
-        while(1)
-        {
-            int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
-            if (reqN <= 0)
-            {
-                ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
-                break;
-            }
-            n += reqN;
-        }
-        m_u8Buffers[n] = '\0';
-
         if (!NVSJSON_ImportJSON(&g_sSettingHandle, (const char*)m_u8Buffers))
         {
             ESP_LOGE(TAG, "Unable to import JSON");

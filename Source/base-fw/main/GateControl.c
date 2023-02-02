@@ -14,6 +14,7 @@
 #include "base-fw.h"
 #include "ClockMode.h"
 #include <stdint.h>
+#include <string.h>
 
 #define TAG "GateControl"
 
@@ -74,9 +75,13 @@ static void GateControlTask( void *pvParameters )
         xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
         const GATECONTROL_EMODE eMode = m_eMode;
         const GATECONTROL_UModeArg uModeArg = m_uModeArgument;
-        xSemaphoreGive(m_xSemaphoreHandle);
 
+        // Reset temporary vars ...
+        m_eMode = GATECONTROL_EMODE_Idle;
+        memset(&m_uModeArgument, 0, sizeof(m_uModeArgument));
         m_bIsStop = false;
+
+        xSemaphoreGive(m_xSemaphoreHandle);
 
         if (eMode == GATECONTROL_EMODE_Idle)
         {
@@ -183,13 +188,12 @@ static void GateControlTask( void *pvParameters )
         {
             ESP_LOGI(TAG, "GateControl manual wormhole");
             WORMHOLE_Open(&m_bIsStop);
-            const WORMHOLE_SArg sArg = { .eType = WORMHOLE_ETYPE_NormalSGU, .bNoTimeLimit = true };
+            const WORMHOLE_SArg sArg = { .eType = uModeArg.sManualWormhole.eWormholeType, .bNoTimeLimit = true };
             WORMHOLE_Run(&m_bIsStop, &sArg);
             WORMHOLE_Close(&m_bIsStop);
         }
 
         vTaskDelay(pdMS_TO_TICKS(1));
-        m_eMode = GATECONTROL_EMODE_Idle;
 	}
 	vTaskDelete( NULL );
 }
@@ -204,6 +208,7 @@ static int32_t GetAbsoluteSymbolTarget(uint8_t u8SymbolIndex, int32_t s32StepPer
 bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* puModeArg)
 {
     xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
+
     if (eMode == GATECONTROL_EMODE_Dial)
     {
         if (puModeArg == NULL)
@@ -212,7 +217,7 @@ bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* p
             goto ERROR;
         }
 
-        if (puModeArg->sDialArg.eWormholeType < 0 || puModeArg->sDialArg.eWormholeType >= WORMHOLE_ETYPE_Count)
+        if (!WORMHOLE_ValidateWormholeType(puModeArg->sDialArg.eWormholeType))
         {
             ESP_LOGE(TAG, "Invalid wormhole type");
             goto ERROR;
@@ -233,6 +238,20 @@ bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* p
             }
         }
     }
+    else if (eMode == GATECONTROL_EMODE_ManualWormhole)
+    {
+        if (puModeArg == NULL)
+        {
+            ESP_LOGE(TAG, "No argument provided");
+            goto ERROR;
+        }
+
+        if (!WORMHOLE_ValidateWormholeType(puModeArg->sManualWormhole.eWormholeType))
+        {
+            ESP_LOGE(TAG, "Invalid wormhole type");
+            goto ERROR;
+        }
+    }
     else if (eMode == GATECONTROL_EMODE_Stop)
     {
         // Request current process to stop
@@ -240,6 +259,8 @@ bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* p
         goto END;
     }
 
+    // Stop what it was doing before
+    m_bIsStop = true;
     m_eMode = eMode;
     if (puModeArg != NULL)
         m_uModeArgument = *puModeArg;

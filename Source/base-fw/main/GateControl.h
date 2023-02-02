@@ -27,6 +27,10 @@ typedef union
         uint8_t u8SymbolCount;
         WORMHOLE_ETYPE eWormholeType;
     } sDialArg;
+    struct
+    {
+        WORMHOLE_ETYPE eWormholeType;
+    } sManualWormhole;
 } GATECONTROL_UModeArg;
 
 void GATECONTROL_Init();
