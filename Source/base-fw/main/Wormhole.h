@@ -7,8 +7,8 @@
 typedef enum
 {
     WORMHOLE_ETYPE_NormalSGU = 0,
-    WORMHOLE_ETYPE_NormalSG1 = 1,
-    WORMHOLE_ETYPE_Hell = 2,
+    WORMHOLE_ETYPE_NormalSG1,
+    WORMHOLE_ETYPE_Hell,
     /* WORMHOLE_ETYPE_Blackhole = 3 */
     /* WORMHOLE_ETYPE_Glitch = 4 */
     WORMHOLE_ETYPE_Count
@@ -28,5 +28,7 @@ void WORMHOLE_Open(volatile bool* pIsCancelled);
 void WORMHOLE_Run(volatile bool* pIsCancelled, const WORMHOLE_SArg* pArg);
 
 void WORMHOLE_Close(volatile bool* pIsCancelled);
+
+bool WORMHOLE_ValidateWormholeType(WORMHOLE_ETYPE eWormholeType);
 
 #endif

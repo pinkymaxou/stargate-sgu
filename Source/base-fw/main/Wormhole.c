@@ -156,6 +156,11 @@ void WORMHOLE_Close(volatile bool* pIsCancelled)
     GPIO_RefreshPixels();
 }
 
+bool WORMHOLE_ValidateWormholeType(WORMHOLE_ETYPE eWormholeType)
+{
+    return eWormholeType >= 0 && (int)eWormholeType < WORMHOLE_ETYPE_Count;
+}
+
 static void DoRing0()
 {
     const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
