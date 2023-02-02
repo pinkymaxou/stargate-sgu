@@ -13,7 +13,7 @@ typedef enum
     GATECONTROL_EMODE_ManualLockClamp,
     GATECONTROL_EMODE_Stop,
     GATECONTROL_EMODE_Dial,
-    GATECONTROL_EMODE_AutoCalibration,
+    GATECONTROL_EMODE_AutoCalibrate,
 
     GATECONTROL_EMODE_ManualWormhole,
     GATECONTROL_EMODE_ActiveClock,
