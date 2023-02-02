@@ -90,7 +90,10 @@ static void GateControlTask( void *pvParameters )
         }
         else if (eMode == GATECONTROL_EMODE_AutoCalibration)
         {
-            AutoCalibrate();
+            if (AutoCalibrate())
+            {
+                DoHoming();
+            }
         }
         else if (eMode == GATECONTROL_EMODE_Dial)
         {
