@@ -16,6 +16,7 @@ typedef enum
     SETTINGS_EENTRY_RingSymbolBrightness,
 
     SETTINGS_EENTRY_StepPerRotation,
+    SETTINGS_EENTRY_TimePerRotationMS,
     SETTINGS_EENTRY_GateOpenedTimeout,
 
     SETTINGS_EENTRY_HomeMaximumStepTicks,

@@ -11,6 +11,11 @@ function SendAction(actionURL, data)
   }
 }
 
+function DialGate(symbols)
+{
+  SendAction('action/dial', { symbols : symbols } );
+}
+
 let allsymbols = [
   { id: 1, imgfile: "img/glyph/01.png", txt: '\u0041' },
   { id: 2, imgfile: "img/glyph/02.png", txt: '\u0042' },

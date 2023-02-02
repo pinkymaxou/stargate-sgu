@@ -17,7 +17,7 @@
 #define TAG "webserver"
 
 /* Max length a file path can have on storage */
-#define HTTPSERVER_BUFFERSIZE (1024*6)
+#define HTTPSERVER_BUFFERSIZE (1024*10)
 
 #define DEFAULT_RELATIVE_URI "/index.html"
 
@@ -41,6 +41,7 @@
 #define ACTION_POST_DIAL "/action/dial"
 #define ACTION_POST_LOCKCLAMP "/action/lockclamp"
 #define ACTION_POST_RELEASECLAMP "/action/releaseclamp"
+#define ACTION_POST_AUTOCALIBRATION "/action/autocalibration"
 #define ACTION_POST_GOHOME "/action/gohome"
 
 static esp_err_t api_get_handler(httpd_req_t *req);
@@ -188,6 +189,21 @@ static esp_err_t file_post_handler(httpd_req_t *req)
 {
     cJSON* root = NULL;
 
+    int n = 0;
+    while(1)
+    {
+        int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
+        if (reqN <= 0)
+        {
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            break;
+        }
+        n += reqN;
+    }
+    m_u8Buffers[n] = '\0';
+
+    ESP_LOGI(TAG, "Receiving content: %s", m_u8Buffers);
+
     ESP_LOGI(TAG, "file_post_handler, url: %s", req->uri);
 
     if (strcmp(req->uri, ACTION_POST_GOHOME) == 0)
@@ -198,26 +214,29 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualLockClamp, NULL);
     else if (strcmp(req->uri, ACTION_POST_STOP) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_Stop, NULL);
+    else if (strcmp(req->uri, ACTION_POST_AUTOCALIBRATION) == 0)
+        GATECONTROL_DoAction(GATECONTROL_EMODE_AutoCalibration, NULL);
     else if (strcmp(req->uri, ACTION_POST_DIAL) == 0)
     {
-        char content[100+1];
-        size_t recv_size = MIN(req->content_len, sizeof(content)-1);
-        int n = httpd_req_recv(req, (char*)content, recv_size);
-        if (n <= 0) {  /* 0 return value indicates connection closed */
+        // Decode JSON
+        root = cJSON_Parse((const char*)m_u8Buffers);
+        if (root == NULL || !cJSON_IsObject(root))
+        {
+            ESP_LOGE(TAG, "cJSON_IsObject");
             goto ERROR;
         }
-        content[n] = 0; // End
-        ESP_LOGI(TAG, "Receiving content: %s", content);
-        // Decode JSON
-        root = cJSON_Parse(content);
-        if (root == NULL || !cJSON_IsArray(root))
-            goto ERROR;
-
         GATECONTROL_UModeArg uModeArg;
 
         const cJSON *itemArray;
         uModeArg.sDialArg.u8SymbolCount = 0;
-        cJSON_ArrayForEach(itemArray, root)
+        cJSON* cJsonSymbols = cJSON_GetObjectItem(root, "symbols");
+        if (cJsonSymbols == NULL || !cJSON_IsArray(cJsonSymbols))
+        {
+            ESP_LOGE(TAG, "symbol");
+            goto ERROR;
+        }
+
+        cJSON_ArrayForEach(itemArray, cJsonSymbols)
         {
             if (!cJSON_IsNumber(itemArray))
                 goto ERROR;
@@ -225,21 +244,18 @@ static esp_err_t file_post_handler(httpd_req_t *req)
             uModeArg.sDialArg.u8SymbolCount++;
         }
 
+        cJSON* cJsonWormhole = cJSON_GetObjectItem(root, "wormhole");
+        if (cJsonWormhole)
+            uModeArg.sDialArg.eWormholeType = (WORMHOLE_ETYPE)cJsonWormhole->valueint;
+        else uModeArg.sDialArg.eWormholeType = WORMHOLE_ETYPE_NormalSGU;
+
         if (!GATECONTROL_DoAction(GATECONTROL_EMODE_Dial, &uModeArg))
             goto ERROR;
     }
     else if (strcmp(req->uri, ACTION_POST_MANUALRAMPLIGHT) == 0)
     {
-        char content[100+1];
-        size_t recv_size = MIN(req->content_len, sizeof(content)-1);
-        int n = httpd_req_recv(req, (char*)content, recv_size);
-        if (n <= 0) {  /* 0 return value indicates connection closed */
-            goto ERROR;
-        }
-        content[n] = 0; // End
-        ESP_LOGI(TAG, "Receiving content: %s", content);
         // Decode JSON
-        root = cJSON_Parse(content);
+        root = cJSON_Parse((const char*)m_u8Buffers);
         if (root == NULL)
             goto ERROR;
         cJSON* pKeyJSON = cJSON_GetObjectItem(root, "light_perc");
@@ -261,7 +277,18 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         SGUBRCOMM_TurnOff(&g_sSGUBRCOMMHandle);
     }
     else if (strcmp(req->uri, ACTION_POST_ACTIVEWORMHOLE) == 0)
-        GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, NULL);
+    {
+        // Decode JSON
+        root = cJSON_Parse((const char*)m_u8Buffers);
+        if (root == NULL)
+            goto ERROR;
+        GATECONTROL_UModeArg uModeArg;
+        cJSON* cJsonWormhole = cJSON_GetObjectItem(root, "wormhole");
+        if (cJsonWormhole)
+            uModeArg.sManualWormhole.eWormholeType = (WORMHOLE_ETYPE)cJsonWormhole->valueint;
+        else uModeArg.sManualWormhole.eWormholeType = WORMHOLE_ETYPE_NormalSGU;
+        GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, &uModeArg);
+    }
     else if (strcmp(req->uri, ACTION_POST_ACTIVECLOCK) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ActiveClock, NULL);
     else if (strcmp(req->uri, ACTION_POST_RINGCHEVRONERROR) == 0)
@@ -304,6 +331,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
 
 static esp_err_t api_get_handler(httpd_req_t *req)
 {
+    esp_err_t err = ESP_OK;
+
     char* pExportJSON = NULL;
 
     if (strcmp(req->uri, API_GETSETTINGSJSON_URI) == 0)
@@ -313,7 +342,7 @@ static esp_err_t api_get_handler(httpd_req_t *req)
         if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
         {
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
-            goto END;
+            goto ERROR;
         }
     }
     else if (strcmp(req->uri, API_GETSYSINFOJSON_URI) == 0)
@@ -323,45 +352,67 @@ static esp_err_t api_get_handler(httpd_req_t *req)
         if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
         {
             httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
-            goto END;
+            goto ERROR;
         }
     }
     else
     {
         ESP_LOGE(TAG, "api_get_handler, url: %s", req->uri);
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Unknown request");
+        goto ERROR;
     }
+    goto END;
+    ERROR:
+    err = ESP_FAIL;
     END:
     if (pExportJSON != NULL)
         free(pExportJSON);
 
     httpd_resp_set_hdr(req, "Connection", "close");
     httpd_resp_send_chunk(req, NULL, 0);
-    return ESP_OK;
+    return err;
 }
 
 static esp_err_t api_post_handler(httpd_req_t *req)
 {
+    esp_err_t err = ESP_OK;
+
+    int n = 0;
+    while(1)
+    {
+        int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
+        if (reqN <= 0)
+        {
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            break;
+        }
+        n += reqN;
+    }
+    m_u8Buffers[n] = '\0';
+
     ESP_LOGI(TAG, "api_post_handler, url: %s", req->uri);
     if (strcmp(req->uri, API_POSTSETTINGSJSON_URI) == 0)
     {
-        int n = httpd_req_recv(req, (char*)m_u8Buffers, HTTPSERVER_BUFFERSIZE);
-        m_u8Buffers[n] = '\0';
-
         if (!NVSJSON_ImportJSON(&g_sSettingHandle, (const char*)m_u8Buffers))
         {
             ESP_LOGE(TAG, "Unable to import JSON");
             httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Unknown request");
+            goto ERROR;
         }
     }
     else
     {
         ESP_LOGE(TAG, "api_post_handler, url: %s", req->uri);
         httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Unknown request");
+        goto ERROR;
     }
+    goto END;
+    ERROR:
+    err = ESP_FAIL;
+    END:
     httpd_resp_set_hdr(req, "Connection", "close");
     httpd_resp_send_chunk(req, NULL, 0);
-    return ESP_OK;
+    return err;
 }
 
 static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
