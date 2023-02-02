@@ -303,7 +303,7 @@ static bool AutoCalibrate()
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
 
-    const int32_t s32AttemptCount = 12;
+    const int32_t s32AttemptCount = 18;
     int32_t s32StepCount = 0;
 
     const TickType_t ttStartAll = xTaskGetTickCount();
@@ -398,12 +398,21 @@ static bool AutoCalibrate()
         ESP_LOGI(TAG, "[Autocalibration] #%d, count: %d, gap: %d, tick count: %d", i+1, count, countGap, count + countGap);
     }
 
-    const int32_t s32StepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
+    const int32_t s32OldStepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
 
-    ESP_LOGI(TAG, "[Autocalibration] After %d turn, it got: %d, avg: %.2f, last saved ticks per rotation: %d, rotation time: %.2f ms",
+    const int32_t s32NewTimePerRotation = (pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll) / s32AttemptCount);
+    const int32_t s32NewStepPerRotation = s32StepCount / s32AttemptCount;
+
+    ESP_LOGI(TAG, "[Autocalibration] After %d turn, it got: %d, avg: %.2f, ticks per rotation: %d => %d, rotation time: %d ms",
         s32AttemptCount, s32StepCount, (float)s32StepCount / (float)s32AttemptCount,
-        s32StepPerRotation,
-        ((float)pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll) / (float)s32AttemptCount) );
+        s32OldStepPerRotation, s32NewStepPerRotation,
+        s32NewTimePerRotation );
+
+    // Record values
+    NVSJSON_SetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation, false, s32NewStepPerRotation);
+    NVSJSON_SetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_TimePerRotationMS, false, s32NewTimePerRotation);
+
+    NVSJSON_Save(&g_sSettingHandle);
     return true;
     ERROR:
     ESP_LOGE(TAG, "[Autocalibration] Error: %s", szError);
