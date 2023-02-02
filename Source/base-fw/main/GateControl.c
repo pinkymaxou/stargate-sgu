@@ -303,7 +303,7 @@ static bool AutoCalibrate()
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
 
-    const int32_t s32AttemptCount = 8;
+    const int32_t s32AttemptCount = 12;
     int32_t s32StepCount = 0;
 
     const TickType_t ttStartAll = xTaskGetTickCount();
