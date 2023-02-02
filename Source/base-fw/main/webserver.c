@@ -203,7 +203,7 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         GATECONTROL_DoAction(GATECONTROL_EMODE_AutoCalibration, NULL);
     else if (strcmp(req->uri, ACTION_POST_DIAL) == 0)
     {
-        char content[100+1];
+        char content[256+1];
         size_t recv_size = MIN(req->content_len, sizeof(content)-1);
         int n = httpd_req_recv(req, (char*)content, recv_size);
         if (n <= 0) {  /* 0 return value indicates connection closed */
@@ -213,20 +213,34 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         ESP_LOGI(TAG, "Receiving content: %s", content);
         // Decode JSON
         root = cJSON_Parse(content);
-        if (root == NULL || !cJSON_IsArray(root))
+        if (root == NULL || !cJSON_IsObject(root))
+        {
+            ESP_LOGE(TAG, "cJSON_IsObject");
             goto ERROR;
-
+        }
         GATECONTROL_UModeArg uModeArg;
 
         const cJSON *itemArray;
         uModeArg.sDialArg.u8SymbolCount = 0;
-        cJSON_ArrayForEach(itemArray, root)
+        cJSON* cJsonSymbols = cJSON_GetObjectItem(root, "symbols");
+        if (cJsonSymbols == NULL || !cJSON_IsArray(cJsonSymbols))
+        {
+            ESP_LOGE(TAG, "symbol");
+            goto ERROR;
+        }
+
+        cJSON_ArrayForEach(itemArray, cJsonSymbols)
         {
             if (!cJSON_IsNumber(itemArray))
                 goto ERROR;
             uModeArg.sDialArg.u8Symbols[uModeArg.sDialArg.u8SymbolCount] = itemArray->valueint;
             uModeArg.sDialArg.u8SymbolCount++;
         }
+
+        cJSON* cJsonWormhole = cJSON_GetObjectItem(root, "wormhole");
+        if (cJsonWormhole)
+            uModeArg.sDialArg.eWormholeType = (WORMHOLE_ETYPE)cJsonWormhole->valueint;
+        else uModeArg.sDialArg.eWormholeType = WORMHOLE_ETYPE_NormalSGU;
 
         if (!GATECONTROL_DoAction(GATECONTROL_EMODE_Dial, &uModeArg))
             goto ERROR;

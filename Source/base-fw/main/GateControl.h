@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "Wormhole.h"
 
 typedef enum
 {
@@ -22,11 +23,11 @@ typedef union
 {
     struct
     {
-        uint8_t u8Symbols[9];
+        uint8_t u8Symbols[36];
         uint8_t u8SymbolCount;
+        WORMHOLE_ETYPE eWormholeType;
     } sDialArg;
 } GATECONTROL_UModeArg;
-
 
 void GATECONTROL_Init();
 
