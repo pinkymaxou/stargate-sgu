@@ -294,7 +294,7 @@ static void MoveRelative(int32_t s32RelativeTarget)
         int accel = u32SlowDelta;
         while(s32Target > 0)
         {
-            GPIO_StepMotorCCW();
+            GPIO_StepMotorCW();
             s32Target--;
 
             if (accel > 0)
@@ -309,7 +309,7 @@ static void MoveRelative(int32_t s32RelativeTarget)
         int accel = u32SlowDelta;
         while(s32Target > 0)
         {
-            GPIO_StepMotorCW();
+            GPIO_StepMotorCCW();
             s32Target--;
 
             if (accel > 0)
@@ -388,7 +388,7 @@ static bool AutoCalibrate()
 static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, int32_t* ps32Count)
 {
     const char* szError = "Unknown";
-    
+
     TickType_t ttStart = xTaskGetTickCount();
     while(1)
     {
@@ -403,7 +403,7 @@ static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, in
             ESP_LOGI(TAG, "[Autocalibration] state reached %d", (int)bHomeSwitchState);
             break;
         }
-        GPIO_StepMotorCCW();
+        GPIO_StepMotorCW();
         if (ps32Count != NULL)
             *ps32Count = *ps32Count + 1;
         vTaskDelay(pdMS_TO_TICKS(1));
@@ -434,7 +434,7 @@ static bool DoHoming()
 
     for(int i = 0; i < u32MaxStep; i++)
     {
-        GPIO_StepMotorCCW();
+        GPIO_StepMotorCW();
         m_s32Count++;
 
         const bool bIsHome = GPIO_IsHomeActive();

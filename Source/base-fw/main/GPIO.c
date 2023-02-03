@@ -103,9 +103,9 @@ void GPIO_Init()
 
 
 /*! @brief The gate spin counter-clockwise */
-void GPIO_StepMotorCCW()
+void GPIO_StepMotorCW()
 {
-    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, false);
+    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, true);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, true);
     ets_delay_us(10);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, false);
@@ -113,9 +113,9 @@ void GPIO_StepMotorCCW()
 }
 
 /*! @brief The gate spin clockwise */
-void GPIO_StepMotorCW()
+void GPIO_StepMotorCCW()
 {
-    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, true);
+    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, false);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, true);
     ets_delay_us(10);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, false);
