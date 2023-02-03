@@ -7,8 +7,8 @@
 void GPIO_Init();
 
 // Private functions
-void GPIO_StepMotorCCW();
 void GPIO_StepMotorCW();
+void GPIO_StepMotorCCW();
 void GPIO_StartStepper();
 void GPIO_StopStepper();
 
