@@ -332,8 +332,6 @@ static bool AutoCalibrate()
     const int32_t s32AttemptCount = 18;
     int32_t s32StepCount = 0;
 
-    const TickType_t ttStartAll = xTaskGetTickCount();
-
     for(int i = 0; i < s32AttemptCount; i++)
     {
         if (m_bIsStop)
@@ -364,9 +362,12 @@ static bool AutoCalibrate()
     }
 
     const int32_t s32OldStepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
-
-    const int32_t s32NewTimePerRotation = (pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll) / s32AttemptCount);
     const int32_t s32NewStepPerRotation = s32StepCount / s32AttemptCount;
+
+    // Count how long it takes to do one rotation
+    const TickType_t ttStartAll = xTaskGetTickCount();
+    MoveRelative(s32NewStepPerRotation);
+    const int32_t s32NewTimePerRotation = pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll);
 
     ESP_LOGI(TAG, "[Autocalibration] After %d turn, it got: %d, avg: %.2f, ticks per rotation: %d => %d, rotation time: %d ms",
         s32AttemptCount, s32StepCount, (float)s32StepCount / (float)s32AttemptCount,
