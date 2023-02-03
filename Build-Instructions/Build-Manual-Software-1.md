@@ -4,9 +4,9 @@
 
 | Description | URL |
 |---|---|
-| Home page of the system | http://192.168.4.1/index.html
-| Get many system informations | http://192.168.4.1/about-ota.html
-| Get current settings (JSON) | http://192.168.4.1/settings.html
+| Home page of the system | http://192.168.66.1/index.html
+| Get many system informations | http://192.168.66.1/about-ota.html
+| Get current settings (JSON) | http://192.168.66.1/settings.html
 
 ## About-OTA
 

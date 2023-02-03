@@ -21,4 +21,4 @@ The photo is old, I used JST connector later because the job is prettier.
 - Connect a USB cable to the base ESP32.
 - Flash "ring-fw" app into it.
 - Connect to "SGU-Base-XXXXXX" Wi-Fi access point without password.
-- Access to http://192.168.4.1 using a browser. You should get access to the control program.
+- Access to http://192.168.66.1 using a browser. You should get access to the control program.
