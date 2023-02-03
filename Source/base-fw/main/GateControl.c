@@ -38,8 +38,11 @@ static TaskHandle_t m_sGateControlHandle;
 static int32_t m_s32Count = 0;
 
 static void GateControlTask( void *pvParameters );
+
 static void MoveTo(int32_t* ps32Count, int32_t s32Target);
 static void MoveRelative(int32_t s32RelativeTarget);
+static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, int32_t* ps32Count);
+
 static int32_t GetAbsoluteSymbolTarget(uint8_t u8SymbolIndex, int32_t s32StepPerRotation);
 
 static bool AutoCalibrate();
@@ -78,7 +81,7 @@ static void GateControlTask( void *pvParameters )
 
         // Reset temporary vars ...
         m_eMode = GATECONTROL_EMODE_Idle;
-        memset(&m_uModeArgument, 0, sizeof(m_uModeArgument));
+        memset((void*)&m_uModeArgument, 0, sizeof(m_uModeArgument));
         m_bIsStop = false;
 
         xSemaphoreGive(m_xSemaphoreHandle);
@@ -93,7 +96,7 @@ static void GateControlTask( void *pvParameters )
         {
             DoHoming();
         }
-        else if (eMode == GATECONTROL_EMODE_AutoCalibration)
+        else if (eMode == GATECONTROL_EMODE_AutoCalibrate)
         {
             if (AutoCalibrate())
             {
@@ -153,10 +156,9 @@ static void GateControlTask( void *pvParameters )
             if (bIsSuccess)
             {
                 ESP_LOGI(TAG, "Dial done!");
-
-                WORMHOLE_Open(&m_bIsStop);
                 const WORMHOLE_SArg sArg = { .eType = uModeArg.sDialArg.eWormholeType, .bNoTimeLimit = false };
-                WORMHOLE_Run(&m_bIsStop, &sArg);
+                WORMHOLE_Open(&sArg, &m_bIsStop);
+                WORMHOLE_Run(&m_bIsStop);
                 WORMHOLE_Close(&m_bIsStop);
             }
             else
@@ -187,9 +189,9 @@ static void GateControlTask( void *pvParameters )
         else if (eMode == GATECONTROL_EMODE_ManualWormhole)
         {
             ESP_LOGI(TAG, "GateControl manual wormhole");
-            WORMHOLE_Open(&m_bIsStop);
             const WORMHOLE_SArg sArg = { .eType = uModeArg.sManualWormhole.eWormholeType, .bNoTimeLimit = true };
-            WORMHOLE_Run(&m_bIsStop, &sArg);
+            WORMHOLE_Open(&sArg, &m_bIsStop);
+            WORMHOLE_Run(&m_bIsStop);
             WORMHOLE_Close(&m_bIsStop);
         }
 
@@ -330,102 +332,42 @@ static bool AutoCalibrate()
     const int32_t s32AttemptCount = 18;
     int32_t s32StepCount = 0;
 
-    const TickType_t ttStartAll = xTaskGetTickCount();
-
     for(int i = 0; i < s32AttemptCount; i++)
     {
-        // Move until the home detection is off ...
-        TickType_t ttStart = xTaskGetTickCount();
-        while(1)
+        if (m_bIsStop)
         {
-            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
-            {
-                szError = "Timeout";
-                goto ERROR;
-            }
+            szError = "Cancelled by user";
+            goto ERROR;
+        }
 
-            if (GPIO_IsHomeActive())
-            {
-                ESP_LOGI(TAG, "[Autocalibration] On home switch");
-                break;
-            }
+        // Move until the home detection is active ...
+        MoveUntilHomeSwitch(true, 30000, NULL);
+        // Move until the home detection is off ...
+        MoveUntilHomeSwitch(false, 30000, NULL);
 
-            GPIO_StepMotorCCW();
-            vTaskDelay(pdMS_TO_TICKS(1));
+        if (m_bIsStop)
+        {
+            szError = "Cancelled by user";
+            goto ERROR;
         }
 
         // Move until the home detection is off ...
-        ttStart = xTaskGetTickCount();
-        while(1)
-        {
-            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
-            {
-                szError = "Timeout";
-                goto ERROR;
-            }
+        int32_t s32Count = 0;
+        MoveUntilHomeSwitch(true, 30000, &s32Count);
+        int32_t s32CountGap = 0;
+        MoveUntilHomeSwitch(false, 30000, &s32CountGap);
 
-            if (!GPIO_IsHomeActive())
-            {
-                ESP_LOGI(TAG, "[Autocalibration] Out of home switch");
-                break;
-            }
-
-            GPIO_StepMotorCCW();
-            vTaskDelay(pdMS_TO_TICKS(1));
-        }
-
-        // Move until the home detection is off ...
-        int count = 0;
-
-        ttStart = xTaskGetTickCount();
-        while(1)
-        {
-            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
-            {
-                szError = "Timeout";
-                goto ERROR;
-            }
-
-            if (GPIO_IsHomeActive())
-            {
-                ESP_LOGI(TAG, "[Autocalibration] In home switch");
-                break;
-            }
-            GPIO_StepMotorCCW();
-            count++;
-            vTaskDelay(pdMS_TO_TICKS(1));
-        }
-
-        // Move until the home detection is off ...
-        ttStart = xTaskGetTickCount();
-        int countGap = 0;
-        while(1)
-        {
-            if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(30000))
-            {
-                szError = "Timeout";
-                goto ERROR;
-            }
-
-            if (!GPIO_IsHomeActive())
-            {
-                ESP_LOGI(TAG, "[Autocalibration] Out of home switch (second part)");
-                break;
-            }
-
-            GPIO_StepMotorCCW();
-            countGap++;
-            vTaskDelay(pdMS_TO_TICKS(1));
-        }
-
-        s32StepCount += count + countGap;
-        ESP_LOGI(TAG, "[Autocalibration] #%d, count: %d, gap: %d, tick count: %d", i+1, count, countGap, count + countGap);
+        s32StepCount += s32Count + s32CountGap;
+        ESP_LOGI(TAG, "[Autocalibration] #%d, count: %d, gap: %d, tick count: %d", i+1, s32Count, s32CountGap, s32Count + s32CountGap);
     }
 
     const int32_t s32OldStepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
-
-    const int32_t s32NewTimePerRotation = (pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll) / s32AttemptCount);
     const int32_t s32NewStepPerRotation = s32StepCount / s32AttemptCount;
+
+    // Count how long it takes to do one rotation
+    const TickType_t ttStartAll = xTaskGetTickCount();
+    MoveRelative(s32NewStepPerRotation);
+    const int32_t s32NewTimePerRotation = pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll);
 
     ESP_LOGI(TAG, "[Autocalibration] After %d turn, it got: %d, avg: %.2f, ticks per rotation: %d => %d, rotation time: %d ms",
         s32AttemptCount, s32StepCount, (float)s32StepCount / (float)s32AttemptCount,
@@ -440,6 +382,36 @@ static bool AutoCalibrate()
     return true;
     ERROR:
     ESP_LOGE(TAG, "[Autocalibration] Error: %s", szError);
+    return false;
+}
+
+static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, int32_t* ps32Count)
+{
+    const char* szError = "Unknown";
+    
+    TickType_t ttStart = xTaskGetTickCount();
+    while(1)
+    {
+        if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(u32TimeOutMS))
+        {
+            szError = "Timeout";
+            goto ERROR;
+        }
+
+        if (GPIO_IsHomeActive() == bHomeSwitchState)
+        {
+            ESP_LOGI(TAG, "[Autocalibration] state reached %d", (int)bHomeSwitchState);
+            break;
+        }
+        GPIO_StepMotorCCW();
+        if (ps32Count != NULL)
+            *ps32Count = *ps32Count + 1;
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+
+    return true;
+    ERROR:
+    ESP_LOGE(TAG, "MoveUntilHomeSwitch error: %s", szError);
     return false;
 }
 

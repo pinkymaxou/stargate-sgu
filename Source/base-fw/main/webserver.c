@@ -32,8 +32,8 @@
 #define ACTION_POST_RINGCHEVRONERROR "/action/ringchevronerror"
 #define ACTION_POST_RINGCHEVRONFADEIN "/action/ringchevronfadein"
 #define ACTION_POST_RINGCHEVRONFADEOUT "/action/ringchevronfadeout"
-#define ACTION_POST_ACTIVEWORMHOLE "/action/activewormhole"
-#define ACTION_POST_ACTIVECLOCK "/action/activeclock"
+#define ACTION_POST_ACTIVATEWORMHOLE "/action/activatewormhole"
+#define ACTION_POST_ACTIVATECLOCKMODE "/action/activateclockmode"
 #define ACTION_POST_RINGTURNOFF "/action/ringturnoff"
 #define ACTION_POST_RAMPLIGHTOFF "/action/ramplightoff"
 #define ACTION_POST_RAMPLIGHTON "/action/ramplighton"
@@ -41,7 +41,7 @@
 #define ACTION_POST_DIAL "/action/dial"
 #define ACTION_POST_LOCKCLAMP "/action/lockclamp"
 #define ACTION_POST_RELEASECLAMP "/action/releaseclamp"
-#define ACTION_POST_AUTOCALIBRATION "/action/autocalibration"
+#define ACTION_POST_AUTOCALIBRATE "/action/autocalibrate"
 #define ACTION_POST_GOHOME "/action/gohome"
 
 static esp_err_t api_get_handler(httpd_req_t *req);
@@ -214,8 +214,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualLockClamp, NULL);
     else if (strcmp(req->uri, ACTION_POST_STOP) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_Stop, NULL);
-    else if (strcmp(req->uri, ACTION_POST_AUTOCALIBRATION) == 0)
-        GATECONTROL_DoAction(GATECONTROL_EMODE_AutoCalibration, NULL);
+    else if (strcmp(req->uri, ACTION_POST_AUTOCALIBRATE) == 0)
+        GATECONTROL_DoAction(GATECONTROL_EMODE_AutoCalibrate, NULL);
     else if (strcmp(req->uri, ACTION_POST_DIAL) == 0)
     {
         // Decode JSON
@@ -276,7 +276,7 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         ESP_LOGI(TAG, "GateControl ring turn off");
         SGUBRCOMM_TurnOff(&g_sSGUBRCOMMHandle);
     }
-    else if (strcmp(req->uri, ACTION_POST_ACTIVEWORMHOLE) == 0)
+    else if (strcmp(req->uri, ACTION_POST_ACTIVATEWORMHOLE) == 0)
     {
         // Decode JSON
         root = cJSON_Parse((const char*)m_u8Buffers);
@@ -289,7 +289,7 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         else uModeArg.sManualWormhole.eWormholeType = WORMHOLE_ETYPE_NormalSGU;
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, &uModeArg);
     }
-    else if (strcmp(req->uri, ACTION_POST_ACTIVECLOCK) == 0)
+    else if (strcmp(req->uri, ACTION_POST_ACTIVATECLOCKMODE) == 0)
         GATECONTROL_DoAction(GATECONTROL_EMODE_ActiveClock, NULL);
     else if (strcmp(req->uri, ACTION_POST_RINGCHEVRONERROR) == 0)
     {

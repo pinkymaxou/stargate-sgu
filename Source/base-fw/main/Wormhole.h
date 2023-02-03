@@ -23,9 +23,9 @@ typedef struct
 
 void WORMHOLE_FullStop();
 
-void WORMHOLE_Open(volatile bool* pIsCancelled);
+void WORMHOLE_Open(const WORMHOLE_SArg* pArg, volatile bool* pIsCancelled);
 
-void WORMHOLE_Run(volatile bool* pIsCancelled, const WORMHOLE_SArg* pArg);
+void WORMHOLE_Run(volatile bool* pIsCancelled);
 
 void WORMHOLE_Close(volatile bool* pIsCancelled);
 
