@@ -7,7 +7,8 @@ function SendAction(actionURL, data)
     xhr.send(JSON.stringify(data));
   }
   else {
-    xhr.send(null);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify({}));
   }
 }
 
