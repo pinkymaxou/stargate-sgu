@@ -22,7 +22,6 @@ typedef enum
     SETTINGS_EENTRY_HomeMaximumStepTicks,
 
     SETTINGS_EENTRY_RampOnPercent,
-    SETTINGS_EENTRY_RampOffPercent,
 
     SETTINGS_EENTRY_WormholeMaxBrightness,
     SETTINGS_EENTRY_WormholeType,

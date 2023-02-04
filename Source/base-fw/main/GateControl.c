@@ -68,7 +68,7 @@ static void GateControlTask( void *pvParameters )
     ESP_LOGI(TAG, "GateControl task started");
 
     GATECONTROL_DoAction(GATECONTROL_EMODE_GoHome, NULL);
-    GPIO_SetRampLightOnOff(true);
+    // GATECONTROL_AnimRampLight(true);
 
 	while(1)
 	{
@@ -108,7 +108,7 @@ static void GateControlTask( void *pvParameters )
             bool bIsSuccess = true;
 
             // Animation off ...
-            GPIO_SetRampLightOnOff(true);
+            GATECONTROL_AnimRampLight(true);
             WORMHOLE_FullStop();
 
             GPIO_StartStepper();
@@ -167,7 +167,7 @@ static void GateControlTask( void *pvParameters )
             }
 
             SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
-            GPIO_SetRampLightOnOff(false);
+            GATECONTROL_AnimRampLight(false);
         }
         else if (eMode == GATECONTROL_EMODE_ActiveClock)
         {
@@ -417,20 +417,26 @@ static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, in
 
 static bool DoHoming()
 {
+    const char* szErrorString = "unknown";
+
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
     ESP_LOGI(TAG, "[DoHoming] Started");
+    const uint32_t u32MaxStep = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_HomeMaximumStepTicks);
 
+    if (u32MaxStep == 0)
+    {
+        szErrorString = "HomeMaximumStepTicks not set";
+        goto ERROR;
+    }
+    
     SSMHome ssHome = { .ttLastTicks = xTaskGetTickCount(), .bLastIsHome = GPIO_IsHomeActive() };
 
     vTaskDelay(pdMS_TO_TICKS(750));
 
     // If it cannot after 8000 we consider it failed.
-    bool bIsFailed = true;
-
     m_s32Count = 0;
-    const uint32_t u32MaxStep = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_HomeMaximumStepTicks);
 
     for(int i = 0; i < u32MaxStep; i++)
     {
@@ -443,7 +449,6 @@ static bool DoHoming()
             ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
             //ssHome.s32Count = 0;
             m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
-            bIsFailed = false;
             break;
         }
         ssHome.bLastIsHome = bIsHome;
@@ -451,28 +456,42 @@ static bool DoHoming()
 
         if (m_bIsStop)
         {
-            ESP_LOGE(TAG, "[DoHoming] Cancelled by user");
-            bIsFailed = true;
-            break;
+            szErrorString = "Cancelled by user";
+            goto ERROR;
         }
     }
 
-    //
-    if (bIsFailed)
-    {
-        ESP_LOGE(TAG, "Go Home - ERROR! Cannot do homing");
-        SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite);
-    }
-    else
-    {
-        ESP_LOGI(TAG, "Go Home - Readjustment in progress");
-        MoveTo(&m_s32Count, 0);
-    }
+    // Move back to reajusted home
+    ESP_LOGI(TAG, "[DoHoming] - Readjustment in progress");
+    MoveTo(&m_s32Count, 0);
 
     GPIO_LockClamp();
     vTaskDelay(pdMS_TO_TICKS(250));
     GPIO_StopClamp();
     GPIO_StopStepper();
-    ESP_LOGI(TAG, "Go Home - ended");
-    return !bIsFailed;
+    ESP_LOGI(TAG, "[DoHoming] - ended");
+    return true;
+    ERROR:
+    SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite);
+    ESP_LOGE(TAG, "[DoHoming] error: %s", szErrorString);
+    return false;
+}
+
+void GATECONTROL_AnimRampLight(bool bIsActive)
+{
+    const float fltPWMOn = (float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOnPercent) / 100.0f;
+    const float fltInc = (fltPWMOn / 50.0f);
+
+    if (bIsActive)
+        for(float flt = 0.0f; flt < fltPWMOn; flt += fltInc)
+        {
+            GPIO_SetRampLightPerc(flt);
+            vTaskDelay(pdMS_TO_TICKS(5));
+        }
+    else
+        for(float flt = fltPWMOn; flt >= 0.0f; flt -= fltInc)
+        {
+            GPIO_SetRampLightPerc(flt);
+            vTaskDelay(pdMS_TO_TICKS(5));
+        }
 }

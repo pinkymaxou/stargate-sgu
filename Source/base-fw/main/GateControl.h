@@ -41,4 +41,6 @@ void GATECONTROL_Start();
 
 bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* puModeArg);
 
+void GATECONTROL_AnimRampLight(bool bIsActive);
+
 #endif
