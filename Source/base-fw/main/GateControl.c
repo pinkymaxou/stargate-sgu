@@ -423,9 +423,9 @@ static bool DoHoming()
     GPIO_ReleaseClamp();
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
     ESP_LOGI(TAG, "[DoHoming] Started");
-    const uint32_t u32MaxStep = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_HomeMaximumStepTicks);
+    const uint32_t u32StepPerRotation = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
 
-    if (u32MaxStep == 0)
+    if (u32StepPerRotation == 0)
     {
         szErrorString = "HomeMaximumStepTicks not set";
         goto ERROR;
@@ -435,10 +435,10 @@ static bool DoHoming()
 
     vTaskDelay(pdMS_TO_TICKS(750));
 
-    // If it cannot after 8000 we consider it failed.
     m_s32Count = 0;
 
-    for(int i = 0; i < u32MaxStep; i++)
+    // We allow 10% error maximum
+    for(int i = 0; i < (uint32_t)(u32StepPerRotation * 1.1); i++)
     {
         GPIO_StepMotorCW();
         m_s32Count++;

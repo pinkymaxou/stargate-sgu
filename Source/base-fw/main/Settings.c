@@ -24,8 +24,6 @@ static NVSJSON_SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_TimePerRotationMS] =       NVSJSON_INITINT32_RNG("TimePerRot",      "Time to do a rotation",                 0,    0, 120000, NVSJSON_EFLAGS_None),
     [SETTINGS_EENTRY_GateOpenedTimeout] =       NVSJSON_INITINT32_RNG("GateTimeoutS",    "Timeout (s) before the gate close",   300,   10,  42*60, NVSJSON_EFLAGS_None),
 
-    [SETTINGS_EENTRY_HomeMaximumStepTicks] =    NVSJSON_INITINT32_RNG("Home.MaxSteps",   "Maximum step for homing process",    8000,    0,  64000, NVSJSON_EFLAGS_None),
-
     [SETTINGS_EENTRY_RampOnPercent] =           NVSJSON_INITINT32_RNG("Ramp.LightOn",    "Ramp illumination ON (percent)",       30,    0,    100, NVSJSON_EFLAGS_None),
 
     [SETTINGS_EENTRY_WormholeMaxBrightness] =   NVSJSON_INITINT32_RNG("WH.MaxBright",    "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)", 180, 0, 255, NVSJSON_EFLAGS_None),
