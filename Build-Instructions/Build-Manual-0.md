@@ -2,7 +2,7 @@
 
 ## Electronics
 
-| Description | Quantity | URL 
+| Description | Quantity | URL
 |---|---|---|
 | MOSFET P Channel | 1 | https://www.aliexpress.com/item/32884055864.html |
 | NPN Transistor (BC337) | 1 |  |
@@ -19,7 +19,7 @@
 | A few schottky diodes | |
 | All kind of wires | (24 to 26 AWG mostly) |
 | 12 volts to 5 volts step converter (2A) | 1 | https://www.aliexpress.com/item/1005001534795169.html
-| 12 mm tactile switch | 1 | 
+| 12 mm tactile switch | 1 |
 | Hall-Effect Sensor Digital 3144 | 1 | https://www.aliexpress.com/item/32823025060.html (Any will do as long as it's digital)
 | JST Connecteur Kit 2.54 mm | 1 | https://www.amazon.ca/Bestgle-Connector-JST-XHP-Housing-Adapter/dp/B07MBCLPBK/ref=asc_df_B07MBCLPBK/
 
@@ -56,7 +56,7 @@
 | Gorilla Super Glue | 1 | Used to glue the most important parts.
 | Canopy Glue | 1 | Need a glue that turn transparent. Gorilla glue stain the plexiglass and leave horrible traces.
 | Hot Glue | 1 | It could be done with canopy glue too but it's easier to remove hot glue if necessary.
-| Small clamps to hold parts while curing | 1 | 
+| Small clamps to hold parts while curing | 1 |
 
 ![](./Assets/material_superglue.jpg) ![](./Assets/material_canopy_glue.jpg) ![](./Assets/material_gorillaglue.jpg)
 

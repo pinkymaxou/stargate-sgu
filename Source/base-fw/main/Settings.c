@@ -6,6 +6,7 @@
 #include "cJSON.h"
 #include "esp_log.h"
 #include <string.h>
+#include "Wormhole.h"
 
 #define TAG "SETTINGS"
 
@@ -29,6 +30,7 @@ static NVSJSON_SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_RampOffPercent] =          NVSJSON_INITINT32_RNG("Ramp.LightOff",   "Ramp illumination OFF (percent)",       0,    0,    100, NVSJSON_EFLAGS_None),
 
     [SETTINGS_EENTRY_WormholeMaxBrightness] =   NVSJSON_INITINT32_RNG("WH.MaxBright",    "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)", 180, 0, 255, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_WormholeType] =            NVSJSON_INITINT32_RNG("WH.Type",         "0: SGU, 1: SG1, 2: Hell", (int)WORMHOLE_ETYPE_NormalSGU, 0, (int)WORMHOLE_ETYPE_Count-1, NVSJSON_EFLAGS_None),
 
     // WiFi Station related
     [SETTINGS_EENTRY_WSTAIsActive] =            NVSJSON_INITINT32_RNG("WSTA.IsActive",   "Wifi is active",                        0,    0, 1, NVSJSON_EFLAGS_NeedsReboot),

@@ -22,6 +22,8 @@ Use nuts to install the ring to the base. It allow to easily remove the ring lat
 
 ![](./Assets/bridge-to-base.png)
 
+![](./Assets/ring-motor-empty-2.jpg)
+
 # Stepper-mount
 
 ## Install hidden nuts
@@ -38,6 +40,8 @@ Using Gorilla Glue, glue "Stepper-mount-1_4mm-x1.stl" to the "Bottom-plate-v2_4m
 Use clamp to hold the part in place and ensure glue won't go into the nuts.
 
 ![](./Assets/base-stepper-mount-1.png)
+
+![](./Assets/ring-motor-empty.jpg)
 
 # Install the stepper in place
 
