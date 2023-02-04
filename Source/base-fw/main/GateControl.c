@@ -113,7 +113,13 @@ static void GateControlTask( void *pvParameters )
         }
         else if (eMode == GATECONTROL_EMODE_Dial)
         {
-            DoDialSequence(&uModeArg.sDialArg);
+            if (DoDialSequence(&uModeArg.sDialArg))
+            {
+                // Go back to home ...
+                vTaskDelay(pdMS_TO_TICKS(5000));
+                DoHoming();
+            }
+
         }
         else if (eMode == GATECONTROL_EMODE_ActiveClock)
         {
@@ -515,17 +521,6 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
 
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
     GATECONTROL_AnimRampLight(false);
-
-    // Go back to home ...
-    vTaskDelay(pdMS_TO_TICKS(5000));
-    GPIO_StartStepper();
-    GPIO_ReleaseClamp();
-    vTaskDelay(pdMS_TO_TICKS(250)); // Delay to allow mechanical part to do their job
-    MoveTo(&m_s32Count, 0);
-    GPIO_StopStepper();
-    GPIO_LockClamp();
-    GPIO_StopClamp();
-
     return true;
     ERROR:
     ESP_LOGE(TAG, "unable to dial: %s", szErrorString);
