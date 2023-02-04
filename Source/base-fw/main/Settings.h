@@ -25,6 +25,7 @@ typedef enum
     SETTINGS_EENTRY_RampOffPercent,
 
     SETTINGS_EENTRY_WormholeMaxBrightness,
+    SETTINGS_EENTRY_WormholeType,
 
     SETTINGS_EENTRY_WSTAIsActive,
     SETTINGS_EENTRY_WSTASSID,

@@ -247,7 +247,8 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         cJSON* cJsonWormhole = cJSON_GetObjectItem(root, "wormhole");
         if (cJsonWormhole)
             uModeArg.sDialArg.eWormholeType = (WORMHOLE_ETYPE)cJsonWormhole->valueint;
-        else uModeArg.sDialArg.eWormholeType = WORMHOLE_ETYPE_NormalSGU;
+        else
+            uModeArg.sDialArg.eWormholeType = (WORMHOLE_ETYPE)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeType);
 
         if (!GATECONTROL_DoAction(GATECONTROL_EMODE_Dial, &uModeArg))
             goto ERROR;
@@ -286,7 +287,9 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         cJSON* cJsonWormhole = cJSON_GetObjectItem(root, "wormhole");
         if (cJsonWormhole)
             uModeArg.sManualWormhole.eWormholeType = (WORMHOLE_ETYPE)cJsonWormhole->valueint;
-        else uModeArg.sManualWormhole.eWormholeType = WORMHOLE_ETYPE_NormalSGU;
+        else
+            uModeArg.sManualWormhole.eWormholeType = (WORMHOLE_ETYPE)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeType);
+
         GATECONTROL_DoAction(GATECONTROL_EMODE_ManualWormhole, &uModeArg);
     }
     else if (strcmp(req->uri, ACTION_POST_ACTIVATECLOCKMODE) == 0)
