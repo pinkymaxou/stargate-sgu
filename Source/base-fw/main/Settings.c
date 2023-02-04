@@ -24,18 +24,15 @@ static NVSJSON_SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_TimePerRotationMS] =       NVSJSON_INITINT32_RNG("TimePerRot",      "Time to do a rotation",                 0,    0, 120000, NVSJSON_EFLAGS_None),
     [SETTINGS_EENTRY_GateOpenedTimeout] =       NVSJSON_INITINT32_RNG("GateTimeoutS",    "Timeout (s) before the gate close",   300,   10,  42*60, NVSJSON_EFLAGS_None),
 
-    [SETTINGS_EENTRY_HomeMaximumStepTicks] =    NVSJSON_INITINT32_RNG("Home.MaxSteps",   "Maximum step for homing process",    8000,    0,  64000, NVSJSON_EFLAGS_None),
-
     [SETTINGS_EENTRY_RampOnPercent] =           NVSJSON_INITINT32_RNG("Ramp.LightOn",    "Ramp illumination ON (percent)",       30,    0,    100, NVSJSON_EFLAGS_None),
-    [SETTINGS_EENTRY_RampOffPercent] =          NVSJSON_INITINT32_RNG("Ramp.LightOff",   "Ramp illumination OFF (percent)",       0,    0,    100, NVSJSON_EFLAGS_None),
 
     [SETTINGS_EENTRY_WormholeMaxBrightness] =   NVSJSON_INITINT32_RNG("WH.MaxBright",    "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)", 180, 0, 255, NVSJSON_EFLAGS_None),
     [SETTINGS_EENTRY_WormholeType] =            NVSJSON_INITINT32_RNG("WH.Type",         "0: SGU, 1: SG1, 2: Hell", (int)WORMHOLE_ETYPE_NormalSGU, 0, (int)WORMHOLE_ETYPE_Count-1, NVSJSON_EFLAGS_None),
 
     // WiFi Station related
-    [SETTINGS_EENTRY_WSTAIsActive] =            NVSJSON_INITINT32_RNG("WSTA.IsActive",   "Wifi is active",                        0,    0, 1, NVSJSON_EFLAGS_NeedsReboot),
-    [SETTINGS_EENTRY_WSTASSID] =                NVSJSON_INITSTRING_RNG("WSTA.SSID",      "WiFi (SSID)",                           "", NVSJSON_EFLAGS_NeedsReboot),
-    [SETTINGS_EENTRY_WSTAPass] =                NVSJSON_INITSTRING_VALIDATOR("WSTA.Pass","WiFi password",                         "", ValidateWifiPassword, NVSJSON_EFLAGS_Secret | NVSJSON_EFLAGS_NeedsReboot),
+    [SETTINGS_EENTRY_WSTAIsActive] =            NVSJSON_INITINT32_RNG("WSTA.IsActive",   "Wi-Fi is active",                        0,    0, 1, NVSJSON_EFLAGS_NeedsReboot),
+    [SETTINGS_EENTRY_WSTASSID] =                NVSJSON_INITSTRING_RNG("WSTA.SSID",      "Wi-Fi (SSID)",                           "", NVSJSON_EFLAGS_NeedsReboot),
+    [SETTINGS_EENTRY_WSTAPass] =                NVSJSON_INITSTRING_VALIDATOR("WSTA.Pass","Wi-Fi password",                         "", ValidateWifiPassword, NVSJSON_EFLAGS_Secret | NVSJSON_EFLAGS_NeedsReboot),
 
     // Animation delay
     [SETTINGS_EENTRY_AnimPrelockDelayMS] =      NVSJSON_INITINT32_RNG("dial.anim1",      "Delay before locking the chevron (ms)",  750, 0, 6000, NVSJSON_EFLAGS_None),

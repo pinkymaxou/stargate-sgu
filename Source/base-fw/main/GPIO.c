@@ -76,7 +76,7 @@ void GPIO_Init()
         .hpoint         = 0
     };
     ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
-    GPIO_SetRampLightOnOff(false);
+    GPIO_SetRampLightPerc(false);
 
     // Initialize GPIO for home sensor
     gpio_set_direction(FWCONFIG_HOMESENSOR_PIN, GPIO_MODE_INPUT);
@@ -167,14 +167,6 @@ void GPIO_SetRampLightPerc(float fltPercent)
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 4095 * fltPercent));
     // Update duty to apply the new value
     ESP_ERROR_CHECK(ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0));
-}
-
-void GPIO_SetRampLightOnOff(bool bIsActive)
-{
-    if (bIsActive)
-        GPIO_SetRampLightPerc((float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOnPercent) / 100.0f);
-    else
-        GPIO_SetRampLightPerc((float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOffPercent) / 100.0f);
 }
 
 void GPIO_SetSanityLEDStatus(bool bIsLightUp)

@@ -19,14 +19,16 @@ typedef enum
     GATECONTROL_EMODE_ActiveClock,
 } GATECONTROL_EMODE;
 
+typedef struct
+{
+    uint8_t u8Symbols[36];
+    uint8_t u8SymbolCount;
+    WORMHOLE_ETYPE eWormholeType;
+} GATECONTROL_SDialArg;
+
 typedef union
 {
-    struct
-    {
-        uint8_t u8Symbols[36];
-        uint8_t u8SymbolCount;
-        WORMHOLE_ETYPE eWormholeType;
-    } sDialArg;
+    GATECONTROL_SDialArg sDialArg;
     struct
     {
         WORMHOLE_ETYPE eWormholeType;
@@ -40,5 +42,7 @@ void GATECONTROL_Process();
 void GATECONTROL_Start();
 
 bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* puModeArg);
+
+void GATECONTROL_AnimRampLight(bool bIsActive);
 
 #endif
