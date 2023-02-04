@@ -168,14 +168,6 @@ void GPIO_SetRampLightPerc(float fltPercent)
     // Update duty to apply the new value
     ESP_ERROR_CHECK(ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0));
 }
-/*
-void GPIO_SetRampLightOnOff(bool bIsActive)
-{
-    if (bIsActive)
-        GPIO_SetRampLightPerc((float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOnPercent) / 100.0f);
-    else
-        GPIO_SetRampLightPerc(0.0f);
-}*/
 
 void GPIO_SetSanityLEDStatus(bool bIsLightUp)
 {
