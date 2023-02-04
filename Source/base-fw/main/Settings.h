@@ -16,6 +16,7 @@ typedef enum
     SETTINGS_EENTRY_RingSymbolBrightness,
 
     SETTINGS_EENTRY_StepPerRotation,
+    SETTINGS_EENTRY_TimePerRotationMS,
     SETTINGS_EENTRY_GateOpenedTimeout,
 
     SETTINGS_EENTRY_HomeMaximumStepTicks,
@@ -24,6 +25,7 @@ typedef enum
     SETTINGS_EENTRY_RampOffPercent,
 
     SETTINGS_EENTRY_WormholeMaxBrightness,
+    SETTINGS_EENTRY_WormholeType,
 
     SETTINGS_EENTRY_WSTAIsActive,
     SETTINGS_EENTRY_WSTASSID,

@@ -26,8 +26,8 @@ esp_err_t SIMPLEOTA_StartAsync(const SIMPLEOTA_Params* params)
 
     ESP_LOGI(SIMPLEOTA_TAG, "SimpleOTA_StartAsync");
     if (xTaskCreate(simpleota_task, "simpleota_task", 8000, &m_params, tskIDLE_PRIORITY, &m_taskHandle) != pdTRUE)
-    { 
-        ESP_LOGE(SIMPLEOTA_TAG, "Error create simpleota_task");   
+    {
+        ESP_LOGE(SIMPLEOTA_TAG, "Error create simpleota_task");
         return ESP_FAIL;
     }
     return ESP_OK;
@@ -55,14 +55,14 @@ static void simpleota_task(void* arg)
     ip_protocol = IPPROTO_IP;
 
 
-    struct timeval timeout;      
+    struct timeval timeout;
     timeout.tv_sec = 20;
     timeout.tv_usec = 0;
 
     ESP_LOGI(SIMPLEOTA_TAG, "Simple OTA is about to start listening on port: %d ...", m_params.port);
 
     int listensock =  socket(addr_family, SOCK_STREAM, ip_protocol);
-    if (listensock < 0) 
+    if (listensock < 0)
     {
         ESP_LOGE(SIMPLEOTA_TAG, "Unable to create socket: errno %d", errno);
         goto CLEAN_UP;
@@ -100,7 +100,7 @@ static void simpleota_task(void* arg)
         ESP_LOGE(SIMPLEOTA_TAG, "setsockopt failed");
 
     // Convert ip address to string
-    if (source_addr.ss_family == PF_INET) 
+    if (source_addr.ss_family == PF_INET)
     {
         char addr_str[128];
         inet_ntoa_r(((struct sockaddr_in *)&source_addr)->sin_addr, addr_str, sizeof(addr_str) - 1);
@@ -119,21 +119,21 @@ static void simpleota_task(void* arg)
              update_partition->subtype, update_partition->address);
 
     esp_app_desc_t running_app_info;
-    if (esp_ota_get_partition_description(running, &running_app_info) == ESP_OK) 
+    if (esp_ota_get_partition_description(running, &running_app_info) == ESP_OK)
     {
         ESP_LOGI(SIMPLEOTA_TAG, "Running firmware version: %s", running_app_info.version);
     }
 
     const esp_partition_t* last_invalid_app = esp_ota_get_last_invalid_partition();
     esp_app_desc_t invalid_app_info;
-    if (esp_ota_get_partition_description(last_invalid_app, &invalid_app_info) == ESP_OK) 
+    if (esp_ota_get_partition_description(last_invalid_app, &invalid_app_info) == ESP_OK)
     {
         ESP_LOGI(SIMPLEOTA_TAG, "Last invalid firmware version: %s", invalid_app_info.version);
     }
 
     esp_ota_handle_t update_handle = 0 ;
     err = esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &update_handle);
-    if (err != ESP_OK) 
+    if (err != ESP_OK)
     {
         ESP_LOGE(SIMPLEOTA_TAG, "esp_ota_begin failed (%s)", esp_err_to_name(err));
         goto CLEAN_UP;
@@ -150,7 +150,7 @@ static void simpleota_task(void* arg)
     while (r > 0)
     {
         esp_err_t err3 = esp_ota_write( update_handle, (const void *)buffer, r);
-        if (err3 != ESP_OK) 
+        if (err3 != ESP_OK)
         {
             ESP_LOGE(SIMPLEOTA_TAG, "esp_ota_write error, stopped !");
             goto CLEAN_UP;
@@ -165,9 +165,9 @@ static void simpleota_task(void* arg)
     ESP_LOGI(SIMPLEOTA_TAG, "Ending OTA");
 
     err = esp_ota_end(update_handle);
-    if (err != ESP_OK) 
+    if (err != ESP_OK)
     {
-        if (err == ESP_ERR_OTA_VALIDATE_FAILED) 
+        if (err == ESP_ERR_OTA_VALIDATE_FAILED)
         {
             ESP_LOGE(SIMPLEOTA_TAG, "Image validation failed, image is corrupted");
         }
@@ -179,25 +179,25 @@ static void simpleota_task(void* arg)
     {
         ESP_LOGI(SIMPLEOTA_TAG, "Setting up boot partition ...!");
         err = esp_ota_set_boot_partition(update_partition);
-        if (err != ESP_OK) 
+        if (err != ESP_OK)
         {
             ESP_LOGE(SIMPLEOTA_TAG, "esp_ota_set_boot_partition failed (%s)!", esp_err_to_name(err));
             goto CLEAN_UP;
         }
-        
+
         ESP_LOGI(SIMPLEOTA_TAG, "Install succeeded!");
         ESP_LOGI(SIMPLEOTA_TAG, "About to restart!");
     }
 
     CLEAN_UP:
-    if (sock != -1) 
+    if (sock != -1)
     {
         ESP_LOGE(SIMPLEOTA_TAG, "Shutting down socket");
         shutdown(sock, 0);
         close(sock);
     }
 
-    // Restart, no matter the results    
+    // Restart, no matter the results
     esp_restart();
 
     m_taskHandle = NULL;

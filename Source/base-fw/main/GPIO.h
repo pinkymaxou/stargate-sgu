@@ -16,6 +16,8 @@ void GPIO_ReleaseClamp();
 void GPIO_LockClamp();
 void GPIO_StopClamp();
 
+bool GPIO_IsHomeActive();
+
 void GPIO_SetRampLightPerc(float fltPercent);
 void GPIO_SetRampLightOnOff(bool bIsActive);
 void GPIO_SetSanityLEDStatus(bool bIsLightUp);

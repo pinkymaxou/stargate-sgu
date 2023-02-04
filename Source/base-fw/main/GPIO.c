@@ -59,7 +59,7 @@ void GPIO_Init()
     ledc_timer_config_t ledc_timer = {
         .speed_mode       = LEDC_LOW_SPEED_MODE,
         .timer_num        = LEDC_TIMER_0,
-        .duty_resolution  = LEDC_TIMER_13_BIT,
+        .duty_resolution  = LEDC_TIMER_12_BIT,
         .freq_hz          = 5000,  // Set output frequency at 5 kHz
         .clk_cfg          = LEDC_AUTO_CLK
     };
@@ -102,20 +102,20 @@ void GPIO_Init()
 }
 
 
-/*! @brief The gate spin clockwise */
+/*! @brief The gate spin counter-clockwise */
 void GPIO_StepMotorCW()
 {
-    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, false);
+    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, true);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, true);
     ets_delay_us(10);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, false);
     ets_delay_us(10);
 }
 
-/*! @brief The gate spin counter-clockwise */
+/*! @brief The gate spin clockwise */
 void GPIO_StepMotorCCW()
 {
-    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, true);
+    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, false);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, true);
     ets_delay_us(10);
     gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, false);
@@ -138,7 +138,7 @@ void GPIO_ReleaseClamp()
 {
     mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, SERVO_PWM2PERCENT(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_ClampReleasedPWM)));
     mcpwm_set_duty_type(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A, MCPWM_DUTY_MODE_0);  //call this each time, if operator was previously in low/high state
-    //vTaskDelay(pdMS_TO_TICKS(750));
+    vTaskDelay(pdMS_TO_TICKS(350));
     // Stopping it prevent the annoying sound of the servo and save some power
     //mcpwm_set_signal_low(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A);
 }
@@ -155,6 +155,11 @@ void GPIO_LockClamp()
 void GPIO_StopClamp()
 {
     mcpwm_set_signal_low(MCPWM_UNIT_1, MCPWM_TIMER_1, MCPWM_OPR_A);
+}
+
+bool GPIO_IsHomeActive()
+{
+    return !gpio_get_level(FWCONFIG_HOMESENSOR_PIN);
 }
 
 void GPIO_SetRampLightPerc(float fltPercent)

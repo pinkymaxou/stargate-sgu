@@ -268,6 +268,11 @@ void app_main(void)
 
     WEBSERVER_Init();
 
+    char* szAllTask = (char*)malloc(4096);
+    vTaskList(szAllTask);
+    ESP_LOGI(TAG, "vTaskList: \r\n\r\n%s", szAllTask);
+    free(szAllTask);
+
     while(true)
     {
         // Wait for the next cycle.

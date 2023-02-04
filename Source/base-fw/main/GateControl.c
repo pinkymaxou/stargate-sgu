@@ -12,15 +12,11 @@
 #include "SGUBRProtocol.h"
 #include "SGUHelper.h"
 #include "base-fw.h"
-#include "Wormhole.h"
 #include "ClockMode.h"
 #include <stdint.h>
+#include <string.h>
 
 #define TAG "GateControl"
-
-#define GATECONTROL_STACKSIZE 2000
-#define GATECONTROL_PRIORITY_DEFAULT (tskIDLE_PRIORITY+1)
-#define GATECONTROL_COREID 1
 
 typedef struct
 {
@@ -38,14 +34,19 @@ static StaticSemaphore_t m_xSemaphoreCreateMutex;
 static SemaphoreHandle_t m_xSemaphoreHandle;
 
 static TaskHandle_t m_sGateControlHandle;
-static UBaseType_t m_uxPriority;
 
 static int32_t m_s32Count = 0;
 
 static void GateControlTask( void *pvParameters );
+
 static void MoveTo(int32_t* ps32Count, int32_t s32Target);
 static void MoveRelative(int32_t s32RelativeTarget);
+static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, int32_t* ps32Count);
+
 static int32_t GetAbsoluteSymbolTarget(uint8_t u8SymbolIndex, int32_t s32StepPerRotation);
+
+static bool AutoCalibrate();
+static bool DoHoming();
 
 void GATECONTROL_Init()
 {
@@ -56,7 +57,7 @@ void GATECONTROL_Init()
 void GATECONTROL_Start()
 {
 	// Create task to respond to SPI queries
-	if (xTaskCreatePinnedToCore(GateControlTask, "gatecontrol", GATECONTROL_STACKSIZE, (void*)NULL, m_uxPriority, &m_sGateControlHandle, GATECONTROL_COREID) != pdPASS )
+	if (xTaskCreatePinnedToCore(GateControlTask, "gatecontrol", FWCONFIG_GATECONTROL_STACKSIZE, (void*)NULL, FWCONFIG_GATECONTROL_PRIORITY_DEFAULT, &m_sGateControlHandle, FWCONFIG_GATECONTROL_COREID) != pdPASS )
 	{
 		ESP_ERROR_CHECK(ESP_FAIL);
 	}
@@ -66,6 +67,9 @@ static void GateControlTask( void *pvParameters )
 {
     ESP_LOGI(TAG, "GateControl task started");
 
+    GATECONTROL_DoAction(GATECONTROL_EMODE_GoHome, NULL);
+    GPIO_SetRampLightOnOff(true);
+
 	while(1)
 	{
         // Clear the wormhole
@@ -74,81 +78,36 @@ static void GateControlTask( void *pvParameters )
         xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
         const GATECONTROL_EMODE eMode = m_eMode;
         const GATECONTROL_UModeArg uModeArg = m_uModeArgument;
-        xSemaphoreGive(m_xSemaphoreHandle);
 
+        // Reset temporary vars ...
+        m_eMode = GATECONTROL_EMODE_Idle;
+        memset((void*)&m_uModeArgument, 0, sizeof(m_uModeArgument));
         m_bIsStop = false;
+
+        xSemaphoreGive(m_xSemaphoreHandle);
 
         if (eMode == GATECONTROL_EMODE_Idle)
         {
-            vTaskDelay(pdMS_TO_TICKS(1));
+            vTaskDelay(pdMS_TO_TICKS(100));
             continue;
         }
 
         if (eMode == GATECONTROL_EMODE_GoHome)
         {
-            GPIO_StartStepper();
-            GPIO_ReleaseClamp();
-            SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
-            ESP_LOGI(TAG, "Go Home - started");
-
-            SSMHome ssHome = { .ttLastTicks = xTaskGetTickCount(), .bLastIsHome = !gpio_get_level(FWCONFIG_HOMESENSOR_PIN) };
-
-            vTaskDelay(pdMS_TO_TICKS(750));
-
-            // If it cannot after 8000 we consider it failed.
-            bool bIsFailed = true;
-
-            m_s32Count = 0;
-            const uint32_t u32MaxStep = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_HomeMaximumStepTicks);
-
-            for(int i = 0; i < u32MaxStep; i++)
+            DoHoming();
+        }
+        else if (eMode == GATECONTROL_EMODE_AutoCalibrate)
+        {
+            if (AutoCalibrate())
             {
-                GPIO_StepMotorCW();
-                m_s32Count++;
-
-                const bool bIsHome = !gpio_get_level(FWCONFIG_HOMESENSOR_PIN);
-                if (!ssHome.bLastIsHome && bIsHome)
-                {
-                    ESP_LOGI(TAG, "Go Home - Reached, count: %d", m_s32Count);
-                    //ssHome.s32Count = 0;
-                    m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
-                    bIsFailed = false;
-                    break;
-                }
-                ssHome.bLastIsHome = bIsHome;
-                vTaskDelay(pdMS_TO_TICKS(1));
-
-                if (m_bIsStop)
-                {
-                    ESP_LOGE(TAG, "Go Home - Cancelled by user");
-                    bIsFailed = true;
-                    break;
-                }
+                DoHoming();
             }
-
-            //
-            if (bIsFailed)
-            {
-                ESP_LOGE(TAG, "Go Home - ERROR! Cannot do homing");
-                SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite);
-            }
-            else
-            {
-                ESP_LOGI(TAG, "Go Home - Readjustment in progress");
-                MoveTo(&m_s32Count, 0);
-            }
-
-            GPIO_LockClamp();
-            vTaskDelay(pdMS_TO_TICKS(250));
-            GPIO_StopClamp();
-            GPIO_StopStepper();
-
-            ESP_LOGI(TAG, "Go Home - ended");
         }
         else if (eMode == GATECONTROL_EMODE_Dial)
         {
             bool bIsSuccess = true;
 
+            // Animation off ...
             GPIO_SetRampLightOnOff(true);
             WORMHOLE_FullStop();
 
@@ -197,9 +156,9 @@ static void GateControlTask( void *pvParameters )
             if (bIsSuccess)
             {
                 ESP_LOGI(TAG, "Dial done!");
-
-                WORMHOLE_Open(&m_bIsStop);
-                WORMHOLE_Run(&m_bIsStop, false);
+                const WORMHOLE_SArg sArg = { .eType = uModeArg.sDialArg.eWormholeType, .bNoTimeLimit = false };
+                WORMHOLE_Open(&sArg, &m_bIsStop);
+                WORMHOLE_Run(&m_bIsStop);
                 WORMHOLE_Close(&m_bIsStop);
             }
             else
@@ -230,13 +189,13 @@ static void GateControlTask( void *pvParameters )
         else if (eMode == GATECONTROL_EMODE_ManualWormhole)
         {
             ESP_LOGI(TAG, "GateControl manual wormhole");
-            WORMHOLE_Open(&m_bIsStop);
-            WORMHOLE_Run(&m_bIsStop, true);
+            const WORMHOLE_SArg sArg = { .eType = uModeArg.sManualWormhole.eWormholeType, .bNoTimeLimit = true };
+            WORMHOLE_Open(&sArg, &m_bIsStop);
+            WORMHOLE_Run(&m_bIsStop);
             WORMHOLE_Close(&m_bIsStop);
         }
 
         vTaskDelay(pdMS_TO_TICKS(1));
-        m_eMode = GATECONTROL_EMODE_Idle;
 	}
 	vTaskDelete( NULL );
 }
@@ -245,12 +204,13 @@ static int32_t GetAbsoluteSymbolTarget(uint8_t u8SymbolIndex, int32_t s32StepPer
 {
     const uint32_t u32SymbolLedIndex = SGUHELPER_SymbolIndexToLedIndex(u8SymbolIndex);
     const double dblPercent = (SGUHELPER_LEDIndexToDeg(u32SymbolLedIndex) / 360.0d);
-    return dblPercent * (double)s32StepPerRotation;
+    return dblPercent * (double)s32StepPerRotation * -1;
 }
 
 bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* puModeArg)
 {
     xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
+
     if (eMode == GATECONTROL_EMODE_Dial)
     {
         if (puModeArg == NULL)
@@ -259,7 +219,13 @@ bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* p
             goto ERROR;
         }
 
-        if (puModeArg->sDialArg.u8SymbolCount < 1 || puModeArg->sDialArg.u8SymbolCount > 9)
+        if (!WORMHOLE_ValidateWormholeType(puModeArg->sDialArg.eWormholeType))
+        {
+            ESP_LOGE(TAG, "Invalid wormhole type");
+            goto ERROR;
+        }
+
+        if (puModeArg->sDialArg.u8SymbolCount < 1 || puModeArg->sDialArg.u8SymbolCount > (sizeof(puModeArg->sDialArg.u8Symbols)/sizeof(puModeArg->sDialArg.u8Symbols[0])))
         {
             ESP_LOGE(TAG, "Invalid symbol count");
             goto ERROR;
@@ -274,6 +240,20 @@ bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* p
             }
         }
     }
+    else if (eMode == GATECONTROL_EMODE_ManualWormhole)
+    {
+        if (puModeArg == NULL)
+        {
+            ESP_LOGE(TAG, "No argument provided");
+            goto ERROR;
+        }
+
+        if (!WORMHOLE_ValidateWormholeType(puModeArg->sManualWormhole.eWormholeType))
+        {
+            ESP_LOGE(TAG, "Invalid wormhole type");
+            goto ERROR;
+        }
+    }
     else if (eMode == GATECONTROL_EMODE_Stop)
     {
         // Request current process to stop
@@ -281,6 +261,8 @@ bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* p
         goto END;
     }
 
+    // Stop what it was doing before
+    m_bIsStop = true;
     m_eMode = eMode;
     if (puModeArg != NULL)
         m_uModeArgument = *puModeArg;
@@ -335,4 +317,162 @@ static void MoveRelative(int32_t s32RelativeTarget)
             vTaskDelay(pdMS_TO_TICKS((accel > 0 || s32Target < u32SlowDelta) ? 3 : 1));
         }
     }
+}
+
+static bool AutoCalibrate()
+{
+    const char* szError = "Unknown";
+
+    ESP_LOGI(TAG, "[Autocalibration] started");
+
+    // Move until it's outside
+    GPIO_StartStepper();
+    GPIO_ReleaseClamp();
+
+    const int32_t s32AttemptCount = 18;
+    int32_t s32StepCount = 0;
+
+    for(int i = 0; i < s32AttemptCount; i++)
+    {
+        if (m_bIsStop)
+        {
+            szError = "Cancelled by user";
+            goto ERROR;
+        }
+
+        // Move until the home detection is active ...
+        MoveUntilHomeSwitch(true, 30000, NULL);
+        // Move until the home detection is off ...
+        MoveUntilHomeSwitch(false, 30000, NULL);
+
+        if (m_bIsStop)
+        {
+            szError = "Cancelled by user";
+            goto ERROR;
+        }
+
+        // Move until the home detection is off ...
+        int32_t s32Count = 0;
+        MoveUntilHomeSwitch(true, 30000, &s32Count);
+        int32_t s32CountGap = 0;
+        MoveUntilHomeSwitch(false, 30000, &s32CountGap);
+
+        s32StepCount += s32Count + s32CountGap;
+        ESP_LOGI(TAG, "[Autocalibration] #%d, count: %d, gap: %d, tick count: %d", i+1, s32Count, s32CountGap, s32Count + s32CountGap);
+    }
+
+    const int32_t s32OldStepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
+    const int32_t s32NewStepPerRotation = s32StepCount / s32AttemptCount;
+
+    // Count how long it takes to do one rotation
+    const TickType_t ttStartAll = xTaskGetTickCount();
+    MoveRelative(s32NewStepPerRotation);
+    const int32_t s32NewTimePerRotation = pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll);
+
+    ESP_LOGI(TAG, "[Autocalibration] After %d turn, it got: %d, avg: %.2f, ticks per rotation: %d => %d, rotation time: %d ms",
+        s32AttemptCount, s32StepCount, (float)s32StepCount / (float)s32AttemptCount,
+        s32OldStepPerRotation, s32NewStepPerRotation,
+        s32NewTimePerRotation );
+
+    // Record values
+    NVSJSON_SetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation, false, s32NewStepPerRotation);
+    NVSJSON_SetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_TimePerRotationMS, false, s32NewTimePerRotation);
+
+    NVSJSON_Save(&g_sSettingHandle);
+    return true;
+    ERROR:
+    ESP_LOGE(TAG, "[Autocalibration] Error: %s", szError);
+    return false;
+}
+
+static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, int32_t* ps32Count)
+{
+    const char* szError = "Unknown";
+
+    TickType_t ttStart = xTaskGetTickCount();
+    while(1)
+    {
+        if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(u32TimeOutMS))
+        {
+            szError = "Timeout";
+            goto ERROR;
+        }
+
+        if (GPIO_IsHomeActive() == bHomeSwitchState)
+        {
+            ESP_LOGI(TAG, "[Autocalibration] state reached %d", (int)bHomeSwitchState);
+            break;
+        }
+        GPIO_StepMotorCW();
+        if (ps32Count != NULL)
+            *ps32Count = *ps32Count + 1;
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+
+    return true;
+    ERROR:
+    ESP_LOGE(TAG, "MoveUntilHomeSwitch error: %s", szError);
+    return false;
+}
+
+static bool DoHoming()
+{
+    GPIO_StartStepper();
+    GPIO_ReleaseClamp();
+    SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
+    ESP_LOGI(TAG, "[DoHoming] Started");
+
+    SSMHome ssHome = { .ttLastTicks = xTaskGetTickCount(), .bLastIsHome = GPIO_IsHomeActive() };
+
+    vTaskDelay(pdMS_TO_TICKS(750));
+
+    // If it cannot after 8000 we consider it failed.
+    bool bIsFailed = true;
+
+    m_s32Count = 0;
+    const uint32_t u32MaxStep = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_HomeMaximumStepTicks);
+
+    for(int i = 0; i < u32MaxStep; i++)
+    {
+        GPIO_StepMotorCW();
+        m_s32Count++;
+
+        const bool bIsHome = GPIO_IsHomeActive();
+        if (!ssHome.bLastIsHome && bIsHome)
+        {
+            ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
+            //ssHome.s32Count = 0;
+            m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
+            bIsFailed = false;
+            break;
+        }
+        ssHome.bLastIsHome = bIsHome;
+        vTaskDelay(pdMS_TO_TICKS(1));
+
+        if (m_bIsStop)
+        {
+            ESP_LOGE(TAG, "[DoHoming] Cancelled by user");
+            bIsFailed = true;
+            break;
+        }
+    }
+
+    //
+    if (bIsFailed)
+    {
+        ESP_LOGE(TAG, "Go Home - ERROR! Cannot do homing");
+        SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite);
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Go Home - Readjustment in progress");
+        MoveTo(&m_s32Count, 0);
+    }
+
+    GPIO_LockClamp();
+    vTaskDelay(pdMS_TO_TICKS(250));
+    GPIO_StopClamp();
+    GPIO_StopStepper();
+    ESP_LOGI(TAG, "Go Home - ended");
+    return !bIsFailed;
 }

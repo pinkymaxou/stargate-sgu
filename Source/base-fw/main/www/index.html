@@ -18,8 +18,8 @@
 						<button class="dropbtn button-27">Dial</button>
 						<div class="dropdown-content">
 							<button id="idBtGoHome" class="button-27 item" onclick="SendAction('action/gohome')">Homing sequence</button>
-							<button id="idBtActiveWormhole" class="button-27 item" onclick="SendAction('action/activewormhole')">Activate wormhole</button>
-							<button id="idBtActiveClock" class="button-27 item" onclick="SendAction('action/activeclock')">Activate clock mode</button>
+							<button id="idBtActiveWormhole" class="button-27 item" onclick="SendAction('action/activatewormhole')">Activate wormhole</button>
+							<button id="idBtActiveClock" class="button-27 item" onclick="SendAction('action/activateclockmode')">Activate clock mode</button>
 						</div>
 					</li>
 
@@ -59,7 +59,7 @@
 			<div class="flex-container">
 				<div style="overflow-y: scroll; ">
 					<div v-for="addr in alladdresses">
-						<button class="sguaddrbtn" @click="SendAction('action/dial', addr.symbolIndexes)">
+						<button class="sguaddrbtn" @click="DialGate(addr.symbolIndexes)">
 							<p style="margin: 0.15em; font-weight: bold; color: black;">{{ addr.name }}</p>
 							<span v-for="symbolIndex in addr.symbolIndexes">
 								<!-- <img v-bind:src="GetSymbolIndex(symbolIndex).imgfile"> -->

@@ -5,17 +5,21 @@ You will no longer be the same after that, it could also cause hair loss.
 # Stargate Universe
 
 This project is basically a small stargate made to decorate your desk. It features lightning for symbols like in the serie and the ring spins.
-https://www.youtube.com/channel/UCcdElKiCrVWVq5p8XVurI4g for more details.
+
+![](./Readme-Assets/stargate-thumbnail4.jpg)
+
+https://www.youtube.com/watch?v=u1PzZ1OQ_60 for more details.
 
 Unfortunately this project went through a lot of trial and error, so there are more parts than it should have especially in the base.
-Optimize it would require making a second gate to test new optimization. I'm no willing to do that now.
+Optimize it would require making a second gate to test new optimization. 
+I'm no willing to do that now.
 
-Still writing the print and assembly manual, more will come later including the source code and wiring diagrams to operate the system.
+Inspired partly by: 
 
-Inspired partly by: https://thestargateproject.com/build-a-stargate-and-dhd-3d-printed/
-
-![](./Readme-Assets/stargate-thumbnail3.jpg)
-![](./Readme-Assets/stargate-thumbnail2.png)
+| URL |
+|---|
+| https://thestargateproject.com/build-a-stargate-and-dhd-3d-printed/ |
+| https://www.youtube.com/watch?v=m0cj_5DWYjw&ab_channel=StargateFan |
 
 # Knowns issues
 
@@ -34,7 +38,7 @@ Some fonts:
 # Prerequisites
 
  - Correct knowledge of ESP32 and programming with ESP-IDF
- - At least 22 x 22 cm printer, capable of printing with 0.2 mm nozzle<br>
+ - At least 22 x 22 cm printer, capable of printing with 0.2 mm nozzle (yes, 0.2mm !)<br>
     **Warning: Don't even think of printing it using a bigger nozzle, it just won't work.**
  - Have some knowledge in electronic.
  - ESP-IDF toolkit installed (tested on IDF 4.4)

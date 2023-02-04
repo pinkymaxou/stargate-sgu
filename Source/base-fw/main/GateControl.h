@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "Wormhole.h"
 
 typedef enum
 {
@@ -12,6 +13,7 @@ typedef enum
     GATECONTROL_EMODE_ManualLockClamp,
     GATECONTROL_EMODE_Stop,
     GATECONTROL_EMODE_Dial,
+    GATECONTROL_EMODE_AutoCalibrate,
 
     GATECONTROL_EMODE_ManualWormhole,
     GATECONTROL_EMODE_ActiveClock,
@@ -21,11 +23,15 @@ typedef union
 {
     struct
     {
-        uint8_t u8Symbols[9];
+        uint8_t u8Symbols[36];
         uint8_t u8SymbolCount;
+        WORMHOLE_ETYPE eWormholeType;
     } sDialArg;
+    struct
+    {
+        WORMHOLE_ETYPE eWormholeType;
+    } sManualWormhole;
 } GATECONTROL_UModeArg;
-
 
 void GATECONTROL_Init();
 

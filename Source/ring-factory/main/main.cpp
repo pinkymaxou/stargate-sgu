@@ -51,8 +51,8 @@ void wifi_init_softap(void)
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
     esp_netif_ip_info_t ipInfo;
-    IP4_ADDR(&ipInfo.ip, 192, 168, 66,1);
-	IP4_ADDR(&ipInfo.gw, 192, 168, 66,1);
+    IP4_ADDR(&ipInfo.ip, 192, 168, 66, 1);
+	IP4_ADDR(&ipInfo.gw, 192, 168, 66, 1);
 	IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
 	esp_netif_dhcps_stop(wifiAP);
 	esp_netif_set_ip_info(wifiAP, &ipInfo);
@@ -92,21 +92,21 @@ void wifi_init_softap(void)
 
     char ipString[12+1];
     esp_ip4addr_ntoa(&ipInfo.ip, ipString, sizeof(ipString));
-    
+
     ESP_LOGI(TAG, "AP IP Address: %s", ipString);
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
              m_wifi_config.ap.ssid, CONFIG_ESP_WIFI_PASS, CONFIG_ESP_WIFI_CHANNEL);
 }
-        
+
 #if CONFIG_WS1228B_ISACTIVE != 0
-static void LightningTask(void *pvParameters) 
+static void LightningTask(void *pvParameters)
 {
     bool b = false;
 
     // Complete shutdown by default
     for(int i = 0; i < CONFIG_WS1228B_LEDCOUNT; i++)
         m_leds[i] = CRGB::Black;
-    
+
     int currLedIndex = 0;
     bool isBlink = false;
     while(true)
@@ -116,7 +116,7 @@ static void LightningTask(void *pvParameters)
         {
             if (m_bIsSuicide) // RED = means time to die
                 m_leds[0] = CRGB::Red;
-            else if (SIMPLEOTA_GetIsReceiving()) // Yellow = Receiving            
+            else if (SIMPLEOTA_GetIsReceiving()) // Yellow = Receiving
                 m_leds[0] = CRGB::Yellow;
             else if (m_iConnectedCount > 0) // Green = If one client is connected
                 m_leds[0] = CRGB::Green;
@@ -124,7 +124,7 @@ static void LightningTask(void *pvParameters)
         }
         else
             m_leds[0] = CRGB::Black;
-            
+
         isBlink = !isBlink;
 
         // Make a LED Spin arround, except the first one
@@ -152,7 +152,7 @@ static void LightningTask(void *pvParameters)
 #endif
 
 void app_main(void)
-{    
+{
     ESP_ERROR_CHECK(esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, "NoLightSleep", &m_lockHandle));
     FastLED.addLeds<WS2812B, CONFIG_WS1228B_PIN, GRB>(m_leds, CONFIG_WS1228B_LEDCOUNT);
 
@@ -195,7 +195,7 @@ void app_main(void)
             if (!bSwitchState) // Up
             {
                 if (switchTicks == 0)
-                    switchTicks = xTaskGetTickCount(); 
+                    switchTicks = xTaskGetTickCount();
 
                 // If we hold the switch long enough it stop the process.
                 if ( (xTaskGetTickCount() - switchTicks) > pdMS_TO_TICKS(CONFIG_SWITCH_HOLDDELAY_MS))
@@ -220,7 +220,7 @@ void app_main(void)
             // Release the power pin
             gpio_set_level(CONFIG_HOLDPOWER_PIN, false);
         }
-        
+
         // 4 HZ
         vTaskDelay(pdMS_TO_TICKS(250));
     }
@@ -228,14 +228,14 @@ void app_main(void)
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
-    if (event_id == WIFI_EVENT_AP_STACONNECTED) 
+    if (event_id == WIFI_EVENT_AP_STACONNECTED)
     {
         wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
         m_iConnectedCount++;
         ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
                  MAC2STR(event->mac), event->aid);
-    } 
-    else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) 
+    }
+    else if (event_id == WIFI_EVENT_AP_STADISCONNECTED)
     {
         wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
         m_iConnectedCount--;
