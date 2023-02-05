@@ -119,6 +119,9 @@ static void GateControlTask( void *pvParameters )
             {
                 // Go back to home ...
                 vTaskDelay(pdMS_TO_TICKS(5000));
+
+                // We give a chance to home ...
+                m_bIsStop = false;
                 DoHoming();
             }
 
