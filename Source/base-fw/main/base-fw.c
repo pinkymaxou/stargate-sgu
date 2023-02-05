@@ -28,8 +28,8 @@
 #include "FWConfig.h"
 #include "Settings.h"
 #include "base-fw.h"
-
 #include "GateControl.h"
+#include "GateStepper.h"
 
 /* The examples use WiFi configuration that you can set via project configuration menu.
 
@@ -231,7 +231,7 @@ void app_main(void)
     // Need to be high ...
     GPIO_Init();
 
-    GPIO_StartStepper();
+    GATESTEPPER_Init();
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());

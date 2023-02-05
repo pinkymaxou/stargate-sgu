@@ -13,6 +13,8 @@
 #include "SGUHelper.h"
 #include "base-fw.h"
 #include "ClockMode.h"
+#include "GateControl.h"
+#include "GateStepper.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -235,6 +237,9 @@ static void MoveTo(int32_t* ps32Count, int32_t s32Target)
 
 static void MoveRelative(int32_t s32RelativeTarget)
 {
+    GATESTEPPER_MoveTo(s32RelativeTarget);
+    return;
+
     const uint32_t u32SlowDelta = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingSlowDelta);
 
     int32_t s32Target = abs(s32RelativeTarget);
