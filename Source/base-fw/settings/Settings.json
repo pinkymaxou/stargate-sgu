@@ -26,7 +26,7 @@
 		},
 		{
 			"key": "Ring.HomeOffset",
-			"value": -25,
+			"value": -50,
 			"info": {
 				"desc": "Offset relative to home sensor",
 				"flag_reboot": 0,
@@ -62,7 +62,7 @@
 		},
 		{
 			"key": "StepPerRot",
-			"value": 7332,
+			"value": 14667,
 			"info": {
 				"desc": "How many step per rotation",
 				"flag_reboot": 0,
@@ -136,7 +136,7 @@
 			"key": "WSTA.IsActive",
 			"value": 1,
 			"info": {
-				"desc": "Wi-Fi is active",
+				"desc": "Wifi is active",
 				"flag_reboot": 1,
 				"default": 0,
 				"min": 0,
@@ -148,7 +148,7 @@
 			"key": "WSTA.SSID",
 			"value": "Romano-Fafar-1",
 			"info": {
-				"desc": "Wi-Fi (SSID)",
+				"desc": "WiFi (SSID)",
 				"flag_reboot": 1,
 				"default": "",
 				"type": "string"
@@ -157,7 +157,7 @@
 		{
 			"key": "WSTA.Pass",
 			"info": {
-				"desc": "Wi-Fi password",
+				"desc": "WiFi password",
 				"flag_reboot": 1,
 				"default": "",
 				"type": "string"

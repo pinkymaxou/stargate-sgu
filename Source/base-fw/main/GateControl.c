@@ -289,7 +289,7 @@ static bool AutoCalibrate()
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
 
-    const int32_t s32AttemptCount = 18;
+    const int32_t s32AttemptCount = 10;
     int32_t s32StepCount = 0;
 
     for(int i = 0; i < s32AttemptCount; i++)
