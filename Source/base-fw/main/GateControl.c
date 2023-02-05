@@ -13,6 +13,8 @@
 #include "SGUHelper.h"
 #include "base-fw.h"
 #include "ClockMode.h"
+#include "GateControl.h"
+#include "GateStepper.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -113,7 +115,16 @@ static void GateControlTask( void *pvParameters )
         }
         else if (eMode == GATECONTROL_EMODE_Dial)
         {
-            DoDialSequence(&uModeArg.sDialArg);
+            if (DoDialSequence(&uModeArg.sDialArg))
+            {
+                // Go back to home ...
+                vTaskDelay(pdMS_TO_TICKS(5000));
+
+                // We give a chance to home ...
+                m_bIsStop = false;
+                DoHoming();
+            }
+
         }
         else if (eMode == GATECONTROL_EMODE_ActiveClock)
         {
@@ -229,40 +240,7 @@ static void MoveTo(int32_t* ps32Count, int32_t s32Target)
 
 static void MoveRelative(int32_t s32RelativeTarget)
 {
-    const uint32_t u32SlowDelta = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingSlowDelta);
-
-    int32_t s32Target = abs(s32RelativeTarget);
-
-    if (s32RelativeTarget > 0)
-    {
-        ESP_LOGI(TAG, "Go Home - Ajustment clockwise");
-
-        int accel = u32SlowDelta;
-        while(s32Target > 0)
-        {
-            GPIO_StepMotorCW();
-            s32Target--;
-
-            if (accel > 0)
-                accel--;
-            vTaskDelay(pdMS_TO_TICKS((accel > 0 || s32Target < u32SlowDelta) ? 3 : 1));
-        }
-    }
-    else if (s32RelativeTarget < 0)
-    {
-        ESP_LOGI(TAG, "Go Home - Ajustment counter clockwise");
-
-        int accel = u32SlowDelta;
-        while(s32Target > 0)
-        {
-            GPIO_StepMotorCCW();
-            s32Target--;
-
-            if (accel > 0)
-                accel--;
-            vTaskDelay(pdMS_TO_TICKS((accel > 0 || s32Target < u32SlowDelta) ? 3 : 1));
-        }
-    }
+    GATESTEPPER_MoveTo(s32RelativeTarget);
 }
 
 static bool AutoCalibrate()
@@ -275,7 +253,7 @@ static bool AutoCalibrate()
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
 
-    const int32_t s32AttemptCount = 18;
+    const int32_t s32AttemptCount = 10;
     int32_t s32StepCount = 0;
 
     for(int i = 0; i < s32AttemptCount; i++)
@@ -515,17 +493,6 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
 
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
     GATECONTROL_AnimRampLight(false);
-
-    // Go back to home ...
-    vTaskDelay(pdMS_TO_TICKS(5000));
-    GPIO_StartStepper();
-    GPIO_ReleaseClamp();
-    vTaskDelay(pdMS_TO_TICKS(250)); // Delay to allow mechanical part to do their job
-    MoveTo(&m_s32Count, 0);
-    GPIO_StopStepper();
-    GPIO_LockClamp();
-    GPIO_StopClamp();
-
     return true;
     ERROR:
     ESP_LOGE(TAG, "unable to dial: %s", szErrorString);

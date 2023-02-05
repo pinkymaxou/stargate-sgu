@@ -13,6 +13,7 @@
 #include "Settings.h"
 #include "base-fw.h"
 #include "GPIO.h"
+#include "GateStepper.h"
 
 #define TAG "webserver"
 
