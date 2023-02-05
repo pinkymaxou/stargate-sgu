@@ -241,42 +241,6 @@ static void MoveTo(int32_t* ps32Count, int32_t s32Target)
 static void MoveRelative(int32_t s32RelativeTarget)
 {
     GATESTEPPER_MoveTo(s32RelativeTarget);
-    return;
-
-    const uint32_t u32SlowDelta = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingSlowDelta);
-
-    int32_t s32Target = abs(s32RelativeTarget);
-
-    if (s32RelativeTarget > 0)
-    {
-        ESP_LOGI(TAG, "Go Home - Ajustment clockwise");
-
-        int accel = u32SlowDelta;
-        while(s32Target > 0)
-        {
-            GPIO_StepMotorCW();
-            s32Target--;
-
-            if (accel > 0)
-                accel--;
-            vTaskDelay(pdMS_TO_TICKS((accel > 0 || s32Target < u32SlowDelta) ? 3 : 1));
-        }
-    }
-    else if (s32RelativeTarget < 0)
-    {
-        ESP_LOGI(TAG, "Go Home - Ajustment counter clockwise");
-
-        int accel = u32SlowDelta;
-        while(s32Target > 0)
-        {
-            GPIO_StepMotorCCW();
-            s32Target--;
-
-            if (accel > 0)
-                accel--;
-            vTaskDelay(pdMS_TO_TICKS((accel > 0 || s32Target < u32SlowDelta) ? 3 : 1));
-        }
-    }
 }
 
 static bool AutoCalibrate()

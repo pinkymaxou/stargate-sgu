@@ -12,7 +12,6 @@ typedef enum
     SETTINGS_EENTRY_ClampLockedPWM = 0,
     SETTINGS_EENTRY_ClampReleasedPWM,
     SETTINGS_EENTRY_RingHomeOffset,
-    SETTINGS_EENTRY_RingSlowDelta,
     SETTINGS_EENTRY_RingSymbolBrightness,
 
     SETTINGS_EENTRY_StepPerRotation,

@@ -257,10 +257,10 @@ void app_main(void)
     SGUBRCOMM_Start(&g_sSGUBRCOMMHandle);
     // GATECONTROL_DoAction(GATECONTROL_EMODE_GoHome);
 
-    const TickType_t xFrequency = 1;
+    // const TickType_t xFrequency = 1;
 
      // Initialise the xLastWakeTime variable with the current time.
-    TickType_t xLastWakeTime = xTaskGetTickCount();
+    // TickType_t xLastWakeTime = xTaskGetTickCount();
     TickType_t xLEDBlinkTicks = xTaskGetTickCount();
     TickType_t xPrintTimeTicks = 0;
 

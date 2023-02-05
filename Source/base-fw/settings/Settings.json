@@ -37,18 +37,6 @@
 			}
 		},
 		{
-			"key": "Ring.SlowDelta",
-			"value": 300,
-			"info": {
-				"desc": "Encoder delta in slow move mode",
-				"flag_reboot": 0,
-				"default": 300,
-				"min": 0,
-				"max": 800,
-				"type": "int32"
-			}
-		},
-		{
 			"key": "Ring.SymBright",
 			"value": 15,
 			"info": {
