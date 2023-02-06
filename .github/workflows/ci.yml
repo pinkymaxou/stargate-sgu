@@ -18,20 +18,20 @@ jobs:
     - name: Build (ring-factory)
       uses: espressif/esp-idf-ci-action@v1
       with:
-        esp_idf_version: v4.3
+        esp_idf_version: v4.4
         path: ./Source/ring-factory
         target: esp32
 
     - name: Build (ring-fw)
       uses: espressif/esp-idf-ci-action@v1
       with:
-        esp_idf_version: v4.3
+        esp_idf_version: v4.4
         path: ./Source/ring-fw
         target: esp32
 
     - name: Build (base-fw)
       uses: espressif/esp-idf-ci-action@v1
       with:
-        esp_idf_version: v4.3
+        esp_idf_version: v4.4
         path: ./Source/base-fw
         target: esp32
