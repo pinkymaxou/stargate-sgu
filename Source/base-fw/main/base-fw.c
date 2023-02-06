@@ -109,8 +109,8 @@ static void wifi_init_all(void)
     m_pWifiSoftAP = esp_netif_create_default_wifi_ap();
 
     esp_netif_ip_info_t ipInfo;
-    IP4_ADDR(&ipInfo.ip, 192, 168, 66,1);
-	IP4_ADDR(&ipInfo.gw, 192, 168, 66,1);
+    IP4_ADDR(&ipInfo.ip, 192, 168, 66, 1);
+	IP4_ADDR(&ipInfo.gw, 192, 168, 66, 1);
 	IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
 	esp_netif_dhcps_stop(m_pWifiSoftAP);
 	esp_netif_set_ip_info(m_pWifiSoftAP, &ipInfo);

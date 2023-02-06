@@ -371,6 +371,12 @@ static bool DoHoming()
                 goto ERROR;
             }
 
+            if (abs(m_s32Count) >= (uint32_t)(u32StepPerRotation * 1.1))
+            {
+                szErrorString = "homing timeout";
+                goto ERROR;
+            }
+
             GPIO_StepMotorCCW();
             m_s32Count--;
 
@@ -387,6 +393,12 @@ static bool DoHoming()
             if (m_bIsStop)
             {
                 szErrorString = "Cancelled by user";
+                goto ERROR;
+            }
+
+            if (abs(m_s32Count) >= (uint32_t)(u32StepPerRotation * 1.1))
+            {
+                szErrorString = "homing timeout";
                 goto ERROR;
             }
 
