@@ -20,12 +20,6 @@
 
 #define TAG "GateControl"
 
-typedef struct
-{
-    TickType_t ttLastTicks;
-    bool bLastIsHome;
-} SSMHome;
-
 // Private variables
 static volatile GATECONTROL_EMODE m_eMode = GATECONTROL_EMODE_Idle;
 static volatile GATECONTROL_UModeArg m_uModeArgument;
@@ -356,39 +350,91 @@ static bool DoHoming()
         goto ERROR;
     }
 
-    SSMHome ssHome = { .ttLastTicks = xTaskGetTickCount(), .bLastIsHome = GPIO_IsHomeActive() };
-
     vTaskDelay(pdMS_TO_TICKS(750));
 
     m_s32Count = 0;
 
-    // We allow 10% error maximum
-    while(1)
+    // Fast mode, if
+    const bool bIsFastMode = GPIO_IsHomeActive();
+
+    if (bIsFastMode)
     {
-        if (m_s32Count >= (uint32_t)(u32StepPerRotation * 1.1))
+        ESP_LOGI(TAG, "Homing using fast mode algorithm");
+
+        /* If the Gate is already near the homing sensor we can just move out of the sensor then move near the sensor again
+           as homing. */
+        while(1)
         {
-            szErrorString = "homing timeout";
-            goto ERROR;
+            if (m_bIsStop)
+            {
+                szErrorString = "Cancelled by user";
+                goto ERROR;
+            }
+
+            GPIO_StepMotorCCW();
+            m_s32Count--;
+
+            if (!GPIO_IsHomeActive())
+            {
+                ESP_LOGI(TAG, "Homing first step, count: %d", m_s32Count);
+                break;
+            }
+            vTaskDelay(pdMS_TO_TICKS(1));
         }
 
-        GPIO_StepMotorCW();
-        m_s32Count++;
-
-        const bool bIsHome = GPIO_IsHomeActive();
-        if (!ssHome.bLastIsHome && bIsHome)
+        while(1)
         {
-            ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
-            //ssHome.s32Count = 0;
-            m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
-            break;
+            if (m_bIsStop)
+            {
+                szErrorString = "Cancelled by user";
+                goto ERROR;
+            }
+
+            GPIO_StepMotorCW();
+            m_s32Count++;
+
+            if (GPIO_IsHomeActive())
+            {
+                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
+                m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
+                break;
+            }
+            vTaskDelay(pdMS_TO_TICKS(1));
         }
-        ssHome.bLastIsHome = bIsHome;
-        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Homing using slow mode algorithm");
 
-        if (m_bIsStop)
+        // We allow 10% error maximum
+        bool bLastIsHome = GPIO_IsHomeActive();
+
+        while(1)
         {
-            szErrorString = "Cancelled by user";
-            goto ERROR;
+            if (m_s32Count >= (uint32_t)(u32StepPerRotation * 1.1))
+            {
+                szErrorString = "homing timeout";
+                goto ERROR;
+            }
+
+            if (m_bIsStop)
+            {
+                szErrorString = "Cancelled by user";
+                goto ERROR;
+            }
+
+            GPIO_StepMotorCW();
+            m_s32Count++;
+
+            const bool bIsHome = GPIO_IsHomeActive();
+            if (!bLastIsHome && bIsHome)
+            {
+                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
+                m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
+                break;
+            }
+            bLastIsHome = bIsHome;
+            vTaskDelay(pdMS_TO_TICKS(1));
         }
     }
 
