@@ -34,6 +34,16 @@ Some fonts:
 | stargateuniverse.woff | Created by : Gilles Nuytens (http://www.thescifiworld.net/fonts.htm)
 | eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
+| MGM (for the franchise)
+
+# Original gate
+
+![](./Readme-Assets/tumblr_886e62aec589cc185ebece6ed06d4db2_12052f14_500.gif)
+
+![](./Readme-Assets/tumblr_pue8nwoSe21xlrxkdo2_500.gif)
+
+![](./Readme-Assets/tumblr_pue8nwoSe21xlrxkdo4_500.gif)
+
 
 # Prerequisites
 
