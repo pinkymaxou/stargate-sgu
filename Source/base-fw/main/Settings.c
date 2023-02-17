@@ -34,7 +34,7 @@ static NVSJSON_SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_WSTAPass] =                NVSJSON_INITSTRING_VALIDATOR("WSTA.Pass","Wi-Fi password",                         "", ValidateWifiPassword, NVSJSON_EFLAGS_Secret | NVSJSON_EFLAGS_NeedsReboot),
 
     // Animation delay
-    [SETTINGS_EENTRY_AnimPrelockDelayMS] =      NVSJSON_INITINT32_RNG("dial.anim1",      "Delay before locking the chevron (ms)",  750, 0, 6000, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_AnimPrelockDelayMS] =      NVSJSON_INITINT32_RNG("dial.anim1",      "Delay before locking the chevron (ms)", 1250, 0, 6000, NVSJSON_EFLAGS_None),
     [SETTINGS_EENTRY_AnimPostlockDelayMS] =     NVSJSON_INITINT32_RNG("dial.anim2",      "Delay after locking the chevron (ms)",  1250, 0, 6000, NVSJSON_EFLAGS_None),
     [SETTINGS_EENTRY_AnimPredialDelayMS] =      NVSJSON_INITINT32_RNG("dial.anim3",      "Delay before starting to dial (ms)",    2500, 0, 10000, NVSJSON_EFLAGS_None),
 };

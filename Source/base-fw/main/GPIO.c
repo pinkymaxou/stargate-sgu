@@ -19,6 +19,8 @@
 
 static led_strip_t* m_strip = NULL;
 
+static void SendCMD(const char* szCmd);
+
 void GPIO_Init()
 {
     //install gpio isr service
@@ -123,19 +125,12 @@ void GPIO_Init()
     ESP_ERROR_CHECK(uart_param_config(FWCONFIG_MP3PLAYER_PORT_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(FWCONFIG_MP3PLAYER_PORT_NUM, FWCONFIG_MP3PLAYER_TX2RXD, FWCONFIG_MP3PLAYER_RX2TXD, -1, -1));
 
-    // We don't know when it is playing and there is no explicit STOP command. It just toggle
-    // so the trick is to play something then immediately put it on pause.
-    const char* cmd5 = "AT+PLAYMODE=3\r\n";
-    uart_write_bytes(FWCONFIG_MP3PLAYER_PORT_NUM, (const char *)cmd5, strlen(cmd5));
-    const char* cmd = "AT+PLAYNUM=2\r\n";
-    uart_write_bytes(FWCONFIG_MP3PLAYER_PORT_NUM, (const char *)cmd, strlen(cmd));
-
-    vTaskDelay(pdMS_TO_TICKS(100));
-
-    const char* cmd2 = "AT+PLAY=PP\r\n";
-    uart_write_bytes(FWCONFIG_MP3PLAYER_PORT_NUM, (const char *)cmd2, strlen(cmd2));
 }
 
+void GPIO_SendMp3PlayerCMD(const char* szCmd)
+{
+    uart_write_bytes(FWCONFIG_MP3PLAYER_PORT_NUM, (const char *)szCmd, strlen(szCmd));
+}
 
 /*! @brief The gate spin counter-clockwise */
 void GPIO_StepMotorCW()
