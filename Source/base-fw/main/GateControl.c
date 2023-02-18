@@ -15,6 +15,7 @@
 #include "ClockMode.h"
 #include "GateControl.h"
 #include "GateStepper.h"
+#include "SoundFX.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -499,9 +500,13 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
     // Animation off ...
     GATECONTROL_AnimRampLight(true);
     WORMHOLE_FullStop();
+    SOUNDFX_Stop();
 
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
+
+    SOUNDFX_ActivateGate();
+
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
     vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPredialDelayMS)));
 
@@ -530,11 +535,18 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
         if (abs(s32Move3) < abs(s32Move))
             s32Move = s32Move3;
 
+        SOUNDFX_StartRollingSound();
+        vTaskDelay(pdMS_TO_TICKS(250));
         MoveRelative(s32Move);
+        SOUNDFX_Stop();
+        vTaskDelay(pdMS_TO_TICKS(150));
+        SOUNDFX_EngageChevron();
+
         m_s32Count = s32TicksTarget;
 
         vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPrelockDelayMS)));
         SGUBRCOMM_LightUpLED(&g_sSGUBRCOMMHandle, u32SymbBright, u32SymbBright, u32SymbBright, SGUHELPER_SymbolIndexToLedIndex(u8SymbolIndex));
+        SOUNDFX_ChevronLock();
         vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPostlockDelayMS)));
     }
 
@@ -545,8 +557,12 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
     ESP_LOGI(TAG, "Dial done!");
 
     const WORMHOLE_SArg sArg = { .eType = psDialArg->eWormholeType, .bNoTimeLimit = false };
+    SOUNDFX_WormholeOpen();
+    vTaskDelay(pdMS_TO_TICKS(500));
     WORMHOLE_Open(&sArg, &m_bIsStop);
     WORMHOLE_Run(&m_bIsStop);
+    SOUNDFX_WormholeClose();
+    vTaskDelay(pdMS_TO_TICKS(600));
     WORMHOLE_Close(&m_bIsStop);
 
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
@@ -556,6 +572,7 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
     ESP_LOGE(TAG, "unable to dial: %s", szErrorString);
     GPIO_StopClamp();
     GPIO_StopStepper();
+    SOUNDFX_Fail();
     GATECONTROL_AnimRampLight(false);
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff);
     return false;
