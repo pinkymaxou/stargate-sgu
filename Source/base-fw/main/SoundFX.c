@@ -2,6 +2,7 @@
 #include "GPIO.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "Settings.h"
 
 static SOUNDFX_SFile m_sFiles[] =
 {
@@ -16,7 +17,7 @@ static SOUNDFX_SFile m_sFiles[] =
     [SOUNDFX_EFILE_9_music2_mp3]    = SOUNDFX_SFILE_INIT("9_music2.mp3", ""),
 };
 
-_Static_assert((sizeof(m_sFiles)/sizeof(m_sFiles[0])) == SOUNDFX_EFILE_Count, "coucou");
+_Static_assert((sizeof(m_sFiles)/sizeof(m_sFiles[0])) == SOUNDFX_EFILE_Count, "doesn't match");
 
 void SOUNDFX_Init()
 {
@@ -60,10 +61,17 @@ void SOUNDFX_WormholeClose()
 
 void SOUNDFX_PlayFile(SOUNDFX_EFILE eFile)
 {
-    const uint32_t u32Ix = (uint32_t)eFile + 1;
+    char szBuff[64];
+    sprintf(szBuff, "AT+VOL=%d\r\n", NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_Mp3PlayerVolume));
+    GPIO_SendMp3PlayerCMD(szBuff);
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    // Play once
     GPIO_SendMp3PlayerCMD("AT+PLAYMODE=3\r\n");
     vTaskDelay(pdMS_TO_TICKS(10));  // Not sure how long it needs to take the command but it doesn't like being spammed
-    char szBuff[64];
+
+    // Play number
+    const uint32_t u32Ix = (uint32_t)eFile + 1;
     sprintf(szBuff, "AT+PLAYNUM=%d\r\n", u32Ix);
     GPIO_SendMp3PlayerCMD(szBuff);
 }

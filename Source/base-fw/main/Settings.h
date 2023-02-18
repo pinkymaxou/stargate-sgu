@@ -31,6 +31,8 @@ typedef enum
     SETTINGS_EENTRY_AnimPostlockDelayMS,
     SETTINGS_EENTRY_AnimPredialDelayMS,
 
+    SETTINGS_EENTRY_Mp3PlayerVolume,
+
     SETTINGS_EENTRY_Count
 } SETTINGS_EENTRY;
 

@@ -558,11 +558,11 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
 
     const WORMHOLE_SArg sArg = { .eType = psDialArg->eWormholeType, .bNoTimeLimit = false };
     SOUNDFX_WormholeOpen();
-    vTaskDelay(pdMS_TO_TICKS(750));
+    vTaskDelay(pdMS_TO_TICKS(500));
     WORMHOLE_Open(&sArg, &m_bIsStop);
     WORMHOLE_Run(&m_bIsStop);
     SOUNDFX_WormholeClose();
-    vTaskDelay(pdMS_TO_TICKS(900));
+    vTaskDelay(pdMS_TO_TICKS(600));
     WORMHOLE_Close(&m_bIsStop);
 
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
