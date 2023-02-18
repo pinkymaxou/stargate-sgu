@@ -12,6 +12,7 @@ typedef enum
     SOUNDFX_EFILE_7_lockfail_wav,
     SOUNDFX_EFILE_8_music1_mp3,
     SOUNDFX_EFILE_9_music2_mp3,
+    SOUNDFX_EFILE_10_wormhole_wav,
 
     SOUNDFX_EFILE_Count
 } SOUNDFX_EFILE;
@@ -35,6 +36,8 @@ void SOUNDFX_EngageChevron();
 void SOUNDFX_ChevronLock();
 
 void SOUNDFX_WormholeOpen();
+
+void SOUNDFX_WormholeIdling();
 
 void SOUNDFX_WormholeClose();
 
