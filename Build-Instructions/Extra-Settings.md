@@ -13,8 +13,9 @@
 | WH.MaxBright      | 180   | 0          | 255        | int32  | Maximum brightness for wormhole leds. (Warning: can cause voltage drop) |
 | WH.Type           | 1     | 0          | 2          | int32  | 0: SGU, 1: SG1, 2: Hell                              |
 | WSTA.IsActive     | 1     | 0          | 1          | int32  | Wifi is active                                       |
-| WSTA.SSID         | Stargate-Command |            |          | string | WiFi (SSID)                                         |
-| WSTA.Pass         | uma-thurman |   |          | string | WiFi password                                       |
-| Dial.anim1        | 750   | 0          | 6000       | int32  | Delay before locking the chevron (ms)                 |
-| Dial.anim2        | 1250  | 0          | 6000       | int32  | Delay after locking the chevron (ms)                  |
+| WSTA.SSID         | Stargate-Command |            |          | string | WiFi (SSID)                                 |
+| WSTA.Pass         | uma-thurman |   |          | string | WiFi password                                             |
+| Dial.anim1        | 750   | 0          | 6000       | int32  | Delay before locking the chevron (ms)                |
+| Dial.anim2        | 1250  | 0          | 6000       | int32  | Delay after locking the chevron (ms)                 |
 | Dial.anim3        | 2500  | 0          | 10000      | int32  | Delay before starting to dial (ms)                   |
+| sound.vol         | 15    | 0          |    30      | int32  | Get Mp3 player volume                                |

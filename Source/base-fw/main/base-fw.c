@@ -30,6 +30,7 @@
 #include "base-fw.h"
 #include "GateControl.h"
 #include "GateStepper.h"
+#include "SoundFX.h"
 
 /* The examples use WiFi configuration that you can set via project configuration menu.
 
@@ -230,6 +231,8 @@ void app_main(void)
 
     // Need to be high ...
     GPIO_Init();
+
+    SOUNDFX_Init();
 
     GATESTEPPER_Init();
 
