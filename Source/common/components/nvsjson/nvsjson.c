@@ -157,7 +157,7 @@ NVSJSON_ESETRET NVSJSON_SetValueString(NVSJSON_SHandle* pHandle, uint16_t u16Ent
     return NVSJSON_ESETRET_OK;
 }
 
-const char* NVSJSON_ExportJSON(NVSJSON_SHandle* pHandle)
+char* NVSJSON_ExportJSON(NVSJSON_SHandle* pHandle)
 {
     cJSON* pRoot = cJSON_CreateObject();
     if (pRoot == NULL)
@@ -223,7 +223,7 @@ const char* NVSJSON_ExportJSON(NVSJSON_SHandle* pHandle)
 
         cJSON_AddItemToArray(pEntries, pEntryJSON);
     }
-    const char* pStr =  cJSON_PrintUnformatted(pRoot);
+    char* pStr =  cJSON_PrintUnformatted(pRoot);
     cJSON_Delete(pRoot);
     return pStr;
     ERROR:

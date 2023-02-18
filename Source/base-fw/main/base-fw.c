@@ -28,8 +28,9 @@
 #include "FWConfig.h"
 #include "Settings.h"
 #include "base-fw.h"
-
 #include "GateControl.h"
+#include "GateStepper.h"
+#include "SoundFX.h"
 
 /* The examples use WiFi configuration that you can set via project configuration menu.
 
@@ -109,8 +110,8 @@ static void wifi_init_all(void)
     m_pWifiSoftAP = esp_netif_create_default_wifi_ap();
 
     esp_netif_ip_info_t ipInfo;
-    IP4_ADDR(&ipInfo.ip, 192, 168, 66,1);
-	IP4_ADDR(&ipInfo.gw, 192, 168, 66,1);
+    IP4_ADDR(&ipInfo.ip, 192, 168, 66, 1);
+	IP4_ADDR(&ipInfo.gw, 192, 168, 66, 1);
 	IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
 	esp_netif_dhcps_stop(m_pWifiSoftAP);
 	esp_netif_set_ip_info(m_pWifiSoftAP, &ipInfo);
@@ -231,7 +232,9 @@ void app_main(void)
     // Need to be high ...
     GPIO_Init();
 
-    GPIO_StartStepper();
+    SOUNDFX_Init();
+
+    GATESTEPPER_Init();
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -257,10 +260,10 @@ void app_main(void)
     SGUBRCOMM_Start(&g_sSGUBRCOMMHandle);
     // GATECONTROL_DoAction(GATECONTROL_EMODE_GoHome);
 
-    const TickType_t xFrequency = 1;
+    // const TickType_t xFrequency = 1;
 
      // Initialise the xLastWakeTime variable with the current time.
-    TickType_t xLastWakeTime = xTaskGetTickCount();
+    // TickType_t xLastWakeTime = xTaskGetTickCount();
     TickType_t xLEDBlinkTicks = xTaskGetTickCount();
     TickType_t xPrintTimeTicks = 0;
 

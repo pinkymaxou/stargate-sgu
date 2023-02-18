@@ -13,6 +13,7 @@
 #include "Settings.h"
 #include "base-fw.h"
 #include "GPIO.h"
+#include "GateStepper.h"
 
 #define TAG "webserver"
 
@@ -269,9 +270,9 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         GPIO_SetRampLightPerc((float)pKeyJSON->valueint / 100.0f);
     }
     else if (strcmp(req->uri, ACTION_POST_RAMPLIGHTON) == 0)
-        GPIO_SetRampLightOnOff(true);
+        GATECONTROL_AnimRampLight(true);
     else if (strcmp(req->uri, ACTION_POST_RAMPLIGHTOFF) == 0)
-        GPIO_SetRampLightOnOff(false);
+        GATECONTROL_AnimRampLight(false);
     else if (strcmp(req->uri, ACTION_POST_RINGTURNOFF) == 0)
     {
         ESP_LOGI(TAG, "GateControl ring turn off");

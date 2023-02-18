@@ -98,7 +98,7 @@ NVSJSON_ESETRET NVSJSON_SetValueDouble(NVSJSON_SHandle* pHandle, uint16_t u16Ent
 void NVSJSON_GetValueString(NVSJSON_SHandle* pHandle, uint16_t u16Entry, char* out_value, size_t* length);
 NVSJSON_ESETRET NVSJSON_SetValueString(NVSJSON_SHandle* pHandle, uint16_t u16Entry, bool bIsDryRun, const char* szValue);
 
-const char* NVSJSON_ExportJSON(NVSJSON_SHandle* pHandle);
+char* NVSJSON_ExportJSON(NVSJSON_SHandle* pHandle);
 bool NVSJSON_ImportJSON(NVSJSON_SHandle* pHandle, const char* szJSON);
 
 

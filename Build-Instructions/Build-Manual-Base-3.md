@@ -10,6 +10,25 @@ Knowns issues:
 
 ![](./Assets/Schematic_SGU-Base.png)
 
+## Stepper Driver (DRV8825)
+
+We use a DRV8825 but you can use anything else.
+We run in 1/16 steps but it's possible to go higher or lower, but it will require some software changes.
+It sounds better at 1/16 but it's perfectly workable at 1/8.
+
+![](./Assets/stepper-driver-drv8825.jpg)
+
+| M0 | M1 | M2 | Microstep Resolution
+|---|---|---|---:|
+| Low | Low | Low | Full step
+| High | Low | Low | 1/2 step
+| Low | High | Low | 1/4 step
+| High | High | Low | 1/8 step
+| Low | Low | High | 1/16 step
+| High | Low | High | 1/32 step
+| Low | High | High | 1/32 step
+| High | High | High | 1/32 step
+
 The photo is old, I used JST connector later because the job is prettier.
 
 ![](./Assets/circuit-board-example.jpg)

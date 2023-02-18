@@ -12,10 +12,14 @@
 #include "led_strip.h"
 #include "esp_log.h"
 #include "driver/ledc.h"
+#include "driver/uart.h"
+#include <string.h>
 
 #define TAG "GPIO"
 
 static led_strip_t* m_strip = NULL;
+
+static void SendCMD(const char* szCmd);
 
 void GPIO_Init()
 {
@@ -76,7 +80,7 @@ void GPIO_Init()
         .hpoint         = 0
     };
     ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
-    GPIO_SetRampLightOnOff(false);
+    GPIO_SetRampLightPerc(false);
 
     // Initialize GPIO for home sensor
     gpio_set_direction(FWCONFIG_HOMESENSOR_PIN, GPIO_MODE_INPUT);
@@ -99,8 +103,34 @@ void GPIO_Init()
     }
     // Clear LED strip (turn off all LEDs)
     ESP_ERROR_CHECK(m_strip->clear(m_strip, 100));
+    
+    // =====================
+    // UART drive to drive the Mp3 player
+        /* Configure parameters of an UART driver,
+     * communication pins and install the driver */
+    uart_config_t uart_config = {
+        .baud_rate = FWCONFIG_MP3PLAYER_BAUDRATE,
+        .data_bits = UART_DATA_8_BITS,
+        .parity    = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .source_clk = UART_SCLK_APB,
+    };
+    int intr_alloc_flags = 0;
+    #if CONFIG_UART_ISR_IN_IRAM
+        intr_alloc_flags = ESP_INTR_FLAG_IRAM;
+    #endif
+
+    ESP_ERROR_CHECK(uart_driver_install(FWCONFIG_MP3PLAYER_PORT_NUM, FWCONFIG_MP3PLAYER_BUFFSIZE * 2, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_param_config(FWCONFIG_MP3PLAYER_PORT_NUM, &uart_config));
+    ESP_ERROR_CHECK(uart_set_pin(FWCONFIG_MP3PLAYER_PORT_NUM, FWCONFIG_MP3PLAYER_TX2RXD, FWCONFIG_MP3PLAYER_RX2TXD, -1, -1));
+
 }
 
+void GPIO_SendMp3PlayerCMD(const char* szCmd)
+{
+    uart_write_bytes(FWCONFIG_MP3PLAYER_PORT_NUM, (const char *)szCmd, strlen(szCmd));
+}
 
 /*! @brief The gate spin counter-clockwise */
 void GPIO_StepMotorCW()
@@ -167,14 +197,6 @@ void GPIO_SetRampLightPerc(float fltPercent)
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 4095 * fltPercent));
     // Update duty to apply the new value
     ESP_ERROR_CHECK(ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0));
-}
-
-void GPIO_SetRampLightOnOff(bool bIsActive)
-{
-    if (bIsActive)
-        GPIO_SetRampLightPerc((float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOnPercent) / 100.0f);
-    else
-        GPIO_SetRampLightPerc((float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOffPercent) / 100.0f);
 }
 
 void GPIO_SetSanityLEDStatus(bool bIsLightUp)
