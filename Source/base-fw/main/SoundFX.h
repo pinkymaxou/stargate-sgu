@@ -1,6 +1,9 @@
 #ifndef _SOUNDFX_H_
 #define _SOUNDFX_H_
 
+#include <stdbool.h>
+#include <stdint.h>
+
 typedef enum
 {
     SOUNDFX_EFILE_1_beginroll_mp3 = 0,
@@ -20,10 +23,11 @@ typedef enum
 typedef struct 
 {
     const char* szName;
+    uint32_t u32TimeMS;
     const char* szDesc;
 } SOUNDFX_SFile;
 
-#define SOUNDFX_SFILE_INIT(_szName, _szDesc) { .szName = _szName, .szDesc = _szDesc }
+#define SOUNDFX_SFILE_INIT(_szName, _u32TimeMS, _szDesc) { .szName = _szName, .u32TimeMS = _u32TimeMS, .szDesc = _szDesc }
 
 void SOUNDFX_Init();
 
@@ -43,7 +47,9 @@ void SOUNDFX_WormholeClose();
 
 void SOUNDFX_Fail();
 
-void SOUNDFX_PlayFile(SOUNDFX_EFILE eFile);
+const SOUNDFX_SFile* SOUNDFX_GetFile(SOUNDFX_EFILE eFile);
+
+void SOUNDFX_PlayFile(SOUNDFX_EFILE eFile, bool bIsRepeat);
 
 void SOUNDFX_Stop();
 

@@ -5,6 +5,7 @@
 #include "freertos/semphr.h"
 #include "FWConfig.h"
 #include "Settings.h"
+#include "SoundFX.h"
 
 typedef struct
 {
@@ -32,6 +33,10 @@ static const int m_pRing3[] = { 41, 44, 45, 46  };
 static SLedEffect m_sLedEffects[FWCONFIG_WORMHOLELEDS_LEDCOUNT];
 static WORMHOLE_SArg m_sArg = {0};
 
+static bool m_bIsIdlingSoundPlaying = false;
+static TickType_t m_xWormHoleOpenTicks = 0;
+static const SOUNDFX_SFile* m_sFileWormholeOpen = NULL;
+
 void WORMHOLE_FullStop()
 {
     GPIO_ClearAllPixels();
@@ -40,13 +45,18 @@ void WORMHOLE_FullStop()
 
 void WORMHOLE_Open(const WORMHOLE_SArg* pArg, volatile bool* pIsCancelled)
 {
+    m_xWormHoleOpenTicks = xTaskGetTickCount();
+    SOUNDFX_WormholeOpen();
+    m_sFileWormholeOpen = SOUNDFX_GetFile(SOUNDFX_EFILE_5_gateopen_mp3);
+    vTaskDelay(pdMS_TO_TICKS(500));
+
     m_sArg = *pArg;
 
     DoRing0();
     DoRing1();
     DoRing2();
     DoRing3();
-    vTaskDelay(pdMS_TO_TICKS(200));
+    vTaskDelay(pdMS_TO_TICKS(250));
     DoRing2();
     DoRing1();
     DoRing0();
@@ -70,8 +80,16 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
 
     const uint32_t u32OpenTimeS = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_GateOpenedTimeout);
 
+    m_bIsIdlingSoundPlaying = false;
+
     while(!*pIsCancelled && (m_sArg.bNoTimeLimit || (xTaskGetTickCount() - xStartTicks) < pdMS_TO_TICKS(1000*u32OpenTimeS)))
     {
+        if ( (xTaskGetTickCount() - m_xWormHoleOpenTicks) > pdMS_TO_TICKS(m_sFileWormholeOpen->u32TimeMS-500) && !m_bIsIdlingSoundPlaying)
+        {
+            m_bIsIdlingSoundPlaying = true;
+            SOUNDFX_WormholeIdling();
+        }
+
         for(int i = 0; i < FWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
         {
             SLedEffect* psLedEffect = &m_sLedEffects[i];
@@ -150,6 +168,9 @@ static int GetRing(int zeroBasedIndex)
 
 void WORMHOLE_Close(volatile bool* pIsCancelled)
 {
+    SOUNDFX_WormholeClose();
+    vTaskDelay(pdMS_TO_TICKS(800));
+
     DoRing3();
     DoRing2();
     DoRing1();
