@@ -16,7 +16,7 @@ bool SGUBRPROTOCOL_Decode(const SGUBRPROTOCOL_SHandle* psHandle, const uint8_t* 
     assert(psHandle->psConfig != NULL);
     if (u16Length < MAGIC_LENGTH + 1)
         return false;
-    
+
     if (u8Datas[0] != MAGIC0 || u8Datas[1] != MAGIC1)
         return false;
 
@@ -107,7 +107,7 @@ uint32_t SGUBRPROTOCOL_EncKeepAlive(uint8_t* u8Dst, uint16_t u16MaxLen, const SG
         return 0;
 
     u8Dst[0] = MAGIC0;
-    u8Dst[1] = MAGIC1; 
+    u8Dst[1] = MAGIC1;
     u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_KeepAlive;
     u8Dst[3] = (uint8_t)(psArg->u32MaximumTimeMS >> 24U);
     u8Dst[4] = (uint8_t)(psArg->u32MaximumTimeMS >> 16U);
@@ -123,7 +123,7 @@ uint32_t SGUBRPROTOCOL_EncTurnOff(uint8_t* u8Dst, uint16_t u16MaxLen)
         return 0;
 
     u8Dst[0] = MAGIC0;
-    u8Dst[1] = MAGIC1; 
+    u8Dst[1] = MAGIC1;
     u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_TurnOff;
     return u16ReqLength;
 }
@@ -135,7 +135,7 @@ uint32_t SGUBRPROTOCOL_EncGotoFactory(uint8_t* u8Dst, uint16_t u16MaxLen)
         return 0;
 
     u8Dst[0] = MAGIC0;
-    u8Dst[1] = MAGIC1; 
+    u8Dst[1] = MAGIC1;
     u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_GotoFactory;
     return u16ReqLength;
 }
@@ -147,7 +147,7 @@ uint32_t SGUBRPROTOCOL_EncGotoOTAMode(uint8_t* u8Dst, uint16_t u16MaxLen)
         return 0;
 
     u8Dst[0] = MAGIC0;
-    u8Dst[1] = MAGIC1; 
+    u8Dst[1] = MAGIC1;
     u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_GotoOTAMode;
     return u16ReqLength;
 }
@@ -159,7 +159,7 @@ uint32_t SGUBRPROTOCOL_EncUpdateLight(uint8_t* u8Dst, uint16_t u16MaxLen, const 
         return 0;
 
     u8Dst[0] = MAGIC0;
-    u8Dst[1] = MAGIC1; 
+    u8Dst[1] = MAGIC1;
     u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_UpdateLight;
     u8Dst[3] = psArg->sRGB.u8Red;
     u8Dst[4] = psArg->sRGB.u8Green;
@@ -175,7 +175,7 @@ uint32_t SGUBRPROTOCOL_EncChevronLightning(uint8_t* u8Dst, uint16_t u16MaxLen, c
         return 0;
 
     u8Dst[0] = MAGIC0;
-    u8Dst[1] = MAGIC1; 
+    u8Dst[1] = MAGIC1;
     u8Dst[2] = (uint8_t)SGUBRPROTOCOL_ECMD_ChevronsLightning;
     u8Dst[3] = (uint8_t)psArg->eChevronAnim;
     return u16ReqLength;

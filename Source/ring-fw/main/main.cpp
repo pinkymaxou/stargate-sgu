@@ -322,7 +322,7 @@ static void LedRefreshTask(void *pvParameters)
 
         FastLED.show();
         ESP_ERROR_CHECK(esp_pm_lock_release(m_lockHandle));
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
 
@@ -441,7 +441,7 @@ static void MainTask(void *pvParameters)
         SGUBRCOMM_Process(&m_sSGUBRCommHandle);
 
         // 100 HZ
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
 
