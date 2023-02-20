@@ -14,6 +14,7 @@
 #include "base-fw.h"
 #include "GPIO.h"
 #include "GateStepper.h"
+#include "SoundFX.h"
 
 #define TAG "webserver"
 
@@ -26,6 +27,8 @@
 #define API_POSTSETTINGSJSON_URI "/api/setsettingsjson"
 
 #define API_GETSYSINFOJSON_URI "/api/getsysinfo"
+
+#define API_GETALLSOUNDSJSON_URI "/api/getallsounds"
 
 #define ACTION_POST_STOP "/action/stop"
 #define ACTION_POST_RINGGOTOFACTORY "/action/ringgotofactory"
@@ -57,6 +60,8 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req);
 static const EF_SFile* GetFile(const char* strFilename);
 
 static const char* GetSysInfo();
+static const char* GetAllSounds();
+
 static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len);
 
 static uint8_t m_u8Buffers[HTTPSERVER_BUFFERSIZE];
@@ -359,6 +364,15 @@ static esp_err_t api_get_handler(httpd_req_t *req)
             goto ERROR;
         }
     }
+    else if (strcmp(req->uri, API_GETALLSOUNDSJSON_URI) == 0)
+    {
+        pExportJSON = GetAllSounds();
+        if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
+        {
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
+            goto ERROR;
+        }
+    }
     else
     {
         ESP_LOGE(TAG, "api_get_handler, url: %s", req->uri);
@@ -632,6 +646,33 @@ static const char* GetSysInfo()
     cJSON_AddItemToObject(pEntryJSON10, "value", cJSON_CreateString(buff));
     cJSON_AddItemToArray(pEntries, pEntryJSON10);
 
+
+    const char* pStr =  cJSON_PrintUnformatted(pRoot);
+    cJSON_Delete(pRoot);
+    return pStr;
+    ERROR:
+    cJSON_Delete(pRoot);
+    return NULL;
+}
+
+static const char* GetAllSounds()
+{
+    cJSON* pRoot = NULL;
+    pRoot = cJSON_CreateObject();
+    if (pRoot == NULL)
+        goto ERROR;
+
+    cJSON* pEntries = cJSON_AddArrayToObject(pRoot, "files");
+
+    for(int i = 0; i < 10; i++)
+    {
+        const SOUNDFX_SFile* pFile = SOUNDFX_GetFile((SOUNDFX_EFILE)i);
+
+        cJSON* pNewFile = cJSON_CreateObject(); 
+        cJSON_AddItemToObject(pNewFile, "name", cJSON_CreateString(pFile->szName));
+        cJSON_AddItemToObject(pNewFile, "desc", cJSON_CreateString(pFile->szDesc));
+        cJSON_AddItemToArray(pEntries, pNewFile);
+    }
 
     const char* pStr =  cJSON_PrintUnformatted(pRoot);
     cJSON_Delete(pRoot);
