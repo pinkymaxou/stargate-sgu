@@ -14,6 +14,7 @@
 #include "driver/ledc.h"
 #include "driver/uart.h"
 #include <string.h>
+#include "WhiteBox.h"
 
 #define TAG "GPIO"
 
@@ -104,6 +105,7 @@ void GPIO_Init()
     // Clear LED strip (turn off all LEDs)
     ESP_ERROR_CHECK(m_strip->clear(m_strip, 100));
     
+    #ifndef WHITEBOX_SOUNDFX_DEACTIVATE
     // =====================
     // UART drive to drive the Mp3 player
         /* Configure parameters of an UART driver,
@@ -124,12 +126,14 @@ void GPIO_Init()
     ESP_ERROR_CHECK(uart_driver_install(FWCONFIG_MP3PLAYER_PORT_NUM, FWCONFIG_MP3PLAYER_BUFFSIZE * 2, 0, 0, NULL, intr_alloc_flags));
     ESP_ERROR_CHECK(uart_param_config(FWCONFIG_MP3PLAYER_PORT_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(FWCONFIG_MP3PLAYER_PORT_NUM, FWCONFIG_MP3PLAYER_TX2RXD, FWCONFIG_MP3PLAYER_RX2TXD, -1, -1));
-
+    #endif
 }
 
 void GPIO_SendMp3PlayerCMD(const char* szCmd)
 {
+    #ifndef WHITEBOX_SOUNDFX_DEACTIVATE
     uart_write_bytes(FWCONFIG_MP3PLAYER_PORT_NUM, (const char *)szCmd, strlen(szCmd));
+    #endif
 }
 
 /*! @brief The gate spin counter-clockwise */
