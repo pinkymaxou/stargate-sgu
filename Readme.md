@@ -1,4 +1,4 @@
-**Warning**: This project contains several hundred parts to print and hundreds hours of print. 
+**Warning**: This project contains several hundred parts to print and hundreds hours of print.
 If you decide to take this path you will suffer a lot, you may lost some compatriot in the battle.
 You will no longer be the same after that, it could also cause hair loss.
 
@@ -11,10 +11,10 @@ This project is basically a small stargate made to decorate your desk. It featur
 https://www.youtube.com/watch?v=xp08K564FYA for more details.
 
 Unfortunately this project went through a lot of trial and error, so there are more parts than it should have especially in the base.
-Optimize it would require making a second gate to test new optimization. 
+Optimize it would require making a second gate to test new optimization.
 I'm no willing to do that now.
 
-Inspired partly by: 
+Inspired partly by:
 
 | URL |
 |---|
@@ -23,8 +23,7 @@ Inspired partly by:
 
 # Knowns issues
 
-- I used 1A 12v to 5v, the servo motor moving can cause brownout.
-- Running the wormhole continously seems to prevent correct charge of the ring and cause weird glitches. May be caused by unsufficient 12v to 5v converter amperage.
+- The start-up and recharge plunger is not perfect, using pogo pin and gold plated female contactor may improve it.
 
 # Copyrights & Thanks
 
@@ -34,6 +33,8 @@ Some fonts:
 | stargateuniverse.woff | Created by : Gilles Nuytens (http://www.thescifiworld.net/fonts.htm)
 | eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
+| explanation and inspiration for the design | https://stargate.fandom.com/wiki/Glyph#Milky_Way_glyphs
+| DF Robot | https://www.dfrobot.com/
 | MGM (for the franchise)
 
 # Original gate
@@ -132,12 +133,12 @@ Some fonts:
 | Back-plunger-bar_4mm-x1.stl | 1
 | Back-plunger-Higher-spring_4mm-x1.stl | 1
 | Back-plunger-Lower-spring_4mm-x1.stl | 1
-| black-plunger-hammer-cover_4mm-x1.stl | 1 
+| black-plunger-hammer-cover_4mm-x1.stl | 1
 | black-plunger-hammer_4mm-x1.stl | 1
 | Board-holder_4mm-x1.stl | 1
 | Bottom-plate-v2_4mm-x1.stl | 1
 | magnet-gear_4mm-x1.stl | 1
-| Mechanic-Anchor-L_4mm-x1.stl |1 
+| Mechanic-Anchor-L_4mm-x1.stl |1
 | Mechanic-Anchor-R_4mm-x1.stl | 1
 | Mechanic-Archor-p2-L_4mm-x1.stl | 1
 | Mechanic-Archor-p2-R_4mm-x1.stl | 1
