@@ -1,6 +1,7 @@
 # Base assembly
 
 Don't worry about the ringmotor assembly, it could be inserted later.
+It is designed to be easily dismantlable.
 
  - You need a lot of small clamp if you want to do a decent job. I have found them at dollar store and they worth every penny.
  - Gorilla glue or canopy glue
@@ -13,7 +14,7 @@ Glue all those parts together, use the picture to guide you.
 You needs those part to continue:
 
  - Outer-bottom-plate_4mm-x1.stl
- - Outer-bottom-plate2_4mm-x1.stl 
+ - Outer-bottom-plate2_4mm-x1.stl
  - Outer-front-plate_4mm-x1.stl
  - Outer-side-plate#1_4mm-x1.stl
  - Outer-side-plate#2_4mm-x1.stl
@@ -67,7 +68,7 @@ Glue side covers, you needs to use clamp and maybe tape. Use painter tape where 
 
 ![](./Assets/Outer-assembly-part5.png)
 
-Overcovers are not mandatory, they correct a mistake I made on the side cover STL. 
+Overcovers are not mandatory, they correct a mistake I made on the side cover STL.
 I could have corrected it but I feared I would introduce more errors.
 
 ![](./Assets/install-overcovers-x2.png)
@@ -97,7 +98,7 @@ The base is designed to allow the mecanism to be removed freely.
 
 ## Install back-cover (Outer-back-cover_4mm-x1.stl)
 
-This part is designed to accommodate pretty much any barel jack or connector. 
+This part is designed to accommodate pretty much any barel jack or connector.
 But you have to design it yourself, use "Outer-back-cover-plug_4mm-x1.stl" as a template.
 You can glue it to "Outer-back-cover_4mm-x1.stl" using gorilla glue.
 The back cover is designed to hold using M2x15 screws. It is screwed into plastic because it doesn't needs real structural integrity.

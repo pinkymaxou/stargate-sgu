@@ -2,6 +2,7 @@
 1. Before building
     1. [Material prerequisite](Build-Manual-0.md)
     2. [Recommendation](Build-Manual-1.md)
+    3. [Introduction to the destiny gate](Gate-Intro.md)
 2. Build the base
     1. [Base assembly #1](Build-Manual-Base-1.md)
     2. [Base assembly #2](Build-Manual-Base-2.md)
