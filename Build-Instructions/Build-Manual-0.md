@@ -44,6 +44,8 @@
 
 ## Recommendations
 
+Parts are printed are very high resolution (by FDM standard) and last for several days in some case, it's very important to have a good way to ensure it stick in place.
+
 | Description | Quantity | URL
 |---|---|---|
 | Dremel Purple Glue | 1 | https://www.amazon.ca/Dremel-GS45-01-Glue-Sticks/dp/B077FVQ3DX
@@ -63,8 +65,9 @@
 ## Required plastics
 
 Basically color is up to you, but you will probably needs at least 3 colors.
+Nothing prevent you from painting parts if you can't find the right plastic color. If you do I suggest using dark PLA before painting for the ring, to be sure it doesn't have light leaking.
 
-| Color | Used for | Description
+| Color | Used for | Comments
 |---|---|---|
 | Dark gray or black PLA | Ring | The ring in the serie is almost black if not black. The one I made was gray but not dark enough, if I could do it again I would likely make it black |
 | Transparent PLA | Ring | Used for chevron illumination and light diffusion. It may be possible to use white instead but I suggest you to test it before commiting yourself.

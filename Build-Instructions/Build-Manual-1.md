@@ -13,8 +13,10 @@ We recommend you to print these parts using the color or plastic of your choice 
 - symbol-template1_0.2mm-x1.stl
 
 It is better if you also have one WS2812B to test the chevron and symbol lightning.
-The LED shouldn't be at full power to test symbols, only 10/255 PWM is enough to see it clearly. It could be higher for chevron but your don't gain anything going further than 200/255 expect causing excessive power loss.
-If you want to use a resin printer for symbols you can, but you may need to paint them because resin transparency is not adequate in our experience.
+The LED shouldn't be at full power to test symbols, only 10/255 PWM is enough to see it clearly.
+It could be higher for chevron but your don't gain anything going further than 220/255 except excessive power loss.
+
+If you want to use a resin printer for symbols you can, but you will likely have to paint them because resin transparency is not adequate in our experience.
 
 ![](./Assets/TestPart-Stargate-Front.png)
 

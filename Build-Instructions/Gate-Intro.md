@@ -1,10 +1,12 @@
 # How it works?
 
-SG1 and SGA gate are using constellation like glyth (or symbols). Unlike these, Stargate Universe use some kind of numeral because it travel through different galaxy.
+SG1 and SGA gate use constellation like glyth (or symbols). Unlike these, the Stargate Universe Gate uses some kind of numeral because it travel through different galaxies.
 
 Copyright: https://stargate.fandom.com/wiki/Glyph#Milky_Way_glyphs
 
-| Position | Glyph | Position | Glyph | Position | Glyph |
+There are 36 symbols + 9 chevrons
+
+| Position | Symbols | Position | Glyph | Position | Symbols |
 |---|---|---|---|---|---|
 | 1	 | ![](./Assets/sgu-glyphs/UniverseGlyph01.svg) | 13 | ![](./Assets/sgu-glyphs/UniverseGlyph13.svg) | 25 | ![](./Assets/sgu-glyphs/UniverseGlyph25.svg)
 | 2	 | ![](./Assets/sgu-glyphs/UniverseGlyph02.svg) | 14 | ![](./Assets/sgu-glyphs/UniverseGlyph14.svg) | 26 | ![](./Assets/sgu-glyphs/UniverseGlyph26.svg)

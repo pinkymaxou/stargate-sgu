@@ -1,4 +1,4 @@
-**Warning**: This project contains several hundred parts to print and hundreds hours of print. 
+**Warning**: This project contains several hundred parts to print and hundreds hours of print.
 If you decide to take this path you will suffer a lot, you may lost some compatriot in the battle.
 You will no longer be the same after that, it could also cause hair loss.
 
@@ -11,10 +11,10 @@ This project is basically a small stargate made to decorate your desk. It featur
 https://www.youtube.com/watch?v=u1PzZ1OQ_60 for more details.
 
 Unfortunately this project went through a lot of trial and error, so there are more parts than it should have especially in the base.
-Optimize it would require making a second gate to test new optimization. 
+Optimize it would require making a second gate to test new optimization.
 I'm no willing to do that now.
 
-Inspired partly by: 
+Inspired partly by:
 
 | URL |
 |---|
@@ -133,12 +133,12 @@ Some fonts:
 | Back-plunger-bar_4mm-x1.stl | 1
 | Back-plunger-Higher-spring_4mm-x1.stl | 1
 | Back-plunger-Lower-spring_4mm-x1.stl | 1
-| black-plunger-hammer-cover_4mm-x1.stl | 1 
+| black-plunger-hammer-cover_4mm-x1.stl | 1
 | black-plunger-hammer_4mm-x1.stl | 1
 | Board-holder_4mm-x1.stl | 1
 | Bottom-plate-v2_4mm-x1.stl | 1
 | magnet-gear_4mm-x1.stl | 1
-| Mechanic-Anchor-L_4mm-x1.stl |1 
+| Mechanic-Anchor-L_4mm-x1.stl |1
 | Mechanic-Anchor-R_4mm-x1.stl | 1
 | Mechanic-Archor-p2-L_4mm-x1.stl | 1
 | Mechanic-Archor-p2-R_4mm-x1.stl | 1
