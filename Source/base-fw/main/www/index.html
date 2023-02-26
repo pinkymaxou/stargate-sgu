@@ -10,69 +10,16 @@
     </head>
     <body>
 		<div id="app">
-			<!-- Action bar -->
-			<div id="headermenu">
-				<ul>
-					<!-- Dial control -->
-					<li class="dropdown">
-						<button class="dropbtn button-27">Dial</button>
-						<div class="dropdown-content">
-							<button id="idBtGoHome" class="button-27 item" onclick="SendAction('action/gohome')">Homing sequence</button>
-							<button id="idBtActiveWormhole" class="button-27 item" onclick="SendAction('action/activatewormhole')">Activate wormhole</button>
-							<button id="idBtActiveClock" class="button-27 item" onclick="SendAction('action/activateclockmode')">Activate clock mode</button>
-						</div>
-					</li>
-
-					<!-- Clamp control -->
-					<li class="dropdown">
-						<button class="dropbtn button-27">Clamp/Ramp</button>
-						<div class="dropdown-content">
-							<button id="idBtReleaseClamp" class="button-27 item" onclick="SendAction('action/releaseclamp')">Release</button>
-							<button id="idBtLockClamp" class="button-27 item" onclick="SendAction('action/lockclamp')">Lock</button>
-							<button id="idBtRampLightON" class="button-27 item" onclick="SendAction('action/ramplighton')">Ramp light (on)</button>
-							<button id="idBtRampLightOFF" class="button-27 item" onclick="SendAction('action/ramplightoff')">Ramp light (off)</button>
-						</div>
-					</li>
-
-					<!-- Ring control -->
-					<li class="dropdown">
-						<button class="dropbtn button-27">Ring</button>
-						<div class="dropdown-content">
-							<button id="idBtRingTurnOff" class="button-27 item" onclick="SendAction('action/ringturnoff')">Power Off</button>
-							<button id="idBtRingChevronError" class="button-27 item" onclick="SendAction('action/ringchevronerror')">Chevron Error effect</button>
-							<button id="idBtRingChevronFadeIn" class="button-27 item" onclick="SendAction('action/ringchevronfadein')">Chevron (fade-in)</button>
-							<button id="idBtRingChevronFadeOut" class="button-27 item" onclick="SendAction('action/ringchevronfadeout')">Chevron (fade-out)</button>
-						</div>
-					</li>
-					<!-- Advanced -->
-					<li class="dropdown">
-						<button class="dropbtn button-27">Advanced</button>
-						<div class="dropdown-content">
-							<button id="idBtRingGotoFactory" class="button-27 item" onclick="SendAction('action/ringgotofactory')">Ring (Goto factory)</button>
-							<button id="idBtReboot" class="button-27 item" onclick="SendAction('action/reboot')">Reboot</button>
-						</div>
-					</li>
-					<li style="float: right;"><button id="idBtStop" class="button-27" style="background-color: red;" onclick="SendAction('action/stop')">Stop</button></li>
-				</ul>
-			</div>
-
-			<div class="flex-container">
-				<div style="overflow-y: scroll; ">
-					<div v-for="addr in alladdresses">
-						<button class="sguaddrbtn" @click="DialGate(addr.symbolIndexes)">
-							<p style="margin: 0.15em; font-weight: bold; color: black;">{{ addr.name }}</p>
-							<span v-for="symbolIndex in addr.symbolIndexes">
-								<!-- <img v-bind:src="GetSymbolIndex(symbolIndex).imgfile"> -->
-								<span style="font-family: 'stargateuniverse'; font-size: 3rem; margin: 0.5rem">{{ GetSymbolIndex(symbolIndex).txt }}</span>
-							</span>
-						</button>
-					</div>
-				</div>
-				<div class="colstatus">
-					<div><img src="img/stargate-sgu.png" style="width: auto; height: auto"></div>
+			<div class="address-container">
+				<div v-for="addr in alladdresses"> <!-- sguaddrbtn-selected -->
+					<button class="sguaddrbtn " @click="DialGate(addr.symbolIndexes)">
+						<p>{{ addr.name }}</p>
+						<span v-for="symbolIndex in addr.symbolIndexes">
+							<span>{{ GetSymbolIndex(symbolIndex).txt }}</span>
+						</span>
+					</button>
 				</div>
 			</div>
-
 		</div>
 
         <!-- JS -->

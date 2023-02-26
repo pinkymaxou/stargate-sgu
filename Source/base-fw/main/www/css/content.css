@@ -18,20 +18,32 @@ body {
   margin: 0;
 }
 
-.flex-container {
-  display: flex;
-  background-color: black;
+.address-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(300px, 1fr));
 }
 
-.flex-container > div {
-  background-color: black;
-  margin: 0px;
+.address-item  {
   padding: 5px;
-  font-size: 1rem;
+  font-family: 'orbitron';
+
+  min-width: 20px;
+  max-width: 30px;
+
+  flex-grow: 1;
+  flex: 1 1 0px;
+
+  display: inline-block;
+
+  align-self: flex-start;
+}
+
+.address-item:hover {
+  border-color: lightsteelblue;
 }
 
 .colstatus {
-  background-color: red; 
+  background-color: red;
   flex-grow: 1;
 }
 
@@ -39,14 +51,40 @@ body {
   width: 100%;
   margin: 0.01rem;
   padding: 0.5rem;
-  background-color: aqua;
+  background-color: #112637;
+  color: #1C99AD;
   border-radius: 0.2rem;
   border-color: black;
   border-radius: 0.5rem;
 }
 
+.sguaddrbtn p {
+  margin: 0.15em; 
+  font-weight: bold;
+}
+
+.sguaddrbtn span {
+  font-family: 'stargateuniverse'; 
+  font-size: 3rem; 
+  margin: 2.5px;
+}
+
+.sguaddrbtn-selected {
+  width: 100%;
+  margin: 0.01rem;
+  padding: 0.5rem;
+  background-color: #0C62C5;
+  color: #17EB84;
+  border-radius: 0.2rem;
+  border-color: white;
+  border-radius: 0.5rem;
+}
+
 .sguaddrbtn:hover {
-  background-color: white;
+  background-color: #32A4EB;
+  color: white;
+  border-color: #0C62C5;
+  border-width: 2.5px;
 }
 
 /* CSS */
