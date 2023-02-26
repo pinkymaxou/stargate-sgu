@@ -23,8 +23,7 @@ Inspired partly by:
 
 # Knowns issues
 
-- I used 1A 12v to 5v, the servo motor moving can cause brownout.
-- Running the wormhole continously seems to prevent correct charge of the ring and cause weird glitches. May be caused by unsufficient 12v to 5v converter amperage.
+- The start-up and recharge plunger is not perfect, using pogo pin and gold plated female contactor may improve it.
 
 # Copyrights & Thanks
 
@@ -34,6 +33,8 @@ Some fonts:
 | stargateuniverse.woff | Created by : Gilles Nuytens (http://www.thescifiworld.net/fonts.htm)
 | eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
+| explanation and inspiration for the design | https://stargate.fandom.com/wiki/Glyph#Milky_Way_glyphs
+| DF Robot | https://www.dfrobot.com/
 | MGM (for the franchise)
 
 # Original gate
