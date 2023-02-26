@@ -8,7 +8,7 @@ This project is basically a small stargate made to decorate your desk. It featur
 
 ![](./Readme-Assets/stargate-thumbnail4.jpg)
 
-https://www.youtube.com/watch?v=u1PzZ1OQ_60 for more details.
+https://www.youtube.com/watch?v=xp08K564FYA for more details.
 
 Unfortunately this project went through a lot of trial and error, so there are more parts than it should have especially in the base.
 Optimize it would require making a second gate to test new optimization. 
