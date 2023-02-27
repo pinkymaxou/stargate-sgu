@@ -90,3 +90,4 @@ function GetSymbolIndex(SymbolOneBased)
 {
   return allsymbols[SymbolOneBased-1];
 }
+

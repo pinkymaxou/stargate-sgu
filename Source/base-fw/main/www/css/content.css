@@ -24,11 +24,7 @@ body {
 }
 
 .address-item  {
-  padding: 5px;
   font-family: 'orbitron';
-
-  min-width: 20px;
-  max-width: 30px;
 
   flex-grow: 1;
   flex: 1 1 0px;
@@ -48,9 +44,9 @@ body {
 }
 
 .sguaddrbtn {
+  margin-bottom: 0px;
+  padding: 5px;
   width: 100%;
-  margin: 0.01rem;
-  padding: 0.5rem;
   background-color: #112637;
   color: #1C99AD;
   border-radius: 0.2rem;
@@ -59,20 +55,19 @@ body {
 }
 
 .sguaddrbtn p {
-  margin: 0.15em; 
+  margin: 5px;
+  font-size: 15px;
   font-weight: bold;
 }
 
 .sguaddrbtn span {
-  font-family: 'stargateuniverse'; 
-  font-size: 3rem; 
+  font-family: 'stargateuniverse';
+  font-size: 45px;
   margin: 2.5px;
 }
 
 .sguaddrbtn-selected {
   width: 100%;
-  margin: 0.01rem;
-  padding: 0.5rem;
   background-color: #0C62C5;
   color: #17EB84;
   border-radius: 0.2rem;
@@ -90,11 +85,11 @@ body {
 /* CSS */
 .button-27 {
   appearance: none;
-  background-color: aqua;
+  background-color: #112637;
   border: 2px solid #1A1A1A;
   border-radius: 10px;
   box-sizing: border-box;
-  color: #FFFFFF;
+  color: #1C99AD;
   cursor: pointer;
   display: inline-block;
   font-size: 16px;
