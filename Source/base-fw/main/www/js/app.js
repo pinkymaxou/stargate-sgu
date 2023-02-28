@@ -77,17 +77,54 @@ let alladdresses = [
   { symbolIndexes: [1, 36, 2, 35, 3, 34],                name: 'Test #1' },
 ];
 
-var currentApp = new Vue({
-  el: '#app',
-  data:
-  {
-    symbols: allsymbols,
-    alladdresses: alladdresses,
-  }
-})
-
 function GetSymbolIndex(SymbolOneBased)
 {
   return allsymbols[SymbolOneBased-1];
 }
 
+let currentData =
+{
+  symbols: allsymbols,
+  alladdresses: alladdresses,
+
+  status: {
+    text: "",
+    cancel_request: false,
+    time_hour: 0, time_min: 0
+  }
+};
+
+var currentApp = new Vue({
+  el: '#app',
+  data: currentData
+})
+
+async function timerHandler() {
+
+  // Get system informations
+  await fetch('/api/getstatus')
+      .then((response) => {
+          if (!response.ok) {
+              throw new Error('Unable to get status');
+          }
+          return response.json();
+      })
+      .then((data) =>
+      {
+        console.log("data: ", data);
+        currentData.status = data.status;
+        setTimeout(timerHandler, 500);
+      })
+      .catch((ex) =>
+      {
+          setTimeout(timerHandler, 5000);
+          console.error('getstatus', ex);
+      });
+}
+
+window.addEventListener(
+  "load",
+  (event) => {
+    console.log("page is fully loaded");
+    setTimeout(timerHandler, 500);
+});

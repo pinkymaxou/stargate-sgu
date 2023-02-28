@@ -30,6 +30,8 @@
 
 #define API_GETALLSOUNDSJSON_URI "/api/getallsounds"
 
+#define API_GETSTATUSJSON_URI "/api/getstatus"
+
 #define ACTION_POST_STOP "/action/stop"
 #define ACTION_POST_RINGGOTOFACTORY "/action/ringgotofactory"
 #define ACTION_POST_REBOOT "/action/reboot"
@@ -61,6 +63,7 @@ static const EF_SFile* GetFile(const char* strFilename);
 
 static const char* GetSysInfo();
 static const char* GetAllSounds();
+static const char* GetStatusJSON();
 
 static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len);
 
@@ -373,6 +376,15 @@ static esp_err_t api_get_handler(httpd_req_t *req)
             goto ERROR;
         }
     }
+    else if (strcmp(req->uri, API_GETSTATUSJSON_URI) == 0)
+    {
+        pExportJSON = GetStatusJSON();
+        if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
+        {
+            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
+            goto ERROR;
+        }
+    }
     else
     {
         ESP_LOGE(TAG, "api_get_handler, url: %s", req->uri);
@@ -657,6 +669,40 @@ static const char* GetSysInfo()
     return NULL;
 }
 
+static const char* GetStatusJSON()
+{
+        cJSON* pRoot = NULL;
+    pRoot = cJSON_CreateObject();
+    if (pRoot == NULL)
+        goto ERROR;
+
+    cJSON* pStatusEntry = cJSON_CreateObject();
+
+    GATECONTROL_SState sState;
+    GATECONTROL_GetState(&sState);
+
+    cJSON_AddItemToObject(pStatusEntry, "text", cJSON_CreateString(sState.szStatusText));
+    cJSON_AddItemToObject(pStatusEntry, "cancel_request", cJSON_CreateBool(sState.bIsCancelRequested));
+
+    time_t now = 0;
+    struct tm timeinfo = { 0 };
+    time(&now);
+    localtime_r(&now, &timeinfo);
+    cJSON_AddItemToObject(pStatusEntry, "time_hour", cJSON_CreateNumber(timeinfo.tm_hour));
+    cJSON_AddItemToObject(pStatusEntry, "time_min", cJSON_CreateNumber(timeinfo.tm_min));
+
+    cJSON_AddItemToObject(pRoot, "status", pStatusEntry);
+
+    const char* pStr =  cJSON_PrintUnformatted(pRoot);
+    cJSON_Delete(pRoot);
+    return pStr;
+    ERROR:
+    cJSON_Delete(pRoot);
+    return NULL;
+
+    //return "{ \"status\" : { \"mode\" : \"dialing\" } }";
+}
+
 static const char* GetAllSounds()
 {
     cJSON* pRoot = NULL;
@@ -670,7 +716,7 @@ static const char* GetAllSounds()
     {
         const SOUNDFX_SFile* pFile = SOUNDFX_GetFile((SOUNDFX_EFILE)i);
 
-        cJSON* pNewFile = cJSON_CreateObject(); 
+        cJSON* pNewFile = cJSON_CreateObject();
         cJSON_AddItemToObject(pNewFile, "name", cJSON_CreateString(pFile->szName));
         cJSON_AddItemToObject(pNewFile, "desc", cJSON_CreateString(pFile->szDesc));
         cJSON_AddItemToArray(pEntries, pNewFile);

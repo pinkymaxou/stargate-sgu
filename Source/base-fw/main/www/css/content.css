@@ -115,7 +115,7 @@ body {
 
 .button-27:hover {
   box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
-  background-color: gray;
+  background-color: #0E1E2B;
   transform: translateY(-2px);
 }
 

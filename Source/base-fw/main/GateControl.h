@@ -35,6 +35,14 @@ typedef union
     } sManualWormhole;
 } GATECONTROL_UModeArg;
 
+
+typedef struct
+{
+    GATECONTROL_EMODE eMode;
+    char szStatusText[150+1];
+    bool bIsCancelRequested;
+} GATECONTROL_SState;
+
 void GATECONTROL_Init();
 
 void GATECONTROL_Process();
@@ -44,5 +52,7 @@ void GATECONTROL_Start();
 bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* puModeArg);
 
 void GATECONTROL_AnimRampLight(bool bIsActive);
+
+void GATECONTROL_GetState(GATECONTROL_SState* pState);
 
 #endif

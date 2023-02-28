@@ -22,8 +22,12 @@
 #define TAG "GateControl"
 
 // Private variables
-static volatile GATECONTROL_EMODE m_eMode = GATECONTROL_EMODE_Idle;
-static volatile GATECONTROL_UModeArg m_uModeArgument;
+static volatile GATECONTROL_EMODE m_eNextMode = GATECONTROL_EMODE_Idle;
+static volatile GATECONTROL_UModeArg m_uNextModeArgument;
+
+static volatile GATECONTROL_EMODE m_eCurrentMode;
+static volatile GATECONTROL_UModeArg m_uCurrentModeArg;
+
 static volatile bool m_bIsStop = false;
 
 // Control homing and encoder.
@@ -76,23 +80,23 @@ static void GateControlTask( void *pvParameters )
         WORMHOLE_FullStop();
 
         xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
-        const GATECONTROL_EMODE eMode = m_eMode;
-        const GATECONTROL_UModeArg uModeArg = m_uModeArgument;
-
+        m_eCurrentMode = m_eNextMode;
+        m_uCurrentModeArg = m_uNextModeArgument;
+         
         // Reset temporary vars ...
-        m_eMode = GATECONTROL_EMODE_Idle;
-        memset((void*)&m_uModeArgument, 0, sizeof(m_uModeArgument));
+        m_eNextMode = GATECONTROL_EMODE_Idle;
+        memset((void*)&m_uNextModeArgument, 0, sizeof(GATECONTROL_UModeArg));
         m_bIsStop = false;
 
         xSemaphoreGive(m_xSemaphoreHandle);
 
-        if (eMode == GATECONTROL_EMODE_Idle)
+        if (m_eCurrentMode == GATECONTROL_EMODE_Idle)
         {
             vTaskDelay(pdMS_TO_TICKS(100));
             continue;
         }
 
-        if (eMode == GATECONTROL_EMODE_GoHome)
+        if (m_eCurrentMode == GATECONTROL_EMODE_GoHome)
         {
             SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
             vTaskDelay(pdMS_TO_TICKS(750));
@@ -101,16 +105,16 @@ static void GateControlTask( void *pvParameters )
             else
                 SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff);
         }
-        else if (eMode == GATECONTROL_EMODE_AutoCalibrate)
+        else if (m_eCurrentMode == GATECONTROL_EMODE_AutoCalibrate)
         {
             if (AutoCalibrate())
             {
                 DoHoming();
             }
         }
-        else if (eMode == GATECONTROL_EMODE_Dial)
+        else if (m_eCurrentMode == GATECONTROL_EMODE_Dial)
         {
-            if (DoDialSequence(&uModeArg.sDialArg))
+            if (DoDialSequence(&m_uCurrentModeArg.sDialArg))
             {
                 // Go back to home ...
                 vTaskDelay(pdMS_TO_TICKS(5000));
@@ -121,27 +125,27 @@ static void GateControlTask( void *pvParameters )
             }
 
         }
-        else if (eMode == GATECONTROL_EMODE_ActiveClock)
+        else if (m_eCurrentMode == GATECONTROL_EMODE_ActiveClock)
         {
             ESP_LOGI(TAG, "GateControl activate clock mode");
             CLOCKMODE_Run(&m_bIsStop);
         }
-        else if (eMode == GATECONTROL_EMODE_ManualReleaseClamp)
+        else if (m_eCurrentMode == GATECONTROL_EMODE_ManualReleaseClamp)
         {
             ESP_LOGI(TAG, "GateControl release clamp");
             GPIO_ReleaseClamp();
             vTaskDelay(pdMS_TO_TICKS(5));
         }
-        else if (eMode == GATECONTROL_EMODE_ManualLockClamp)
+        else if (m_eCurrentMode == GATECONTROL_EMODE_ManualLockClamp)
         {
             ESP_LOGI(TAG, "GateControl lock clamp");
             GPIO_LockClamp();
             vTaskDelay(pdMS_TO_TICKS(5));
         }
-        else if (eMode == GATECONTROL_EMODE_ManualWormhole)
+        else if (m_eCurrentMode == GATECONTROL_EMODE_ManualWormhole)
         {
             ESP_LOGI(TAG, "GateControl manual wormhole");
-            const WORMHOLE_SArg sArg = { .eType = uModeArg.sManualWormhole.eWormholeType, .bNoTimeLimit = true };
+            const WORMHOLE_SArg sArg = { .eType = m_uCurrentModeArg.sManualWormhole.eWormholeType, .bNoTimeLimit = true };
             WORMHOLE_Open(&sArg, &m_bIsStop);
             WORMHOLE_Run(&m_bIsStop);
             WORMHOLE_Close(&m_bIsStop);
@@ -215,9 +219,9 @@ bool GATECONTROL_DoAction(GATECONTROL_EMODE eMode, const GATECONTROL_UModeArg* p
 
     // Stop what it was doing before
     m_bIsStop = true;
-    m_eMode = eMode;
+    m_eNextMode = eMode;
     if (puModeArg != NULL)
-        m_uModeArgument = *puModeArg;
+        m_uNextModeArgument = *puModeArg;
     END:
     xSemaphoreGive(m_xSemaphoreHandle);
     return true;
@@ -572,4 +576,44 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
     GATECONTROL_AnimRampLight(false);
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff);
     return false;
+}
+
+void GATECONTROL_GetState(GATECONTROL_SState* pState)
+{
+    pState->eMode = m_eCurrentMode;
+    const char* szStatusText = NULL;
+    switch(pState->eMode)
+    {
+        case GATECONTROL_EMODE_Idle:
+            szStatusText = "IDLE";
+            break;
+        case GATECONTROL_EMODE_GoHome:
+            szStatusText = "Homing procedure";
+            break;
+        case GATECONTROL_EMODE_ManualReleaseClamp:
+            szStatusText = "Releasing clamp manually";
+            break;
+        case GATECONTROL_EMODE_ManualLockClamp:
+            szStatusText = "Locking clamp manually";
+            break;
+        case GATECONTROL_EMODE_Stop:
+            szStatusText = "Stopping";
+            break;
+        case GATECONTROL_EMODE_Dial:
+            szStatusText = "Dialing outside";
+            break;
+        case GATECONTROL_EMODE_AutoCalibrate:
+            szStatusText = "Automatic calibration";
+            break;
+        case GATECONTROL_EMODE_ManualWormhole:
+            szStatusText = "Manual wormhole";
+            break;
+        case GATECONTROL_EMODE_ActiveClock:
+            szStatusText = "Clock mode";
+            break;
+    }
+    pState->szStatusText[0] = 0;
+    if (szStatusText != NULL)
+        strcpy(pState->szStatusText, szStatusText);
+    pState->bIsCancelRequested = m_bIsStop;
 }
