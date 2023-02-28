@@ -13,8 +13,11 @@
     <body>
 		<div class="navbar">
 			<a class="" href="#" alt="Homing the gate" onclick="openNav()"><img src="img/home.svg" width="30" height="30"></a>
+			<p>IDLE</p>
+			<p style="margin-right: 10px">07:00</p>
 		</div>
 
+		<!-- Side nav -->
 		<div id="mySidenav" class="sidenav">
 			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 			<a href="index.html">Home</a>
@@ -22,8 +25,8 @@
 			<a href="settings.html">Settings</a>
 			<br>
 			<div style="display: flex; flex-flow: column;">
-				<button id="idBtStop" class="button-27" style="background-color: red;" onclick="SendAction('action/stop')">Stop</button>
-				<br>
+				<button id="idBtStop" class="button-27" style="background-color: red; color: white;" onclick="SendAction('action/stop')">Stop</button>
+				<p>Gate</p>
 				<button id="idBtGoHome" class="button-27 item" onclick="SendAction('action/gohome')">Homing sequence</button>
 				<button id="idBtActiveWormhole" class="button-27 item" onclick="SendAction('action/activatewormhole')">Activate wormhole</button>
 				<button id="idBtActiveClock" class="button-27 item" onclick="SendAction('action/activateclockmode')">Activate clock mode</button>
@@ -35,8 +38,8 @@
 					<button id="idBtRampLightON" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ramplighton')">Ramp light (on)</button>
 					<button id="idBtRampLightOFF" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ramplightoff')">Ramp light (off)</button>
 				</div>
+				<p>Ring</p>
 				<button id="idBtRingTurnOff" class="button-27 item" onclick="SendAction('action/ringturnoff')">Power Off</button>
-
 				<div style="display: flex; flex-flow: row;">
 					<button id="idBtRingChevronError" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ringchevronerror')">Error</button>
 					<button id="idBtRingChevronFadeIn" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ringchevronfadein')">Fade-in</button>
@@ -44,6 +47,8 @@
 				</div>
 			</div>
 		</div>
+
+		<!-- Main part -->
 		<div class="main">
 			<div id="app">
 				<div class="address-container">

@@ -7,6 +7,9 @@
     top: 0;
     width: 100%;
     height: 50px;
+        
+    display: grid;
+    grid-template-columns: minmax(50px, max-content) auto minmax(50px, max-content);
 }
 
 .navbar a {
@@ -15,7 +18,7 @@
     text-align: center;
     padding: 12px 5px;
     text-decoration: none;
-    font-size: 17px;
+    font-size: 15px;
 }
 
 .navbar a:hover {
