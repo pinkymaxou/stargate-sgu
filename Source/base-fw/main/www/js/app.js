@@ -74,7 +74,7 @@ let alladdresses = [
   { symbolIndexes: [2, 14, 18, 23, 30, 5, 33],           name: 'Malice Planet' },
   { symbolIndexes: [5, 17, 23, 25, 1, 28, 33],           name: 'Novus Colony Planet' },
   { symbolIndexes: [6, 26, 28, 10, 31, 12, 33],          name: 'Last Planet' },
-  { symbolIndexes: [1, 36, 2, 35, 3, 34],                name: 'Test #1' },
+  // { symbolIndexes: [1, 36, 2, 35, 3, 34],                name: 'Test #1' },
 ];
 
 function GetSymbolIndex(SymbolOneBased)
