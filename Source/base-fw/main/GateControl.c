@@ -263,7 +263,7 @@ static void MoveRelative(int32_t s32RelativeTarget)
 
 static bool AutoCalibrate(const SProcCycle* psProcCycle)
 {
-    const char* szError = "Unknown";
+    const char* szError = "unknown";
 
     ESP_LOGI(TAG, "[Autocalibration] started");
 
@@ -278,7 +278,7 @@ static bool AutoCalibrate(const SProcCycle* psProcCycle)
     {
         if (m_bIsStop)
         {
-            szError = "Cancelled by user";
+            szError = "cancelled";
             goto ERROR;
         }
 
@@ -289,7 +289,7 @@ static bool AutoCalibrate(const SProcCycle* psProcCycle)
 
         if (m_bIsStop)
         {
-            szError = "Cancelled by user";
+            szError = "cancelled";
             goto ERROR;
         }
 
@@ -331,14 +331,14 @@ static bool AutoCalibrate(const SProcCycle* psProcCycle)
 
 static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, int32_t* ps32Count)
 {
-    const char* szError = "Unknown";
+    const char* szError = "unknown";
 
     TickType_t ttStart = xTaskGetTickCount();
     while(1)
     {
         if ((xTaskGetTickCount() - ttStart) > pdMS_TO_TICKS(u32TimeOutMS))
         {
-            szError = "Timeout";
+            szError = "timeout";
             goto ERROR;
         }
 
@@ -393,7 +393,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
         {
             if (m_bIsStop)
             {
-                szErrorString = "cancelled by user";
+                szErrorString = "cancelled";
                 goto ERROR;
             }
 
@@ -418,7 +418,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
         {
             if (m_bIsStop)
             {
-                szErrorString = "cancelled by user";
+                szErrorString = "cancelled";
                 goto ERROR;
             }
 
@@ -457,7 +457,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 
             if (m_bIsStop)
             {
-                szErrorString = "cancelled by user";
+                szErrorString = "cancelled";
                 goto ERROR;
             }
 
@@ -544,7 +544,7 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCyc
     {
         if (m_bIsStop)
         {
-            szErrorString = "cancelled by user";
+            szErrorString = "cancelled";
             goto ERROR;
         }
 
@@ -639,6 +639,7 @@ void GATECONTROL_GetState(GATECONTROL_SState* pState)
             break;
     }
 
+    // Last error
     pState->bHasLastError = m_bhasCurrentLastError;
     strcpy(pState->szLastError, m_szCurrentLastError);
 
