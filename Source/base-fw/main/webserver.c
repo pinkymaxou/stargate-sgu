@@ -538,18 +538,27 @@ static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filena
 {
     if (IS_FILE_EXT(filename, ".pdf")) {
         return httpd_resp_set_type(req, "application/pdf");
-    } else if (IS_FILE_EXT(filename, ".html")) {
-        return httpd_resp_set_type(req, "text/html");
-    } else if (IS_FILE_EXT(filename, ".jpeg")) {
-        return httpd_resp_set_type(req, "image/jpeg");
-    } else if (IS_FILE_EXT(filename, ".svg")) {
-        return httpd_resp_set_type(req, "image/svg+xml");
     } else if (IS_FILE_EXT(filename, ".ico")) {
         return httpd_resp_set_type(req, "image/x-icon");
     } else if (IS_FILE_EXT(filename, ".css")) {
         return httpd_resp_set_type(req, "text/css");
+    } else if (IS_FILE_EXT(filename, ".txt")) {
+        return httpd_resp_set_type(req, "text/plain");
     } else if (IS_FILE_EXT(filename, ".js")) {
         return httpd_resp_set_type(req, "text/javascript");
+    } else if (IS_FILE_EXT(filename, ".json")) {
+        return httpd_resp_set_type(req, "application/json");
+    } else if (IS_FILE_EXT(filename, ".ttf")) {
+        return httpd_resp_set_type(req, "application/x-font-truetype");
+    } else if (IS_FILE_EXT(filename, ".woff")) {
+        return httpd_resp_set_type(req, "application/font-woff");
+    } else if (IS_FILE_EXT(filename, ".html") || IS_FILE_EXT(filename, ".htm")) {
+        return httpd_resp_set_type(req, "text/html");
+    } else if (IS_FILE_EXT(filename, ".jpeg") || IS_FILE_EXT(filename, ".jpg")) {
+        return httpd_resp_set_type(req, "image/jpeg");
+    }
+    else if (IS_FILE_EXT(filename, ".svg")) {
+        return httpd_resp_set_type(req, "image/svg+xml");
     }
     /* This is a limited set only */
     /* For any other type always set as plain text */
@@ -671,7 +680,7 @@ static const char* GetSysInfo()
 
 static const char* GetStatusJSON()
 {
-        cJSON* pRoot = NULL;
+    cJSON* pRoot = NULL;
     pRoot = cJSON_CreateObject();
     if (pRoot == NULL)
         goto ERROR;
@@ -683,6 +692,9 @@ static const char* GetStatusJSON()
 
     cJSON_AddItemToObject(pStatusEntry, "text", cJSON_CreateString(sState.szStatusText));
     cJSON_AddItemToObject(pStatusEntry, "cancel_request", cJSON_CreateBool(sState.bIsCancelRequested));
+
+    cJSON_AddItemToObject(pStatusEntry, "error_text", cJSON_CreateString(sState.szLastError));
+    cJSON_AddItemToObject(pStatusEntry, "is_error", cJSON_CreateBool(sState.bHasLastError));
 
     time_t now = 0;
     struct tm timeinfo = { 0 };

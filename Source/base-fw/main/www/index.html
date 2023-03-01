@@ -12,9 +12,9 @@
     </head>
     <body>
 		<div id="app">
-			<div class="navbar">
+			<div class="navbar" :class="{ navbar_error: status.is_error }">
 				<a class="" href="#" alt="Homing the gate" onclick="openNav()"><img src="img/home.svg" width="30" height="30"></a>
-				<p>{{ status.text }}</p>
+				<p>{{ status.is_error ? status.error_text : status.text }}</p>
 				<p style="margin-right: 10px">{{ String(status.time_hour).padStart(2, '0') }}:{{ String(status.time_min).padStart(2, '0') }}</p>
 			</div>
 

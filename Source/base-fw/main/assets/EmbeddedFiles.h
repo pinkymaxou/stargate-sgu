@@ -26,7 +26,7 @@ typedef enum
     EF_EFILE_SETTINGS_HTML = 4,    /*!< @brief File: settings.html (size: 2 KB) */
     EF_EFILE_CSS_CONTENT_CSS = 5,    /*!< @brief File: css/content.css (size: 3 KB) */
     EF_EFILE_CSS_SIDENAV_CSS = 6,    /*!< @brief File: css/sidenav.css (size: 726  B) */
-    EF_EFILE_CSS_TOP_MENU_CSS = 7,    /*!< @brief File: css/top-menu.css (size: 556  B) */
+    EF_EFILE_CSS_TOP_MENU_CSS = 7,    /*!< @brief File: css/top-menu.css (size: 625  B) */
     EF_EFILE_FONT_ANCIENT_VIRTUAL_TTF_WOFF = 8,    /*!< @brief File: font/ancient_virtual.ttf.woff (size: 11 KB) */
     EF_EFILE_FONT_EUROSTILE_EXTENDED2_BOLD_WOFF = 9,    /*!< @brief File: font/eurostile_extended2_bold.woff (size: 14 KB) */
     EF_EFILE_FONT_STARGATEUNIVERSE_WOFF = 10,    /*!< @brief File: font/stargateuniverse.woff (size: 6 KB) */

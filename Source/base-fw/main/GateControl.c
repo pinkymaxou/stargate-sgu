@@ -21,12 +21,20 @@
 
 #define TAG "GateControl"
 
+typedef struct
+{
+    void (*OnError)(const char* szError);
+} SProcCycle;
+
 // Private variables
 static volatile GATECONTROL_EMODE m_eNextMode = GATECONTROL_EMODE_Idle;
 static volatile GATECONTROL_UModeArg m_uNextModeArgument;
 
-static volatile GATECONTROL_EMODE m_eCurrentMode;
-static volatile GATECONTROL_UModeArg m_uCurrentModeArg;
+// Current working variables ...
+static GATECONTROL_EMODE m_eCurrentMode;
+static GATECONTROL_UModeArg m_uCurrentModeArg;
+static bool m_bhasCurrentLastError = false;
+static char m_szCurrentLastError[128+1] = { 0, };
 
 static volatile bool m_bIsStop = false;
 
@@ -48,9 +56,11 @@ static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, in
 
 static int32_t GetAbsoluteSymbolTarget(uint8_t u8SymbolIndex, int32_t s32StepPerRotation);
 
-static bool AutoCalibrate();
-static bool DoHoming();
-static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg);
+static bool AutoCalibrate(const SProcCycle* psProcCycle);
+static bool DoHoming(const SProcCycle* psProcCycle);
+static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCycle* psProcCycle);
+
+static void ProcCycleError(const char* szError);
 
 void GATECONTROL_Init()
 {
@@ -80,9 +90,11 @@ static void GateControlTask( void *pvParameters )
         WORMHOLE_FullStop();
 
         xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
+
+        // Start new process ....
         m_eCurrentMode = m_eNextMode;
         m_uCurrentModeArg = m_uNextModeArgument;
-         
+
         // Reset temporary vars ...
         m_eNextMode = GATECONTROL_EMODE_Idle;
         memset((void*)&m_uNextModeArgument, 0, sizeof(GATECONTROL_UModeArg));
@@ -96,34 +108,41 @@ static void GateControlTask( void *pvParameters )
             continue;
         }
 
+        // Reset last error latch
+        xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
+        m_bhasCurrentLastError = false;
+        m_szCurrentLastError[0] = 0;
+        xSemaphoreGive(m_xSemaphoreHandle);
+
+        SProcCycle sProcCycle = { .OnError = ProcCycleError };
+
         if (m_eCurrentMode == GATECONTROL_EMODE_GoHome)
         {
             SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
             vTaskDelay(pdMS_TO_TICKS(750));
-            if (DoHoming())
+            if (DoHoming(&sProcCycle))
                 SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);
             else
                 SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff);
         }
         else if (m_eCurrentMode == GATECONTROL_EMODE_AutoCalibrate)
         {
-            if (AutoCalibrate())
+            if (AutoCalibrate(&sProcCycle))
             {
-                DoHoming();
+                DoHoming(&sProcCycle);
             }
         }
         else if (m_eCurrentMode == GATECONTROL_EMODE_Dial)
         {
-            if (DoDialSequence(&m_uCurrentModeArg.sDialArg))
+            if (DoDialSequence(&m_uCurrentModeArg.sDialArg, &sProcCycle))
             {
                 // Go back to home ...
                 vTaskDelay(pdMS_TO_TICKS(5000));
 
                 // We give a chance to home ...
                 m_bIsStop = false;
-                DoHoming();
+                DoHoming(&sProcCycle);
             }
-
         }
         else if (m_eCurrentMode == GATECONTROL_EMODE_ActiveClock)
         {
@@ -242,7 +261,7 @@ static void MoveRelative(int32_t s32RelativeTarget)
     GATESTEPPER_MoveTo(s32RelativeTarget);
 }
 
-static bool AutoCalibrate()
+static bool AutoCalibrate(const SProcCycle* psProcCycle)
 {
     const char* szError = "Unknown";
 
@@ -304,6 +323,8 @@ static bool AutoCalibrate()
     NVSJSON_Save(&g_sSettingHandle);
     return true;
     ERROR:
+    if (psProcCycle != NULL)
+        psProcCycle->OnError(szError);
     ESP_LOGE(TAG, "[Autocalibration] Error: %s", szError);
     return false;
 }
@@ -338,7 +359,7 @@ static bool MoveUntilHomeSwitch(bool bHomeSwitchState, uint32_t u32TimeOutMS, in
     return false;
 }
 
-static bool DoHoming()
+static bool DoHoming(const SProcCycle* psProcCycle)
 {
     const char* szErrorString = "unknown";
 
@@ -372,7 +393,7 @@ static bool DoHoming()
         {
             if (m_bIsStop)
             {
-                szErrorString = "Cancelled by user";
+                szErrorString = "cancelled by user";
                 goto ERROR;
             }
 
@@ -397,7 +418,7 @@ static bool DoHoming()
         {
             if (m_bIsStop)
             {
-                szErrorString = "Cancelled by user";
+                szErrorString = "cancelled by user";
                 goto ERROR;
             }
 
@@ -436,7 +457,7 @@ static bool DoHoming()
 
             if (m_bIsStop)
             {
-                szErrorString = "Cancelled by user";
+                szErrorString = "cancelled by user";
                 goto ERROR;
             }
 
@@ -469,6 +490,8 @@ static bool DoHoming()
     return true;
     ERROR:
     ESP_LOGE(TAG, "[DoHoming] error: %s", szErrorString);
+    if (psProcCycle != NULL)
+        psProcCycle->OnError(szErrorString);
     return false;
 }
 
@@ -491,7 +514,7 @@ void GATECONTROL_AnimRampLight(bool bIsActive)
         }
 }
 
-static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
+static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCycle* psProcCycle)
 {
     const char* szErrorString = "unknown";
 
@@ -569,7 +592,9 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
     GATECONTROL_AnimRampLight(false);
     return true;
     ERROR:
-    ESP_LOGE(TAG, "unable to dial: %s", szErrorString);
+    if (psProcCycle != NULL)
+        psProcCycle->OnError(szErrorString);
+    ESP_LOGE(TAG, "Unable to dial: %s", szErrorString);
     GPIO_StopClamp();
     GPIO_StopStepper();
     SOUNDFX_Fail();
@@ -580,6 +605,7 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg)
 
 void GATECONTROL_GetState(GATECONTROL_SState* pState)
 {
+    xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
     pState->eMode = m_eCurrentMode;
     const char* szStatusText = NULL;
     switch(pState->eMode)
@@ -612,8 +638,22 @@ void GATECONTROL_GetState(GATECONTROL_SState* pState)
             szStatusText = "Clock mode";
             break;
     }
+
+    pState->bHasLastError = m_bhasCurrentLastError;
+    strcpy(pState->szLastError, m_szCurrentLastError);
+
     pState->szStatusText[0] = 0;
     if (szStatusText != NULL)
         strcpy(pState->szStatusText, szStatusText);
+
     pState->bIsCancelRequested = m_bIsStop;
+    xSemaphoreGive(m_xSemaphoreHandle);
+}
+
+static void ProcCycleError(const char* szError)
+{
+    xSemaphoreTake(m_xSemaphoreHandle, portMAX_DELAY);
+    strcpy(m_szCurrentLastError, szError);
+    m_bhasCurrentLastError = true;
+    xSemaphoreGive(m_xSemaphoreHandle);
 }

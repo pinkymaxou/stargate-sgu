@@ -39,7 +39,12 @@ typedef union
 typedef struct
 {
     GATECONTROL_EMODE eMode;
+
     char szStatusText[150+1];
+
+    bool bHasLastError;
+    char szLastError[150+1];
+
     bool bIsCancelRequested;
 } GATECONTROL_SState;
 

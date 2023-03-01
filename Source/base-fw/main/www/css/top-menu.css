@@ -12,6 +12,11 @@
     grid-template-columns: minmax(50px, max-content) auto minmax(50px, max-content);
 }
 
+.navbar_error {
+    background-color: red;
+    color: white;
+}
+
 .navbar a {
     float: left;
     color: #f2f2f2;
