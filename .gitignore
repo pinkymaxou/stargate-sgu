@@ -24,3 +24,6 @@ Source/ring-fw/.vscode/settings.json
 /Source/base-fw/main/assets/EmbeddedFiles.txt
 /Source/test-stepper/build
 /Source/test/test-stepper/build
+/Source/base-fw/.vscode
+/Source/ring-factory/.vscode
+/Source/ring-fw/.vscode
