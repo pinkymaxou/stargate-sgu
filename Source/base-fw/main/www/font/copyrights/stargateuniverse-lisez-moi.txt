@@ -1,0 +1,42 @@
+======================================================================
+Police Stargate Atlantis Glyphs v.1.0
+======================================================================
+Ce que c'est : La première police gratuite sur les glyphs de la porte de Stargate Atlantis.
+Created by   : Gilles Nuytens
+Contact      : gilles@thescifiworld.net
+© copyright  : Gilles Nuytens
+
+
+======================================================================
+NOTES LÉGALES
+======================================================================
+Stargate Atlantis est une marque déposée de la MGM, par conséquent cette police ne peut être utilisée pour des raisons commerciales.
+Cette police est disponible gratuitement sur http://www.thescifiworld.net.
+
+Cette archive et son contenu sont soumuis à certaines conditions:
+- Cette archive ne peut pas être hébergée sur un site web sans ma permission.
+- Si vous avez eu ma permission, vous devez héberger cette archive telle quelle.
+- Cette archive ne peut pas être altérée en aucune façon.
+
+Voilà, c'était pour le blabla "officiel" maintenant amusez-vous bien ! :)
+Et si vous faites de supers créations avec, envoyez-moi une copie ! :)
+
+
+======================================================================
+Stargate Atlantis Glyphs font v.1.0 DETAILS
+======================================================================
+La police contient 36 glyphs provenant de la porte de Stargate Atlantis + le logo d'Atlantis.
+-De a ==> z: glyphs 1 ==> 26
+-De A ==> J: glyphs 27 ==> 36
+-0,1 et 2 sont des caractères spéciaux.
+
+Regardez également le fichier "atlantis_glyphs.gif", inclus dans cette archives pour plus d'informations sur les caractères.
+
+
+======================================================================
+DETAILS DE L'ARCHIVE
+======================================================================
+-atlantis-glyphs.ttf
+-Read Me.txt
+-Lisez-moi.txt
+-atlantis_glyphs.gif
