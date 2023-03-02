@@ -144,7 +144,7 @@ static void InitESPNOW()
         ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
 
         ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-                wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
+                wifi_configAP.ap.ssid, (int)FWCONFIG_SOFTAP_WIFI_PASS, (int)FWCONFIG_SOFTAP_WIFI_CHANNEL);
     }
     else
     {
@@ -331,10 +331,10 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
     if (event_id == WIFI_EVENT_AP_STACONNECTED) {
         wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
         ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
-                 MAC2STR(event->mac), event->aid);
+                 MAC2STR(event->mac), (int)event->aid);
     } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
         wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
-        ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d", MAC2STR(event->mac), event->aid);
+        ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d", MAC2STR(event->mac), (int)event->aid);
     }
 }
 
@@ -360,7 +360,7 @@ static void ResetAutoOffTicks()
 
 static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAliveArg)
 {
-    ESP_LOGI(TAG, "BLE Keep Alive received, resetting timer. Time out set at: %u", /*0*/psKeepAliveArg->u32MaximumTimeMS);
+    ESP_LOGI(TAG, "BLE Keep Alive received, resetting timer. Time out set at: %u", /*0*/(uint)psKeepAliveArg->u32MaximumTimeMS);
     m_ulAutoOffTimeoutMs = psKeepAliveArg->u32MaximumTimeMS + (psKeepAliveArg->u32MaximumTimeMS/2);
     ResetAutoOffTicks();
 }
@@ -373,7 +373,7 @@ static void SGUBRTurnOffHandler()
 
 static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg)
 {
-    ESP_LOGI(TAG, "BLE Update light received. Lights: %u", /*0*/psArg->u8LightCount);
+    ESP_LOGI(TAG, "BLE Update light received. Lights: %u", /*0*/(uint)psArg->u8LightCount);
 
      // Keep chevrons dimly lit
     for(int i = 0; i < psArg->u8LightCount; i++)

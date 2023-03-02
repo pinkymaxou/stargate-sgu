@@ -124,7 +124,7 @@ void WEBSERVER_Init()
     config.max_open_sockets = 13;
 
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
+    ESP_LOGI(TAG, "Starting server on port: '%d'", (int)config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
@@ -204,7 +204,7 @@ static esp_err_t file_post_handler(httpd_req_t *req)
         int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
         if (reqN <= 0)
         {
-            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", (int)n, (int)reqN);
             break;
         }
         n += reqN;
@@ -413,7 +413,7 @@ static esp_err_t api_post_handler(httpd_req_t *req)
         int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
         if (reqN <= 0)
         {
-            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", (int)n, (int)reqN);
             break;
         }
         n += reqN;
@@ -460,7 +460,7 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
     }
 
     ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
-             running->type, running->subtype, running->address);
+             (int)running->type, (int)running->subtype, running->address);
 
     const esp_partition_t* update_partition = esp_ota_get_next_update_partition(NULL);
     assert(update_partition != NULL);
@@ -483,7 +483,7 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
 
     while(n > 0)
     {
-        ESP_LOGI(TAG, "file_otauploadpost_handler / receiving: %d bytes", n);
+        ESP_LOGI(TAG, "file_otauploadpost_handler / receiving: %d bytes", (int)n);
 
         err = esp_ota_write( update_handle, (const void *)m_u8Buffers, n);
         if (err != ESP_OK)

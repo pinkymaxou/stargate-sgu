@@ -73,11 +73,11 @@ static void simpleota_task(void* arg)
 
     int err = bind(listensock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
     if (err != 0) {
-        ESP_LOGE(SIMPLEOTA_TAG, "Socket unable to bind: errno %d", errno);
+        ESP_LOGE(SIMPLEOTA_TAG, "Socket unable to bind: errno %d", (int)errno);
         ESP_LOGE(SIMPLEOTA_TAG, "IPPROTO: %d", addr_family);
         goto CLEAN_UP;
     }
-    ESP_LOGI(SIMPLEOTA_TAG, "Socket bound, port %d", m_params.port);
+    ESP_LOGI(SIMPLEOTA_TAG, "Socket bound, port %d", (int)m_params.port);
 
     err = listen(listensock, 1);
     if (err != 0) {
@@ -116,7 +116,7 @@ static void simpleota_task(void* arg)
     const esp_partition_t *update_partition = esp_ota_get_next_update_partition(NULL);
 
     ESP_LOGI(SIMPLEOTA_TAG, "OTA Partition subtype %d at offset 0x%x",
-             update_partition->subtype, update_partition->address);
+             (int)update_partition->subtype, update_partition->address);
 
     esp_app_desc_t running_app_info;
     if (esp_ota_get_partition_description(running, &running_app_info) == ESP_OK)
@@ -156,7 +156,7 @@ static void simpleota_task(void* arg)
             goto CLEAN_UP;
         }
 
-        ESP_LOGI(SIMPLEOTA_TAG, "Receiving transmission, data: %d bytes", received);
+        ESP_LOGI(SIMPLEOTA_TAG, "Receiving transmission, data: %d bytes", (int)received);
 
         r = recv(sock, buffer, sizeof(buffer), 0);
         received += r;

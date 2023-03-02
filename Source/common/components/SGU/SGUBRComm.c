@@ -60,7 +60,7 @@ void SGUBRCOMM_Start(SGUBRCOMM_SHandle* pHandle)
         ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
         goto END;
     }
-    ESP_LOGI(TAG, "Socket bound, port %d", u16Port);
+    ESP_LOGI(TAG, "Socket bound, port %d", (int)u16Port);
 
     struct timeval read_timeout;
     read_timeout.tv_sec = 0;
@@ -82,7 +82,7 @@ void SGUBRCOMM_Process(SGUBRCOMM_SHandle* pHandle)
 
     if (len > 0)
     {
-        ESP_LOGI(TAG, "Receiving data, len: %d", len);
+        ESP_LOGI(TAG, "Receiving data, len: %d", (int)len);
         if (!SGUBRPROTOCOL_Decode(&pHandle->sSGUBRProtHandle, pHandle->u8Buffers, len))
         {
             ESP_LOGE(TAG, "Unable to decode message");
@@ -98,7 +98,7 @@ static bool SendRingData(SGUBRCOMM_SHandle* pHandle, const uint8_t* u8Datas, uin
     sSockAddrIn.sin_port = htons(SGUBRCOMM_RINGSERVER_PORT);
     sSockAddrIn.sin_addr.s_addr = inet_addr(pHandle->psSetting->dstRingAddress);
 
-    ESP_LOGI(TAG, "Sending data to: %s:%d", pHandle->psSetting->dstRingAddress, SGUBRCOMM_RINGSERVER_PORT);
+    ESP_LOGI(TAG, "Sending data to: %s:%d", pHandle->psSetting->dstRingAddress, (int)SGUBRCOMM_RINGSERVER_PORT);
 
     int err = sendto(pHandle->sock, u8Datas, u32Len, 0, (struct sockaddr *)&sSockAddrIn, sizeof(sSockAddrIn));
     if (err < 0) {
@@ -121,7 +121,7 @@ void SGUBRCOMM_ChevronLightning(SGUBRCOMM_SHandle* pHandle, SGUBRPROTOCOL_ECHEVR
 
     const int n = SGUBRPROTOCOL_EncChevronLightning(buffer, sizeof(buffer), &arg);
     SendRingData(pHandle, buffer, n);
-    ESP_LOGI(TAG, "SGUCOMM_ChevronLightning, n: %d", /*0*/n);
+    ESP_LOGI(TAG, "SGUCOMM_ChevronLightning, n: %d", /*0*/(int)n);
 }
 
 void SGUBRCOMM_LightUpLED(SGUBRCOMM_SHandle* pHandle, uint8_t u8Red, uint8_t u8Green, uint8_t u8Blue, uint8_t u8LedIndex)
@@ -138,7 +138,7 @@ void SGUBRCOMM_LightUpLED(SGUBRCOMM_SHandle* pHandle, uint8_t u8Red, uint8_t u8G
 
     const int n = SGUBRPROTOCOL_EncUpdateLight(buffer, sizeof(buffer), &arg);
     SendRingData(pHandle, buffer, n);
-    ESP_LOGI(TAG, "SGUCOMM_LightUpLED, len: %d, r: %d, g: %d, b: %d, index: %d", /*0*/n, /*1*/u8Red, /*2*/u8Green, /*3*/u8Blue, /*4*/u8LedIndex);
+    ESP_LOGI(TAG, "SGUCOMM_LightUpLED, len: %d, r: %d, g: %d, b: %d, index: %d", /*0*/(int)n, /*1*/(int)u8Red, /*2*/(int)u8Green, /*3*/(int)u8Blue, /*4*/(int)u8LedIndex);
 }
 
 void SGUBRCOMM_TurnOff(SGUBRCOMM_SHandle* pHandle)
