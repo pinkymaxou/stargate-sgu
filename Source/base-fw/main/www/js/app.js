@@ -92,7 +92,8 @@ let currentData =
     cancel_request: false,
     time_hour: 0, time_min: 0
   },
-  is_connected: false
+  is_connected: false,
+  is_adv_mode: false
 };
 
 var currentApp = new Vue({
