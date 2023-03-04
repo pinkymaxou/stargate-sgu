@@ -26,25 +26,25 @@
 				<a href="settings.html">Settings</a>
 				<br>
 				<div style="display: flex; flex-flow: column;">
-					<button id="idBtStop" class="button-27" style="background-color: red; color: white;" onclick="SendAction('action/stop')">Stop</button>
+					<button id="idBtStop" class="button-27" style="background-color: red; color: white;" :disabled="!is_connected" onclick="SendAction('action/stop')">Stop</button>
 					<p>Gate</p>
-					<button id="idBtGoHome" class="button-27 item" onclick="SendAction('action/gohome')">Homing sequence</button>
-					<button id="idBtActiveWormhole" class="button-27 item" onclick="SendAction('action/activatewormhole')">Activate wormhole</button>
-					<button id="idBtActiveClock" class="button-27 item" onclick="SendAction('action/activateclockmode')">Activate clock mode</button>
+					<button id="idBtGoHome" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/gohome')">Homing sequence</button>
+					<button id="idBtActiveWormhole" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/activatewormhole')">Activate wormhole</button>
+					<button id="idBtActiveClock" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/activateclockmode')">Activate clock mode</button>
 					<div style="display: flex; flex-flow: row;">
-						<button id="idBtReleaseClamp" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/releaseclamp')">Release</button>
-						<button id="idBtLockClamp" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/lockclamp')">Lock</button>	
+						<button id="idBtReleaseClamp" style="flex-basis: 100%;" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/releaseclamp')">Release</button>
+						<button id="idBtLockClamp" style="flex-basis: 100%;" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/lockclamp')">Lock</button>	
 					</div>
 					<div style="display: flex; flex-flow: row;">
-						<button id="idBtRampLightON" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ramplighton')">Ramp light (on)</button>
-						<button id="idBtRampLightOFF" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ramplightoff')">Ramp light (off)</button>
+						<button id="idBtRampLightON" style="flex-basis: 100%;" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/ramplighton')">Ramp light (on)</button>
+						<button id="idBtRampLightOFF" style="flex-basis: 100%;" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/ramplightoff')">Ramp light (off)</button>
 					</div>
 					<p>Ring</p>
-					<button id="idBtRingTurnOff" class="button-27 item" onclick="SendAction('action/ringturnoff')">Power Off</button>
+					<button id="idBtRingTurnOff" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/ringturnoff')">Power Off</button>
 					<div style="display: flex; flex-flow: row;">
-						<button id="idBtRingChevronError" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ringchevronerror')">Error</button>
-						<button id="idBtRingChevronFadeIn" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ringchevronfadein')">Fade-in</button>
-						<button id="idBtRingChevronFadeOut" style="flex-basis: 100%;" class="button-27 item" onclick="SendAction('action/ringchevronfadeout')">Fade-out</button>
+						<button id="idBtRingChevronError" style="flex-basis: 100%;" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/ringchevronerror')">Error</button>
+						<button id="idBtRingChevronFadeIn" style="flex-basis: 100%;" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/ringchevronfadein')">Fade-in</button>
+						<button id="idBtRingChevronFadeOut" style="flex-basis: 100%;" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/ringchevronfadeout')">Fade-out</button>
 					</div>
 				</div>
 			</div>
@@ -53,7 +53,7 @@
 			<div class="main">
 				<div class="address-container">
 					<div v-for="addr in alladdresses" class="address-item">
-						<button class="sguaddrbtn " @click="DialGate(addr.symbolIndexes)">
+						<button class="sguaddrbtn" :disabled="!is_connected" @click="DialGate(addr.symbolIndexes)">
 							<p>{{ addr.name }}</p>
 							<span v-for="symbolIndex in addr.symbolIndexes">
 								<span>{{ GetSymbolIndex(symbolIndex).txt }}</span>
