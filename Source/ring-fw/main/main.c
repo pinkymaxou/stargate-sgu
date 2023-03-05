@@ -20,8 +20,7 @@
 #include "lwip/sys.h"
 #include "esp_system.h"
 #include "driver/gpio.h"
-#include "FastLED.h"
-#include "GPIO.h"
+#include "gpio.h"
 #include "SGUBRProtocol.h"
 #include "SGUBRComm.h"
 #include "esp_now.h"
@@ -35,17 +34,14 @@
 #define LED_OUTPUT_MAX (220)
 #define LED_OUTPUT_IDLE (100)
 
-static void InitWS1228B();
 static void InitESPNOW();
-
-static CRGB m_leds[FWCONFIG_WS1228B_LEDCOUNT] = { CRGB::Black };
 
 static const char *TAG = "Main";
 
 const uint8_t m_u8BroadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
 static volatile bool m_bIsSuicide = false;
-static volatile TickType_t m_lAutoOffTicks = xTaskGetTickCount();
+static volatile TickType_t m_lAutoOffTicks = 0;
 static volatile TickType_t m_ulAutoOffTimeoutMs = FWCONFIG_HOLDPOWER_DELAY_MS;
 
 // Chevron animation
@@ -53,24 +49,14 @@ static volatile int32_t m_s32ChevronAnim = -1;
 
 static esp_pm_lock_handle_t m_lockHandle;
 
-// These should survive to reset
-static const uint8_t u8MagicNumber_OTAMode[4] = { 0xA0, 0xBA, 0xDC, 0xC0  };
+void app_main();
+static void ResetAutoOffTicks();
 
-static bool m_bIsOTAMode = false;
-
-static RTC_IRAM_ATTR uint8_t m_u8StartModes[4];
-
-extern "C" {
-    void app_main();
-    static void ResetAutoOffTicks();
-
-    static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAlive);
-    static void SGUBRTurnOffHandler();
-    static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg);
-    static void SGUBRChevronsLightningHandler(const SGUBRPROTOCOL_SChevronsLightningArg* psChevronLightningArg);
-    static void SGUBRGotoFactory();
-    static void SGUBRGotoOTAMode();
-}
+static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAlive);
+static void SGUBRTurnOffHandler();
+static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg);
+static void SGUBRChevronsLightningHandler(const SGUBRPROTOCOL_SChevronsLightningArg* psChevronLightningArg);
+static void SGUBRGotoFactory();
 
 static const SGUBRPROTOCOL_SConfig m_sConfig =
 {
@@ -79,7 +65,7 @@ static const SGUBRPROTOCOL_SConfig m_sConfig =
     .fnUpdateLightHandler = SGUBRUpdateLightHandler,
     .fnChevronsLightningHandler = SGUBRChevronsLightningHandler,
     .fnGotoFactoryHandler = SGUBRGotoFactory,
-    .fnGotoOTAModeHandler = SGUBRGotoOTAMode
+    .fnGotoOTAModeHandler = NULL
 };
 
 static SGUBRCOMM_SHandle m_sSGUBRCommHandle;
@@ -88,68 +74,12 @@ static SGUBRCOMM_SSetting m_sSetting = { .eMode = SGUBRCOMM_EMODE_Ring, .psSGUBR
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void wifistation_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
-static void InitWS1228B()
-{
-    FastLED.addLeds<WS2812B, FWCONFIG_WS1228B_PIN, GRB>(m_leds, FWCONFIG_WS1228B_LEDCOUNT);
-}
-
 static void InitESPNOW()
 {
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    if (m_bIsOTAMode)
-    {
-        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA) );
-
-        // Access point mode
-        esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
-
-        esp_netif_ip_info_t ipInfo;
-        IP4_ADDR(&ipInfo.ip, 192, 168, 55, 1);
-        IP4_ADDR(&ipInfo.gw, 192, 168, 55, 1);
-        IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
-        esp_netif_dhcps_stop(wifiAP);
-        esp_netif_set_ip_info(wifiAP, &ipInfo);
-        esp_netif_dhcps_start(wifiAP);
-
-        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                            ESP_EVENT_ANY_ID,
-                                                            &wifi_event_handler,
-                                                            NULL,
-                                                            NULL));
-
-        wifi_config_t wifi_configAP = {
-            .ap = {
-                .channel = FWCONFIG_SOFTAP_WIFI_CHANNEL,
-                .max_connection = FWCONFIG_SOFTAP_MAX_CONN,
-            },
-        };
-        wifi_configAP.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
-
-        uint8_t macAddr[6];
-        esp_read_mac(macAddr, ESP_MAC_WIFI_SOFTAP);
-        sprintf((char*)wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_SSID_BASE, macAddr[3], macAddr[4], macAddr[5]);
-        int n = strlen((const char*)wifi_configAP.ap.ssid);
-        wifi_configAP.ap.ssid_len = n;
-
-        if (strlen((const char*)FWCONFIG_SOFTAP_WIFI_PASS) == 0) {
-            wifi_configAP.ap.authmode = WIFI_AUTH_OPEN;
-        }
-        else
-        {
-            strcpy((char*)wifi_configAP.ap.password, FWCONFIG_SOFTAP_WIFI_PASS);
-        }
-
-        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_configAP));
-
-        ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-                wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
-    }
-    else
-    {
-        ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    }
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
 
     // Soft Access Point Mode
     esp_netif_t* wifiSTA = esp_netif_create_default_wifi_sta();
@@ -210,16 +140,16 @@ static void LedRefreshTask(void *pvParameters)
     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
     {
         if ((i % 5) == 0)
-            m_leds[i] = CRGB(LED_OUTPUT_IDLE, LED_OUTPUT_IDLE, LED_OUTPUT_IDLE);
+            GPIO_SetPixel(i, LED_OUTPUT_IDLE, LED_OUTPUT_IDLE, LED_OUTPUT_IDLE);
         else
-            m_leds[i] = CRGB::Black;
+            GPIO_SetPixel(i, 0, 0, 0);
     }
 
     while(true)
     {
         // Detect the switch status
         ESP_ERROR_CHECK(esp_pm_lock_acquire(m_lockHandle));
-        FastLED.show();
+        GPIO_RefreshPixels();
 
         // Play chevron animation
         if (m_s32ChevronAnim >= 0)
@@ -234,11 +164,11 @@ static void LedRefreshTask(void *pvParameters)
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
-                                m_leds[i] = CRGB(brightness, brightness, brightness);
+                                GPIO_SetPixel(i, brightness, brightness, brightness);
                             else
-                                m_leds[i] = CRGB::Black;
+                                GPIO_SetPixel(i, 0, 0, 0);
                         }
-                        FastLED.show();
+                        GPIO_RefreshPixels();
                         vTaskDelay(pdMS_TO_TICKS(50));
                     }
                     break;
@@ -251,11 +181,11 @@ static void LedRefreshTask(void *pvParameters)
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
-                                m_leds[i] = CRGB(brightness, brightness, brightness);
+                                GPIO_SetPixel(i, brightness, brightness, brightness);
                             else
-                                m_leds[i] = CRGB::Black;
+                                GPIO_SetPixel(i, 0, 0, 0);
                         }
-                        FastLED.show();
+                        GPIO_RefreshPixels();
                         vTaskDelay(pdMS_TO_TICKS(50));
                     }
                     break;
@@ -266,12 +196,11 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(LED_OUTPUT_MAX, 0, 0);
+                            GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
                         else
-                            m_leds[i] = CRGB::Black;
+                            GPIO_SetPixel(i, 0, 0, 0);
                     }
-
-                    FastLED.show();
+                    GPIO_RefreshPixels();
                     vTaskDelay(pdMS_TO_TICKS(1500));
 
                     for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
@@ -279,9 +208,9 @@ static void LedRefreshTask(void *pvParameters)
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
-                                m_leds[i] = CRGB(LED_OUTPUT_MAX, brightness, brightness);
+                                GPIO_SetPixel(i, LED_OUTPUT_MAX, brightness, brightness);
                         }
-                        FastLED.show();
+                        GPIO_RefreshPixels();
                         vTaskDelay(pdMS_TO_TICKS(50));
                     }
                     break;
@@ -292,12 +221,12 @@ static void LedRefreshTask(void *pvParameters)
                     for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
-                            m_leds[i] = CRGB(LED_OUTPUT_MAX, 0, 0);
+                            GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
                         else
-                            m_leds[i] = CRGB::Black;
+                            GPIO_SetPixel(i, 0, 0, 0);
                     }
 
-                    FastLED.show();
+                    GPIO_RefreshPixels();
                     vTaskDelay(pdMS_TO_TICKS(1500));
 
                     for(int brightness = LED_OUTPUT_MAX; brightness >= 0; brightness -= 10)
@@ -305,9 +234,9 @@ static void LedRefreshTask(void *pvParameters)
                         for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
-                                m_leds[i] = CRGB(brightness, 0, 0);
+                                GPIO_SetPixel(i, brightness, 0, 0);
                         }
-                        FastLED.show();
+                        GPIO_RefreshPixels();
                         vTaskDelay(pdMS_TO_TICKS(50));
                     }
                     break;
@@ -320,7 +249,7 @@ static void LedRefreshTask(void *pvParameters)
             m_s32ChevronAnim = -1; // No more animation to process
         }
 
-        FastLED.show();
+        GPIO_RefreshPixels();
         ESP_ERROR_CHECK(esp_pm_lock_release(m_lockHandle));
         vTaskDelay(pdMS_TO_TICKS(20));
     }
@@ -386,7 +315,7 @@ static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg)
             continue;
         }
 
-        m_leds[u8LightIndex] = CRGB(psArg->sRGB.u8Red, psArg->sRGB.u8Green, psArg->sRGB.u8Blue);
+        GPIO_SetPixel(u8LightIndex, psArg->sRGB.u8Red, psArg->sRGB.u8Green, psArg->sRGB.u8Blue);
         // ESP_LOGI(TAG, "Led index change: %d, Red: %d, Green: %d, Blue: %d", u8LightIndex, psArg->sRGB.u8Red, psArg->sRGB.u8Green, psArg->sRGB.u8Blue);
     }
 
@@ -421,16 +350,6 @@ static void SGUBRGotoFactory()
     ResetAutoOffTicks();
 }
 
-static void SGUBRGotoOTAMode()
-{
-    ESP_LOGI(TAG, "Goto OTA mode");
-
-    memcpy(m_u8StartModes, u8MagicNumber_OTAMode, 4);
-
-    esp_restart();
-    ResetAutoOffTicks();
-}
-
 static void MainTask(void *pvParameters)
 {
     ESP_LOGI(TAG, "MainTask started ...");
@@ -440,7 +359,7 @@ static void MainTask(void *pvParameters)
         // The function is blocking so it's fine
         SGUBRCOMM_Process(&m_sSGUBRCommHandle);
 
-        // 100 HZ
+        // 50 HZ
         vTaskDelay(pdMS_TO_TICKS(20));
     }
 }
@@ -448,6 +367,8 @@ static void MainTask(void *pvParameters)
 void app_main(void)
 {
     ESP_ERROR_CHECK(esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, "NoLightSleep", &m_lockHandle));
+
+    m_lAutoOffTicks = xTaskGetTickCount();
 
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
@@ -460,18 +381,8 @@ void app_main(void)
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-    // Check if the magic number is right, then clear the flag.
-    m_bIsOTAMode = memcmp(m_u8StartModes, u8MagicNumber_OTAMode, 4) == 0;
-    memset(m_u8StartModes, 0, 4);
-    if (m_bIsOTAMode)
-    {
-        ESP_LOGI(TAG, "OTA mode is activated");
-    }
-
     GPIO_Init();
     GPIO_EnableHoldPowerPin(true);
-
-    InitWS1228B();
 
     InitESPNOW();
 
@@ -520,13 +431,14 @@ void app_main(void)
         if (m_bIsSuicide)
         {
             // Release the power pin
-            // m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff;
             // Delay for animation before stop
-            vTaskDelay(pdMS_TO_TICKS(2500));
             GPIO_EnableHoldPowerPin(false);
-
-            ESP_LOGW(TAG, "Time to die, let me die in peace");
-            m_bIsSuicide = false;
+            // At this point if there are no external power to maintain it, it should die.
+            vTaskDelay(pdMS_TO_TICKS(500));
+            // If it survived beyond this point, reset the auto-off
+            // it means the ring is externally powered
+            ResetAutoOffTicks();
+            ESP_LOGW(TAG, "Seems like it we will live");
         }
 
         vTaskDelay(pdMS_TO_TICKS(250));

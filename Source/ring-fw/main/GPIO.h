@@ -4,16 +4,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void GPIO_Init();
 
 void GPIO_EnableHoldPowerPin(bool bEnabled);
 
-#ifdef __cplusplus
-}
-#endif
+void GPIO_SetPixel(uint32_t u32Index, uint8_t u8Red, uint8_t u8Green, uint8_t u8Blue);
+void GPIO_ClearAllPixels();
+void GPIO_RefreshPixels();
 
 #endif
