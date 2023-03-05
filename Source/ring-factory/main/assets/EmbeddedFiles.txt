@@ -1,0 +1,5 @@
+config.json
+favicon.ico
+index.html
+js/about-ota.js
+js/vue.min.js

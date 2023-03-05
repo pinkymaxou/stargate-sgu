@@ -21,8 +21,8 @@ typedef enum
 {
     EF_EFILE_ABOUT_OTA_HTML = 0,    /*!< @brief File: about-ota.html (size: 1 KB) */
     EF_EFILE_CONFIG_JSON = 1,    /*!< @brief File: config.json (size: 18 KB) */
-    EF_EFILE_FAVICON_ICO = 2,    /*!< @brief File: favicon.ico (size: 252 KB) */
-    EF_EFILE_INDEX_HTML = 3,    /*!< @brief File: index.html (size: 4 KB) */
+    EF_EFILE_FAVICON_ICO = 2,    /*!< @brief File: favicon.ico (size: 7 KB) */
+    EF_EFILE_INDEX_HTML = 3,    /*!< @brief File: index.html (size: 5 KB) */
     EF_EFILE_SETTINGS_HTML = 4,    /*!< @brief File: settings.html (size: 2 KB) */
     EF_EFILE_CSS_CONTENT_CSS = 5,    /*!< @brief File: css/content.css (size: 3 KB) */
     EF_EFILE_CSS_SIDENAV_CSS = 6,    /*!< @brief File: css/sidenav.css (size: 726  B) */

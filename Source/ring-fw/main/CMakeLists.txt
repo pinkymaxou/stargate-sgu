@@ -1,2 +1,2 @@
-idf_component_register(SRCS "GPIO.c" "main.cpp"
+idf_component_register(SRCS "gpio.c" "main.c"
                     INCLUDE_DIRS ".")
