@@ -16,23 +16,18 @@
 #include "esp_log.h"
 #include "esp_pm.h"
 #include "nvs_flash.h"
-
-#if CONFIG_WS1228B_ISACTIVE != 0
-#include "FastLED.h"
-#endif
-
 #include "driver/gpio.h"
-
+#include "webserver.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
-
-#include "SimpleOTA.h"
+#include "gpio.h"
 
 static const char *TAG = "Main";
 
 static volatile int m_iConnectedCount = 0;
 static bool m_bIsSuicide = false;
-static CRGB m_leds[CONFIG_WS1228B_LEDCOUNT];
+
+
 
 static wifi_config_t m_wifi_config;
 
@@ -40,12 +35,7 @@ static esp_pm_lock_handle_t m_lockHandle;
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
-extern "C" {
-  void app_main();
-}
-
-
-void wifi_init_softap(void)
+static void wifi_init_softap(void)
 {
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -98,15 +88,16 @@ void wifi_init_softap(void)
              m_wifi_config.ap.ssid, CONFIG_ESP_WIFI_PASS, CONFIG_ESP_WIFI_CHANNEL);
 }
 
-#if CONFIG_WS1228B_ISACTIVE != 0
 static void LightningTask(void *pvParameters)
 {
     bool b = false;
 
     // Complete shutdown by default
-    for(int i = 0; i < CONFIG_WS1228B_LEDCOUNT; i++)
-        m_leds[i] = CRGB::Black;
-
+    GPIO_ClearAllPixels();
+    ESP_ERROR_CHECK(esp_pm_lock_acquire(m_lockHandle));
+    GPIO_RefreshPixels();
+    ESP_ERROR_CHECK(esp_pm_lock_release(m_lockHandle));
+    
     int currLedIndex = 0;
     bool isBlink = false;
     while(true)
@@ -115,15 +106,15 @@ static void LightningTask(void *pvParameters)
         if (isBlink)
         {
             if (m_bIsSuicide) // RED = means time to die
-                m_leds[0] = CRGB::Red;
-            else if (SIMPLEOTA_GetIsReceiving()) // Yellow = Receiving
-                m_leds[0] = CRGB::Yellow;
+                GPIO_SetPixel(0, 255, 0, 0);
+            else if (WEBSERVER_GetIsReceivingOTA()) // Yellow = Receiving
+                GPIO_SetPixel(0, 255, 255, 0);
             else if (m_iConnectedCount > 0) // Green = If one client is connected
-                m_leds[0] = CRGB::Green;
-            else m_leds[0] = CRGB::Blue; // Blue by default
+                GPIO_SetPixel(0, 0, 255, 0);
+            else GPIO_SetPixel(0, 0, 0, 255); // Blue by default
         }
         else
-            m_leds[0] = CRGB::Black;
+            GPIO_SetPixel(0, 80, 80, 80);
 
         isBlink = !isBlink;
 
@@ -133,28 +124,29 @@ static void LightningTask(void *pvParameters)
             if (i == currLedIndex || i == ((CONFIG_WS1228B_LEDCOUNT) - currLedIndex))
             {
                 if (i%5 == 0)
-                    m_leds[i] = CRGB(80, 80, 80);
+                    GPIO_SetPixel(i, 80, 80, 80);
                 else
-                    m_leds[i] = CRGB(20, 20, 20);
+                    GPIO_SetPixel(i, 20, 20, 20);
             }
             else
-                m_leds[i] = CRGB::Black;
+                GPIO_SetPixel(i, 0, 0, 0);
         }
         currLedIndex = (currLedIndex + 1) % CONFIG_WS1228B_LEDCOUNT;
 
         ESP_ERROR_CHECK(esp_pm_lock_acquire(m_lockHandle));
-        FastLED.show();
+        GPIO_RefreshPixels();
         ESP_ERROR_CHECK(esp_pm_lock_release(m_lockHandle));
 
         vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
-#endif
 
 void app_main(void)
 {
+    GPIO_Init();
+
     ESP_ERROR_CHECK(esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, "NoLightSleep", &m_lockHandle));
-    FastLED.addLeds<WS2812B, CONFIG_WS1228B_PIN, GRB>(m_leds, CONFIG_WS1228B_LEDCOUNT);
+
 
     long ticks = xTaskGetTickCount();
 
@@ -180,13 +172,14 @@ void app_main(void)
     ESP_LOGI(TAG, "wifi_init_softap");
     wifi_init_softap();
 
-    const SIMPLEOTA_Params params = SIMPLEOTA_PARAM_DEFAULT;
-    SIMPLEOTA_StartAsync(&params);
+    WEBSERVER_Init();
+    //const SIMPLEOTA_Params params = SIMPLEOTA_PARAM_DEFAULT;
+    //SIMPLEOTA_StartAsync(&params);
 
     long switchTicks = 0;
 
     xTaskCreatePinnedToCore(&LightningTask, "blinkLeds", 4000, NULL, 5, NULL, 0);
-
+    
     while(true)
     {
         if (!m_bIsSuicide)

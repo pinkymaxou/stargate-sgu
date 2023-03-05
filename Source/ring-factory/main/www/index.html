@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Destiny control (OTA/Sysinfos)</title>
+    </head>
+    <body onLoad="AppLoaded()"">
+		<div id="app">
+			<!-- System infos -->
+			<div>
+				<table>
+					<thead>
+						<tr>
+							<td><b>Name</b></td>
+							<td><b>Value</b></td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="sysinfo in sysinfos">
+							<td>{{ sysinfo.name }}</td>
+							<td>{{ sysinfo.value }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<!-- OTA -->
+			<div>
+				<table>
+					<tr>
+						<td>File</td>
+						<td><input type="file" id="idFile"></td>
+					</tr>
+				</table>
+				<br/><br/>
+				<span id="lblStatus">---</span>
+				<br/><br/>
+				<button id="idBtnUpload" class="button-27" onclick="idBtnUpload_Click()">Upload</button>
+			</div>
+		</div>
+
+        <!-- JS -->
+        <script type="text/javascript" src="js/vue.min.js"></script>
+        <script type="text/javascript" src="js/about-ota.js"></script>
+    </body>
+</html>
