@@ -173,6 +173,8 @@ Hall sensor are sensitive to polarity, so you need to test it before attempting 
 
 ![](./Assets/stargate-back-window-assembly.png)
 
+![](./Assets/ring-back-components.png)
+
 # Magnetic ring
 
 Odd position magnets should not have the same polarity as even magnets.
@@ -192,3 +194,5 @@ This photo comes from an ealier prototype, as you can see there is no location f
 ![](./Assets/magnet-gear-example.png)
 
 ![](./Assets/magnet-ring-with-magnets.png)
+
+![](./Assets/assembled-ring-light-magnetring.png)
