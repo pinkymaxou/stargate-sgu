@@ -3,7 +3,7 @@
 #include "esp_log.h"
 #include "driver/gpio.h"
 #include "gpio.h"
-#include "config.h"
+#include "fwconfig.h"
 
 #define TAG "GPIO"
 
