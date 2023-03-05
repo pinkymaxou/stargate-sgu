@@ -6,15 +6,15 @@
 
 static SOUNDFX_SFile m_sFiles[] =
 {
-    [SOUNDFX_EFILE_1_beginroll_mp3] = SOUNDFX_SFILE_INIT("1_beginroll.mp3", 1250, "Gate activation before dialing"),
-    [SOUNDFX_EFILE_2_chevlck_wav]   = SOUNDFX_SFILE_INIT("2_chevlck.wav", 750, "Chevron lock #1"),
-    [SOUNDFX_EFILE_3_chevlck2_wav]  = SOUNDFX_SFILE_INIT("3_chevlck2.wav", 1200, "Chevron lock #2 (light on)"),
-    [SOUNDFX_EFILE_4_gateclos_mp3]  = SOUNDFX_SFILE_INIT("4_gateclos.mp3", 2500, "Wormhole is closing"),
-    [SOUNDFX_EFILE_5_gateopen_mp3]  = SOUNDFX_SFILE_INIT("5_gateopen.mp3", 5000, "Wormhole is opening"),
-    [SOUNDFX_EFILE_6_lggroll_mp3]   = SOUNDFX_SFILE_INIT("6_lggroll.mp3", 26500, "Stargate is spinning"),
-    [SOUNDFX_EFILE_7_lockfail_wav]  = SOUNDFX_SFILE_INIT("7_lockfail.wav", 1000, "Chevron lock failed"),
-    [SOUNDFX_EFILE_8_music1_mp3]    = SOUNDFX_SFILE_INIT("8_music1.mp3", 346000, "Countdown to destiny"),
-    [SOUNDFX_EFILE_9_music2_mp3]    = SOUNDFX_SFILE_INIT("9_music2.mp3", 173000, "Ending music"),
+    [SOUNDFX_EFILE_1_beginroll_mp3]  = SOUNDFX_SFILE_INIT("1_beginroll.mp3", 1250, "Gate activation before dialing"),
+    [SOUNDFX_EFILE_2_chevlck_wav]    = SOUNDFX_SFILE_INIT("2_chevlck.wav",    750, "Chevron lock #1"),
+    [SOUNDFX_EFILE_3_chevlck2_wav]   = SOUNDFX_SFILE_INIT("3_chevlck2.wav",  1200, "Chevron lock #2 (light on)"),
+    [SOUNDFX_EFILE_4_gateclos_mp3]   = SOUNDFX_SFILE_INIT("4_gateclos.mp3",  2500, "Wormhole is closing"),
+    [SOUNDFX_EFILE_5_gateopen_mp3]   = SOUNDFX_SFILE_INIT("5_gateopen.mp3",  5000, "Wormhole is opening"),
+    [SOUNDFX_EFILE_6_lggroll_mp3]    = SOUNDFX_SFILE_INIT("6_lggroll.mp3",  26500, "Stargate is spinning"),
+    [SOUNDFX_EFILE_7_lockfail_wav]   = SOUNDFX_SFILE_INIT("7_lockfail.wav",  1000, "Chevron lock failed"),
+    [SOUNDFX_EFILE_8_music1_mp3]     = SOUNDFX_SFILE_INIT("8_music1.mp3",  346000, "Countdown to destiny"),
+    [SOUNDFX_EFILE_9_music2_mp3]     = SOUNDFX_SFILE_INIT("9_music2.mp3",  173000, "Ending music"),
     [SOUNDFX_EFILE_10_wormhole_wav]  = SOUNDFX_SFILE_INIT("10_wormhole.wav", 5319, "Wormhole activated"),
 };
 

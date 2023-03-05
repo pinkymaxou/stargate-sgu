@@ -55,7 +55,8 @@
 				
 				<!-- Advanced mode -->
 				<div style="display: flex; flex-flow: column;" v-show="is_adv_mode">
-					<p>Mode</p>
+					<p>Gate</p>
+					<button id="idBtAutoCalibration" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/autocalibrate')">Auto-Calibration</button>
 					<button id="idBtReboot" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/reboot')">Reboot</button>
 					<p>Ring</p>
 					<button id="idBtRingGotoFactory" class="button-27 item" :disabled="!is_connected" onclick="SendAction('action/ringgotofactory')">Erase F-W (Goto factory)</button>
