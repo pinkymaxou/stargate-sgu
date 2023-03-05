@@ -47,7 +47,6 @@ void GPIO_Init()
     gpio_set_direction(FWCONFIG_SERVOMOTOR_PIN, GPIO_MODE_OUTPUT);
     // Initialize motor driver
     mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM1A, FWCONFIG_SERVOMOTOR_PIN);
-    mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM1B, FWCONFIG_RAMPLED_PIN);
     mcpwm_config_t servo_config;
     servo_config.frequency = 50;  // Frequency = 1000Hz,
     servo_config.cmpr_a = 0;      // Duty cycle of PWMxA = 0

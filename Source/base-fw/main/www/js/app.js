@@ -91,7 +91,9 @@ let currentData =
     text: "",
     cancel_request: false,
     time_hour: 0, time_min: 0
-  }
+  },
+  is_connected: false,
+  is_adv_mode: false
 };
 
 var currentApp = new Vue({
@@ -113,11 +115,13 @@ async function timerHandler() {
       {
         console.log("data: ", data);
         currentData.status = data.status;
+        currentData.is_connected = true;
         setTimeout(timerHandler, 500);
       })
       .catch((ex) =>
       {
           setTimeout(timerHandler, 5000);
+          currentData.is_connected = false;
           console.error('getstatus', ex);
       });
 }

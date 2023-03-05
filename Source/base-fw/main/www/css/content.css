@@ -82,6 +82,12 @@ body {
   border-width: 2.5px;
 }
 
+.sguaddrbtn:disabled {
+  pointer-events: none;
+  background-color: darkgray;
+  color: lightgray;
+}
+
 /* CSS */
 .button-27 {
   appearance: none;
@@ -111,6 +117,8 @@ body {
 
 .button-27:disabled {
   pointer-events: none;
+  background-color: darkgray;
+  color: lightgray;
 }
 
 .button-27:hover {
