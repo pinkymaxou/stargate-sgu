@@ -531,7 +531,6 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCyc
     SOUNDFX_ActivateGate();
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
     vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPredialDelayMS)));
-    
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
 
