@@ -68,6 +68,12 @@ Copyright:
 | tools/otauploader.py | Do upload using HTTP for OTA |
 | tools/embeddedgen.py | Generate embedded resources |
 
+# Electronic board
+
+A new electronic board has been created. Not yet tested entierely.
+
+![](./Readme-Assets/board.jpg)
+
 # Parts to print
 
 ##  Ring
