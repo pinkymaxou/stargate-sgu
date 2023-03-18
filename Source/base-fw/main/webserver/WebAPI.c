@@ -12,7 +12,7 @@
 #include "lwip/sys.h"
 #include "esp_system.h"
 #include "esp_chip_info.h"
-#include "base-fw.h"
+#include "Main.h"
 #include "esp_ota_ops.h"
 #include "ApiURL.h"
 
@@ -168,7 +168,7 @@ static char* GetSysInfo()
     cJSON* pEntryJSON9 = cJSON_CreateObject();
     cJSON_AddItemToObject(pEntryJSON9, "name", cJSON_CreateString("WiFi (STA)"));
     esp_netif_ip_info_t wifiIpSta = {0};
-    BASEFW_GetWiFiSTAIP(&wifiIpSta);
+    MAIN_GetWiFiSTAIP(&wifiIpSta);
     sprintf(buff, IPSTR, IP2STR(&wifiIpSta.ip));
     cJSON_AddItemToObject(pEntryJSON9, "value", cJSON_CreateString(buff));
     cJSON_AddItemToArray(pEntries, pEntryJSON9);
@@ -177,7 +177,7 @@ static char* GetSysInfo()
     cJSON* pEntryJSON10 = cJSON_CreateObject();
     cJSON_AddItemToObject(pEntryJSON10, "name", cJSON_CreateString("WiFi (Soft-AP)"));
     esp_netif_ip_info_t wifiIpSoftAP = {0};
-    BASEFW_GetWiFiSoftAPIP(&wifiIpSoftAP);
+    MAIN_GetWiFiSoftAPIP(&wifiIpSoftAP);
     sprintf(buff, IPSTR, IP2STR(&wifiIpSoftAP.ip));
     cJSON_AddItemToObject(pEntryJSON10, "value", cJSON_CreateString(buff));
     cJSON_AddItemToArray(pEntries, pEntryJSON10);
@@ -224,8 +224,6 @@ static char* GetStatusJSON()
     ERROR:
     cJSON_Delete(pRoot);
     return NULL;
-
-    //return "{ \"status\" : { \"mode\" : \"dialing\" } }";
 }
 
 static char* GetAllSounds()
@@ -385,7 +383,7 @@ esp_err_t WEBAPI_ActionHandler(httpd_req_t *req)
         SGUBRCOMM_GotoFactory(&g_sSGUBRCOMMHandle);
     }
     else if (strcmp(req->uri, ACTION_POST_REBOOT) == 0)
-        BASEFW_RequestReboot();
+        MAIN_RequestReboot();
     else
         httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Unknown request");
 

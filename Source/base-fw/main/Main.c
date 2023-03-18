@@ -27,7 +27,7 @@
 #include "GPIO.h"
 #include "FWConfig.h"
 #include "Settings.h"
-#include "base-fw.h"
+#include "Main.h"
 #include "GateControl.h"
 #include "GateStepper.h"
 #include "SoundFX.h"
@@ -303,19 +303,19 @@ void app_main(void)
     }
 }
 
-void BASEFW_RequestReboot()
+void MAIN_RequestReboot()
 {
     m_xRebootRequestTicks = xTaskGetTickCount();
 }
 
 
-void BASEFW_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
+void MAIN_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
 {
     if (m_pWifiSTA != NULL)
         esp_netif_get_ip_info(m_pWifiSTA, pIPInfo);
 }
 
-void BASEFW_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)
+void MAIN_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)
 {
     if (m_pWifiSoftAP != NULL)
         esp_netif_get_ip_info(m_pWifiSoftAP, pIPInfo);

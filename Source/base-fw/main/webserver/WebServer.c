@@ -11,7 +11,7 @@
 #include "cJSON.h"
 #include "Settings.h"
 #include "GateControl.h"
-#include "base-fw.h"
+#include "Main.h"
 #include "GPIO.h"
 #include "GateStepper.h"
 #include "ApiURL.h"
@@ -129,6 +129,9 @@ static esp_err_t file_get_handler(httpd_req_t *req)
         httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
     }
 
+    // Static files have 1h cache by default
+    httpd_resp_set_hdr(req, "Cache-Control", "public, max-age=3600");
+
     uint32_t u32Index = 0;
 
     while(u32Index < pFile->u32Length)
@@ -229,7 +232,7 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
     ESP_LOGI(TAG, "OTA Completed !");
     ESP_LOGI(TAG, "Prepare to restart system!");
 
-    BASEFW_RequestReboot();
+    MAIN_RequestReboot();
 
     httpd_resp_set_hdr(req, "Connection", "close");
     return ESP_OK;
@@ -271,6 +274,7 @@ static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filena
     }
     /* This is a limited set only */
     /* For any other type always set as plain text */
+    ESP_LOGW(TAG, "Warning, unsupported file extension, returning text/plain as default");
     return httpd_resp_set_type(req, "text/plain");
 }
 

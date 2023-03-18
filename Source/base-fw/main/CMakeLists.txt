@@ -1,6 +1,7 @@
 
 idf_component_register(
-    SRCS "SoundFX.c" "GateStepper.c" "ClockMode.c" "Wormhole.c" "Settings.c" "base-fw.c"
+    SRCS "SoundFX.c" "GateStepper.c" "ClockMode.c" "Wormhole.c" "Settings.c" 
+    "Main.c" "Main.h"
     "webserver/WebServer.c" "webserver/WebServer.h" "webserver/EmbeddedFiles.c" "webserver/EmbeddedFiles.h"
     "webserver/WebAPI.c" "webserver/WebAPI.h" "webserver/ApiURL.h"
     "GateControl.c" "GPIO.c"
