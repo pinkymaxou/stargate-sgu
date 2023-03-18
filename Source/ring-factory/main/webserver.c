@@ -311,7 +311,7 @@ static const EF_SFile* GetFile(const char* strFilename)
     return NULL;
 }
 
-static const char* GetSysInfo()
+static char* GetSysInfo()
 {
     cJSON* pRoot = NULL;
 

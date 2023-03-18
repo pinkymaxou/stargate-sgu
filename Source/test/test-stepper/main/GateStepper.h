@@ -2,10 +2,7 @@
 #define _GATESTEPPER_H_
 
 #include "driver/gpio.h"
-
-#define FWCONFIG_STEPPER_DIR_PIN GPIO_NUM_33
-#define FWCONFIG_STEPPER_STEP_PIN GPIO_NUM_25
-#define FWCONFIG_STEPPER_SLP_PIN GPIO_NUM_26
+#include "HWConfig.h"
 
 void GATESTEPPER_Init();
 

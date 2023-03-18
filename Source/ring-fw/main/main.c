@@ -137,7 +137,7 @@ static void LedRefreshTask(void *pvParameters)
 {
     // First refresh
      // Initialize chevrons dimmed lit
-    for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
+    for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
     {
         if ((i % 5) == 0)
             GPIO_SetPixel(i, LED_OUTPUT_IDLE, LED_OUTPUT_IDLE, LED_OUTPUT_IDLE);
@@ -161,7 +161,7 @@ static void LedRefreshTask(void *pvParameters)
                     ESP_LOGI(TAG, "Animation / FadeIn");
                     for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
                     {
-                        for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
                                 GPIO_SetPixel(i, brightness, brightness, brightness);
@@ -178,7 +178,7 @@ static void LedRefreshTask(void *pvParameters)
                     ESP_LOGI(TAG, "Animation / FadeOut");
                     for(int brightness = LED_OUTPUT_MAX; brightness >= 0; brightness -= 10)
                     {
-                        for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
                                 GPIO_SetPixel(i, brightness, brightness, brightness);
@@ -193,7 +193,7 @@ static void LedRefreshTask(void *pvParameters)
                 case SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite:
                 {
                     ESP_LOGI(TAG, "Animation / Error");
-                    for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
+                    for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
                             GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
@@ -205,7 +205,7 @@ static void LedRefreshTask(void *pvParameters)
 
                     for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
                     {
-                        for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
                                 GPIO_SetPixel(i, LED_OUTPUT_MAX, brightness, brightness);
@@ -218,7 +218,7 @@ static void LedRefreshTask(void *pvParameters)
                 case SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff:
                 {
                     ESP_LOGI(TAG, "Animation / Error");
-                    for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
+                    for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
                         if ((i % 5) == 0)
                             GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
@@ -231,7 +231,7 @@ static void LedRefreshTask(void *pvParameters)
 
                     for(int brightness = LED_OUTPUT_MAX; brightness >= 0; brightness -= 10)
                     {
-                        for(int i = 0; i < FWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
                             if ((i % 5) == 0)
                                 GPIO_SetPixel(i, brightness, 0, 0);
@@ -311,7 +311,7 @@ static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg)
     {
         uint8_t u8LightIndex = psArg->u8Lights[i];
 
-        if (u8LightIndex >= FWCONFIG_WS1228B_LEDCOUNT)
+        if (u8LightIndex >= HWCONFIG_WS1228B_LEDCOUNT)
         {
             ESP_LOGE(TAG, "Invalid light index, %u", /*0*/u8LightIndex);
             continue;

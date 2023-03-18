@@ -30,7 +30,7 @@ static const int m_pRing3[] = { 41, 44, 45, 46  };
 #define MIN(X,Y) (((X) < (Y)) ? (X) : (Y))
 #define MAX(X,Y) (((X) > (Y)) ? (X) : (Y))
 
-static SLedEffect m_sLedEffects[FWCONFIG_WORMHOLELEDS_LEDCOUNT];
+static SLedEffect m_sLedEffects[HWCONFIG_WORMHOLELEDS_LEDCOUNT];
 static WORMHOLE_SArg m_sArg = {0};
 
 static bool m_bIsIdlingSoundPlaying = false;
@@ -69,7 +69,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
     const float minF = 0.10f;
     const float maxF = 0.25f;
 
-    for(int i = 0; i < FWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
+    for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
     {
         m_sLedEffects[i].fOne = (float)(esp_random() % 100) * 0.01f * maxF;
         m_sLedEffects[i].bUp = false;
@@ -90,7 +90,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
             SOUNDFX_WormholeIdling();
         }
 
-        for(int i = 0; i < FWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
+        for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
         {
             SLedEffect* psLedEffect = &m_sLedEffects[i];
 

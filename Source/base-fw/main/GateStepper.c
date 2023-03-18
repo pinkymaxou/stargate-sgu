@@ -30,8 +30,8 @@ void GATESTEPPER_Init()
     ESP_LOGI(TAG, "GATESTEPPER_Init");
 
     // Activated
-    gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, false);
-    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, false);
+    gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, false);
+    gpio_set_level(HWCONFIG_STEPPER_DIR_PIN, false);
 
     // m_sWaitReachHandle = xSemaphoreCreateBinary();
 
@@ -57,7 +57,7 @@ bool GATESTEPPER_MoveTo(int32_t s32Ticks)
     m_s32Period = 1;
 
     const bool bIsCCW = s32Ticks > 0;
-    gpio_set_level(FWCONFIG_STEPPER_DIR_PIN, bIsCCW);
+    gpio_set_level(HWCONFIG_STEPPER_DIR_PIN, bIsCCW);
 
     ESP_ERROR_CHECK(esp_timer_start_once(m_sSignalTimerHandle, m_s32Period));
 
@@ -87,7 +87,7 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
 
     xHigherPriorityTaskWoken = pdFALSE;
 
-    gpio_set_level(FWCONFIG_STEPPER_STEP_PIN, m_bPeriodAlternate);
+    gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, m_bPeriodAlternate);
     if (m_bPeriodAlternate)
     {
         const int32_t s32 = MIN(abs(m_s32Count) , abs(m_s32Target - m_s32Count));
