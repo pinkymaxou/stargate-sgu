@@ -1,1 +1,1 @@
-python ..\tools\embeddedgen.py -i ".\main\www" -o ".\main\assets"
+python ..\tools\embeddedgen.py -i ".\webserver-assets" -o ".\main\webserver"
