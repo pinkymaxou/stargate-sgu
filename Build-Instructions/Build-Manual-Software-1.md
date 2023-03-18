@@ -43,3 +43,4 @@ To add sound FX to the mp3 player:
 Allows to control the gate, dial address or manually activate/deactivate lightning.
 
 ![](./Assets/Software-Index.png)
+![](./Assets/Software-Index-2.png)
