@@ -285,6 +285,8 @@ static void ResetAutoOffTicks()
 {
     m_lAutoOffTicks = xTaskGetTickCount();
     m_bIsSuicide = false;
+    // Hold the power pin, it's likely about to move
+    GPIO_EnableHoldPowerPin(true);
 }
 
 static void SGUBRKeepAliveHandler(const SGUBRPROTOCOL_SKeepAliveArg* psKeepAliveArg)
@@ -435,9 +437,6 @@ void app_main(void)
             GPIO_EnableHoldPowerPin(false);
             // At this point if there are no external power to maintain it, it should die.
             vTaskDelay(pdMS_TO_TICKS(500));
-            // If it survived beyond this point, reset the auto-off
-            // it means the ring is externally powered
-            ResetAutoOffTicks();
             ESP_LOGW(TAG, "Seems like it we will live");
         }
 
