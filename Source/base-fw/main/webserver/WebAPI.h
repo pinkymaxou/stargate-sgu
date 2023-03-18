@@ -2,11 +2,12 @@
 #define _WEBAPI_H_
 
 #include <stdint.h>
+#include <esp_http_server.h>
 
-char* WEBAPI_GetSysInfo();
+esp_err_t WEBAPI_GetHandler(httpd_req_t *req);
 
-char* WEBAPI_GetStatusJSON();
+esp_err_t WEBAPI_PostHandler(httpd_req_t *req);
 
-char* WEBAPI_GetAllSounds();
+esp_err_t WEBAPI_ActionHandler(httpd_req_t *req);
 
 #endif
