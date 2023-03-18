@@ -21,7 +21,7 @@
 #include <esp_sntp.h>
 #include "lwip/err.h"
 #include "lwip/sys.h"
-#include "webserver.h"
+#include "webserver/WebServer.h"
 #include "mdns.h"
 #include "lwip/apps/netbiosns.h"
 #include "GPIO.h"
@@ -311,12 +311,14 @@ void BASEFW_RequestReboot()
 
 void BASEFW_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
 {
-    esp_netif_get_ip_info(m_pWifiSTA, pIPInfo);
+    if (m_pWifiSTA != NULL)
+        esp_netif_get_ip_info(m_pWifiSTA, pIPInfo);
 }
 
 void BASEFW_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)
 {
-    esp_netif_get_ip_info(m_pWifiSoftAP, pIPInfo);
+    if (m_pWifiSoftAP != NULL)
+        esp_netif_get_ip_info(m_pWifiSoftAP, pIPInfo);
 }
 
 static void PrintCurrentTime()

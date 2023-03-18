@@ -1,4 +1,4 @@
-#include "webserver.h"
+#include "WebServer.h"
 #include "esp_log.h"
 #include "esp_vfs.h"
 #include <stdio.h>
@@ -61,9 +61,9 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req);
 
 static const EF_SFile* GetFile(const char* strFilename);
 
-static const char* GetSysInfo();
-static const char* GetAllSounds();
-static const char* GetStatusJSON();
+static char* GetSysInfo();
+static char* GetAllSounds();
+static char* GetStatusJSON();
 
 static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len);
 
@@ -577,7 +577,7 @@ static const EF_SFile* GetFile(const char* strFilename)
     return NULL;
 }
 
-static const char* GetSysInfo()
+static char* GetSysInfo()
 {
     cJSON* pRoot = NULL;
 
@@ -654,7 +654,7 @@ static const char* GetSysInfo()
     // WiFi-station (IP address)
     cJSON* pEntryJSON9 = cJSON_CreateObject();
     cJSON_AddItemToObject(pEntryJSON9, "name", cJSON_CreateString("WiFi (STA)"));
-    esp_netif_ip_info_t wifiIpSta;
+    esp_netif_ip_info_t wifiIpSta = {0};
     BASEFW_GetWiFiSTAIP(&wifiIpSta);
     sprintf(buff, IPSTR, IP2STR(&wifiIpSta.ip));
     cJSON_AddItemToObject(pEntryJSON9, "value", cJSON_CreateString(buff));
@@ -663,14 +663,14 @@ static const char* GetSysInfo()
     // WiFi-Soft AP (IP address)
     cJSON* pEntryJSON10 = cJSON_CreateObject();
     cJSON_AddItemToObject(pEntryJSON10, "name", cJSON_CreateString("WiFi (Soft-AP)"));
-    esp_netif_ip_info_t wifiIpSoftAP;
+    esp_netif_ip_info_t wifiIpSoftAP = {0};
     BASEFW_GetWiFiSoftAPIP(&wifiIpSoftAP);
     sprintf(buff, IPSTR, IP2STR(&wifiIpSoftAP.ip));
     cJSON_AddItemToObject(pEntryJSON10, "value", cJSON_CreateString(buff));
     cJSON_AddItemToArray(pEntries, pEntryJSON10);
 
 
-    const char* pStr =  cJSON_PrintUnformatted(pRoot);
+    char* pStr =  cJSON_PrintUnformatted(pRoot);
     cJSON_Delete(pRoot);
     return pStr;
     ERROR:
@@ -678,7 +678,7 @@ static const char* GetSysInfo()
     return NULL;
 }
 
-static const char* GetStatusJSON()
+static char* GetStatusJSON()
 {
     cJSON* pRoot = NULL;
     pRoot = cJSON_CreateObject();
@@ -705,7 +705,7 @@ static const char* GetStatusJSON()
 
     cJSON_AddItemToObject(pRoot, "status", pStatusEntry);
 
-    const char* pStr =  cJSON_PrintUnformatted(pRoot);
+    char* pStr =  cJSON_PrintUnformatted(pRoot);
     cJSON_Delete(pRoot);
     return pStr;
     ERROR:
@@ -715,7 +715,7 @@ static const char* GetStatusJSON()
     //return "{ \"status\" : { \"mode\" : \"dialing\" } }";
 }
 
-static const char* GetAllSounds()
+static char* GetAllSounds()
 {
     cJSON* pRoot = NULL;
     pRoot = cJSON_CreateObject();
@@ -734,7 +734,7 @@ static const char* GetAllSounds()
         cJSON_AddItemToArray(pEntries, pNewFile);
     }
 
-    const char* pStr =  cJSON_PrintUnformatted(pRoot);
+    char* pStr = cJSON_PrintUnformatted(pRoot);
     cJSON_Delete(pRoot);
     return pStr;
     ERROR:
