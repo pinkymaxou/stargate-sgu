@@ -70,7 +70,6 @@ void GATECONTROL_Init()
 
 void GATECONTROL_Start()
 {
-	// Create task to respond to SPI queries
 	if (xTaskCreatePinnedToCore(GateControlTask, "gatecontrol", FWCONFIG_GATECONTROL_STACKSIZE, (void*)NULL, FWCONFIG_GATECONTROL_PRIORITY_DEFAULT, &m_sGateControlHandle, FWCONFIG_GATECONTROL_COREID) != pdPASS )
 	{
 		ESP_ERROR_CHECK(ESP_FAIL);
@@ -529,13 +528,11 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCyc
     WORMHOLE_FullStop();
     SOUNDFX_Stop();
 
-    GPIO_StartStepper();
-    GPIO_ReleaseClamp();
-
     SOUNDFX_ActivateGate();
-
     SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
     vTaskDelay(pdMS_TO_TICKS(NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_AnimPredialDelayMS)));
+    GPIO_StartStepper();
+    GPIO_ReleaseClamp();
 
     const int32_t s32StepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
     const uint32_t u32SymbBright = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingSymbolBrightness);
