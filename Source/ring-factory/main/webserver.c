@@ -27,7 +27,7 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req);
 
 static const EF_SFile* GetFile(const char* strFilename);
 
-static const char* GetSysInfo();
+static char* GetSysInfo();
 
 static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len);
 
