@@ -3,10 +3,6 @@
 
 #include "driver/gpio.h"
 
-#define FWCONFIG_STEPPER_DIR_PIN GPIO_NUM_33
-#define FWCONFIG_STEPPER_STEP_PIN GPIO_NUM_25
-#define FWCONFIG_STEPPER_SLP_PIN GPIO_NUM_26
-
 void GATESTEPPER_Init();
 
 bool GATESTEPPER_MoveTo(int32_t s32Ticks);

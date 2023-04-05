@@ -29,7 +29,7 @@ void GPIO_Init()
 
     // -----------------------
     // install ws2812 driver
-    led_strip_config_t strip_config = LED_STRIP_DEFAULT_CONFIG(FWCONFIG_WS1228B_LEDCOUNT, (led_strip_dev_t)config.channel);
+    led_strip_config_t strip_config = LED_STRIP_DEFAULT_CONFIG(HWCONFIG_WS1228B_LEDCOUNT, (led_strip_dev_t)config.channel);
     m_strip = led_strip_new_rmt_ws2812(&strip_config);
     if (!m_strip) {
         ESP_LOGE(TAG, "install WS2812 driver failed");

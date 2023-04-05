@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "HWConfig.h"
 
 typedef enum
 {

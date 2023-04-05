@@ -1,4 +1,4 @@
-#include "webserver.h"
+#include "WebServer.h"
 #include "esp_log.h"
 #include "esp_vfs.h"
 #include <stdio.h>
@@ -6,20 +6,25 @@
 #include <sys/unistd.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#include "assets/EmbeddedFiles.h"
+#include "EmbeddedFiles.h"
 #include "esp_ota_ops.h"
 #include "cJSON.h"
+#include "Settings.h"
+#include "GateControl.h"
+#include "Main.h"
+#include "GPIO.h"
+#include "GateStepper.h"
+#include "ApiURL.h"
+#include "WebAPI.h"
 
 #define TAG "webserver"
 
 /* Max length a file path can have on storage */
-#define HTTPSERVER_BUFFERSIZE (1024*10)
+#define HTTPSERVER_BUFFERSIZE (1024*8)
+static uint8_t m_u8Buffers[HTTPSERVER_BUFFERSIZE];
 
 #define DEFAULT_RELATIVE_URI "/index.html"
 
-#define API_GETSYSINFOJSON_URI "/api/getsysinfo"
-
-static esp_err_t api_get_handler(httpd_req_t *req);
 static esp_err_t file_get_handler(httpd_req_t *req);
 static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filename);
 
@@ -27,28 +32,36 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req);
 
 static const EF_SFile* GetFile(const char* strFilename);
 
-static char* GetSysInfo();
-
-static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len);
-
-static const httpd_uri_t m_sHttpGetAPI = {
-    .uri       = "/api/*",
+static const httpd_uri_t m_sHttpUI = {
+    .uri       = "/*",
     .method    = HTTP_GET,
-    .handler   = api_get_handler,
+    .handler   = file_get_handler,
     /* Let's pass response string in user
      * context to demonstrate it's usage */
     .user_ctx  = ""
 };
 
-static uint8_t m_u8Buffers[HTTPSERVER_BUFFERSIZE];
-
-/*! @brief this variable is set by linker script, don't rename it. It contains app image informations. */
-extern const esp_app_desc_t esp_app_desc;
-
-static const httpd_uri_t m_sHttpUI = {
-    .uri       = "/*",
+static const httpd_uri_t m_sHttpGetAPI = {
+    .uri       = "/api/*",
     .method    = HTTP_GET,
-    .handler   = file_get_handler,
+    .handler   = WEBAPI_GetHandler,
+    /* Let's pass response string in user
+     * context to demonstrate it's usage */
+    .user_ctx  = ""
+};
+
+static const httpd_uri_t m_sHttpPostAPI = {
+    .uri       = "/api/*",
+    .method    = HTTP_POST,
+    .handler   = WEBAPI_PostHandler,
+    /* Let's pass response string in user
+     * context to demonstrate it's usage */
+    .user_ctx  = ""
+};
+static const httpd_uri_t m_sHttpActionPost = {
+    .uri       = "/action/*",
+    .method    = HTTP_POST,
+    .handler   = WEBAPI_ActionHandler,
     /* Let's pass response string in user
      * context to demonstrate it's usage */
     .user_ctx  = ""
@@ -62,9 +75,6 @@ static const httpd_uri_t m_sHttpOTAUploadPost = {
      * context to demonstrate it's usage */
     .user_ctx  = ""
 };
-
-static bool m_bIsReceivingOTA = false;
-
 void WEBSERVER_Init()
 {
     httpd_handle_t server = NULL;
@@ -78,7 +88,9 @@ void WEBSERVER_Init()
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
+        httpd_register_uri_handler(server, &m_sHttpActionPost);
         httpd_register_uri_handler(server, &m_sHttpGetAPI);
+        httpd_register_uri_handler(server, &m_sHttpPostAPI);
         httpd_register_uri_handler(server, &m_sHttpUI);
         httpd_register_uri_handler(server, &m_sHttpOTAUploadPost);
         // return server;
@@ -117,6 +129,9 @@ static esp_err_t file_get_handler(httpd_req_t *req)
         httpd_resp_set_hdr(req, "Content-Encoding", "gzip");
     }
 
+    // Static files have 1h cache by default
+    httpd_resp_set_hdr(req, "Cache-Control", "public, max-age=3600");
+
     uint32_t u32Index = 0;
 
     while(u32Index < pFile->u32Length)
@@ -142,44 +157,8 @@ static esp_err_t file_get_handler(httpd_req_t *req)
     return ESP_OK;
 }
 
-static esp_err_t api_get_handler(httpd_req_t *req)
-{
-    esp_err_t err = ESP_OK;
-
-    char* pExportJSON = NULL;
-
-    if (strcmp(req->uri, API_GETSYSINFOJSON_URI) == 0)
-    {
-        pExportJSON = GetSysInfo();
-
-        if (pExportJSON == NULL || httpd_resp_send_chunk(req, pExportJSON, strlen(pExportJSON)) != ESP_OK)
-        {
-            httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Unable to send data");
-            goto ERROR;
-        }
-    }
-    else
-    {
-        ESP_LOGE(TAG, "api_get_handler, url: %s", req->uri);
-        httpd_resp_send_err(req, HTTPD_404_NOT_FOUND, "Unknown request");
-        goto ERROR;
-    }
-    goto END;
-    ERROR:
-    err = ESP_FAIL;
-    END:
-    if (pExportJSON != NULL)
-        free(pExportJSON);
-
-    httpd_resp_set_hdr(req, "Connection", "close");
-    httpd_resp_send_chunk(req, NULL, 0);
-    return err;
-}
-
 static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
 {
-    m_bIsReceivingOTA = true;
-
     ESP_LOGI(TAG, "file_otauploadpost_handler / uri: %s", req->uri);
 
     const esp_partition_t *configured = esp_ota_get_boot_partition();
@@ -253,12 +232,11 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
     ESP_LOGI(TAG, "OTA Completed !");
     ESP_LOGI(TAG, "Prepare to restart system!");
 
-    esp_restart();
-    m_bIsReceivingOTA = false;
+    MAIN_RequestReboot();
+
     httpd_resp_set_hdr(req, "Connection", "close");
     return ESP_OK;
 ERROR:
-    m_bIsReceivingOTA = false;
     httpd_resp_set_hdr(req, "Connection", "close");
     httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Invalid image");
     return ESP_FAIL;
@@ -296,6 +274,7 @@ static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filena
     }
     /* This is a limited set only */
     /* For any other type always set as plain text */
+    ESP_LOGW(TAG, "Warning, unsupported file extension, returning text/plain as default");
     return httpd_resp_set_type(req, "text/plain");
 }
 
@@ -309,97 +288,4 @@ static const EF_SFile* GetFile(const char* strFilename)
     }
 
     return NULL;
-}
-
-static char* GetSysInfo()
-{
-    cJSON* pRoot = NULL;
-
-    char buff[100];
-    pRoot = cJSON_CreateObject();
-    if (pRoot == NULL)
-    {
-        goto ERROR;
-    }
-    cJSON* pEntries = cJSON_AddArrayToObject(pRoot, "infos");
-
-    // Firmware
-    cJSON* pEntryJSON1 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON1, "name", cJSON_CreateString("Firmware"));
-    cJSON_AddItemToObject(pEntryJSON1, "value", cJSON_CreateString(esp_app_desc.version));
-    cJSON_AddItemToArray(pEntries, pEntryJSON1);
-
-    // Compile Time
-    cJSON* pEntryJSON2 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON2, "name", cJSON_CreateString("Compile Time"));
-    sprintf(buff, "%s %s", /*0*/esp_app_desc.date, /*0*/esp_app_desc.time);
-    cJSON_AddItemToObject(pEntryJSON2, "value", cJSON_CreateString(buff));
-    cJSON_AddItemToArray(pEntries, pEntryJSON2);
-
-    // SHA256
-    cJSON* pEntryJSON3 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON3, "name", cJSON_CreateString("SHA256"));
-    char elfSHA256[sizeof(esp_app_desc.app_elf_sha256)*2 + 1] = {0,};
-    ToHexString(elfSHA256, esp_app_desc.app_elf_sha256, sizeof(esp_app_desc.app_elf_sha256));
-    cJSON_AddItemToObject(pEntryJSON3, "value", cJSON_CreateString(elfSHA256));
-    cJSON_AddItemToArray(pEntries, pEntryJSON3);
-
-    // IDF
-    cJSON* pEntryJSON4 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON4, "name", cJSON_CreateString("IDF"));
-    cJSON_AddItemToObject(pEntryJSON4, "value", cJSON_CreateString(esp_app_desc.idf_ver));
-    cJSON_AddItemToArray(pEntries, pEntryJSON4);
-
-    // WiFi-AP
-    cJSON* pEntryJSON5 = cJSON_CreateObject();
-    uint8_t u8Macs[6];
-    cJSON_AddItemToObject(pEntryJSON5, "name", cJSON_CreateString("WiFi.AP"));
-    esp_read_mac(u8Macs, ESP_MAC_WIFI_SOFTAP);
-    sprintf(buff, "%02X:%02X:%02X:%02X:%02X:%02X", /*0*/u8Macs[0], /*1*/u8Macs[1], /*2*/u8Macs[2], /*3*/u8Macs[3], /*4*/u8Macs[4], /*5*/u8Macs[5]);
-    cJSON_AddItemToObject(pEntryJSON5, "value", cJSON_CreateString(buff));
-    cJSON_AddItemToArray(pEntries, pEntryJSON5);
-
-    // WiFi-STA
-    cJSON* pEntryJSON6 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON6, "name", cJSON_CreateString("WiFi.STA"));
-    esp_read_mac(u8Macs, ESP_MAC_WIFI_STA);
-    sprintf(buff, "%02X:%02X:%02X:%02X:%02X:%02X", /*0*/u8Macs[0], /*1*/u8Macs[1], /*2*/u8Macs[2], /*3*/u8Macs[3], /*4*/u8Macs[4], /*5*/u8Macs[5]);
-    cJSON_AddItemToObject(pEntryJSON6, "value", cJSON_CreateString(buff));
-    cJSON_AddItemToArray(pEntries, pEntryJSON6);
-
-    // WiFi-BT
-    cJSON* pEntryJSON7 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON7, "name", cJSON_CreateString("WiFi.BT"));
-    esp_read_mac(u8Macs, ESP_MAC_BT);
-    sprintf(buff, "%02X:%02X:%02X:%02X:%02X:%02X", /*0*/u8Macs[0], /*1*/u8Macs[1], /*2*/u8Macs[2], /*3*/u8Macs[3], /*4*/u8Macs[4], /*5*/u8Macs[5]);
-    cJSON_AddItemToObject(pEntryJSON7, "value", cJSON_CreateString(buff));
-    cJSON_AddItemToArray(pEntries, pEntryJSON7);
-
-    // Memory
-    cJSON* pEntryJSON8 = cJSON_CreateObject();
-    cJSON_AddItemToObject(pEntryJSON8, "name", cJSON_CreateString("Memory"));
-    const int freeSize = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-    const int totalSize = heap_caps_get_total_size(MALLOC_CAP_8BIT);
-
-    sprintf(buff, "%d / %d", /*0*/freeSize, /*1*/totalSize);
-    cJSON_AddItemToObject(pEntryJSON8, "value", cJSON_CreateString(buff));
-    cJSON_AddItemToArray(pEntries, pEntryJSON8);
-
-    const char* pStr =  cJSON_PrintUnformatted(pRoot);
-    cJSON_Delete(pRoot);
-    return pStr;
-    ERROR:
-    cJSON_Delete(pRoot);
-    return NULL;
-}
-
-bool WEBSERVER_GetIsReceivingOTA()
-{
-    return m_bIsReceivingOTA;
-}
-
-static void ToHexString(char *dstHexString, const uint8_t* data, uint8_t len)
-{
-    for (uint32_t i = 0; i < len; i++)
-        sprintf(dstHexString + (i * 2), "%02X", data[i]);
 }

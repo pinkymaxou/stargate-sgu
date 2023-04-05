@@ -11,7 +11,7 @@
 #include "SGUBRComm.h"
 #include "SGUBRProtocol.h"
 #include "SGUHelper.h"
-#include "base-fw.h"
+#include "Main.h"
 #include "ClockMode.h"
 #include "GateControl.h"
 #include "GateStepper.h"
