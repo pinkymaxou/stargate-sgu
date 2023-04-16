@@ -31,6 +31,7 @@
 #include "GateControl.h"
 #include "GateStepper.h"
 #include "SoundFX.h"
+#include "SSD1306.h"
 
 /* The examples use WiFi configuration that you can set via project configuration menu.
 
@@ -43,6 +44,7 @@ static const char *TAG = "wifi";
 SGUBRCOMM_SHandle g_sSGUBRCOMMHandle;
 static SGUBRCOMM_SSetting m_sSetting = { .eMode = SGUBRCOMM_EMODE_Base };
 static TickType_t m_xRebootRequestTicks = 0;
+static char m_szSoftAPSSID[31] = {0,};
 
 static esp_netif_t* m_pWifiSoftAP;
 static esp_netif_t* m_pWifiSTA;
@@ -138,6 +140,8 @@ static void wifi_init_all(void)
     esp_read_mac(macAddr, ESP_MAC_WIFI_SOFTAP);
 
     sprintf((char*)wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_SSID_BASE, macAddr[3], macAddr[4], macAddr[5]);
+    strcpy((char*)m_szSoftAPSSID, (char*)wifi_configAP.ap.ssid);
+
     int n = strlen((const char*)wifi_configAP.ap.ssid);
     wifi_configAP.ap.ssid_len = n;
 
@@ -266,6 +270,9 @@ void app_main(void)
     // TickType_t xLastWakeTime = xTaskGetTickCount();
     TickType_t xLEDBlinkTicks = xTaskGetTickCount();
     TickType_t xPrintTimeTicks = 0;
+    #ifdef HWCONFIG_OLED_ISPRESENT
+    TickType_t xUpdateOLEDTicks = 0;
+    #endif
 
     bool bAltern = false;
 
@@ -278,6 +285,31 @@ void app_main(void)
 
     while(true)
     {
+        #ifdef HWCONFIG_OLED_ISPRESENT
+        // Update OLED screen
+        if ( (xTaskGetTickCount() - xUpdateOLEDTicks) > pdMS_TO_TICKS(250) )
+        {
+            SSD1306_handle* pss1306Handle = GPIO_GetSSD1306Handle();
+            const char szText[128+1];
+
+            esp_netif_ip_info_t wifiIpSta = {0};
+            MAIN_GetWiFiSTAIP(&wifiIpSta);
+
+            esp_netif_ip_info_t wifiIpAP = {0};
+            MAIN_GetWiFiSoftAPIP(&wifiIpAP);
+
+            sprintf(szText, "%s\n"IPSTR"\n"IPSTR,
+                m_szSoftAPSSID,
+                IP2STR(&wifiIpAP.ip),
+                IP2STR(&wifiIpSta.ip));
+
+            SSD1306_ClearDisplay(pss1306Handle);
+            SSD1306_DrawString(pss1306Handle, 0, 0, szText, strlen(szText));
+            SSD1306_UpdateDisplay(pss1306Handle);
+            xUpdateOLEDTicks = xTaskGetTickCount();
+        }
+        #endif
+
         // Wait for the next cycle.
         vTaskDelay(pdMS_TO_TICKS(1));
         //vTaskDelayUntil( &xLastWakeTime, xFrequency );

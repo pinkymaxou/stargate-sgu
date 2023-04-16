@@ -35,6 +35,7 @@ Copyright:
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
 | MGM (for the franchise)
 | Explanation and inspiration for the design | https://stargate.fandom.com/wiki/Glyph#Milky_Way_glyphs
+| Adafruit | OLED library |
 
 |File | Info
 |---|---
@@ -73,6 +74,7 @@ Copyright:
 A new electronic board has been created. Not yet tested entierely.
 
 ![](./Readme-Assets/board.jpg)
+![](./Readme-Assets/board-real.jpg)
 
 # Parts to print
 
