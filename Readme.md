@@ -74,6 +74,7 @@ Copyright:
 A new electronic board has been created. Not yet tested entierely.
 
 ![](./Readme-Assets/board.jpg)
+![](./Readme-Assets/board-real.jpg)
 
 # Parts to print
 
