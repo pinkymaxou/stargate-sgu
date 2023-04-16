@@ -16,12 +16,13 @@
 #include <string.h>
 #include "WhiteBox.h"
 #include "HWConfig.h"
+#include "driver/i2c.h"
+#include "SSD1306.h"
 
 #define TAG "GPIO"
 
 static led_strip_t* m_strip = NULL;
-
-static void SendCMD(const char* szCmd);
+static SSD1306_handle m_ssd1306;
 
 void GPIO_Init()
 {
@@ -104,7 +105,7 @@ void GPIO_Init()
     }
     // Clear LED strip (turn off all LEDs)
     ESP_ERROR_CHECK(m_strip->clear(m_strip, 100));
-    
+
     #ifndef WHITEBOX_SOUNDFX_DEACTIVATE
     // =====================
     // UART drive to drive the Mp3 player
@@ -126,6 +127,27 @@ void GPIO_Init()
     ESP_ERROR_CHECK(uart_driver_install(HWCONFIG_MP3PLAYER_PORT_NUM, HWCONFIG_MP3PLAYER_BUFFSIZE * 2, 0, 0, NULL, intr_alloc_flags));
     ESP_ERROR_CHECK(uart_param_config(HWCONFIG_MP3PLAYER_PORT_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(HWCONFIG_MP3PLAYER_PORT_NUM, HWCONFIG_MP3PLAYER_TX2RXD, HWCONFIG_MP3PLAYER_RX2TXD, -1, -1));
+    #endif
+
+	const int i2c_master_port = HWCONFIG_I2C_MASTER_NUM;
+    i2c_config_t conf;
+    conf.mode = I2C_MODE_MASTER;
+    conf.sda_io_num = HWCONFIG_I2C_SDA;
+    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.scl_io_num = HWCONFIG_I2C_SCL;
+    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.master.clk_speed = HWCONFIG_I2C_MASTER_FREQ_HZ;
+    i2c_param_config(i2c_master_port, &conf);
+
+	ESP_ERROR_CHECK(i2c_driver_install(i2c_master_port, conf.mode, HWCONFIG_I2C_MASTER_RX_BUF_DISABLE, HWCONFIG_I2C_MASTER_TX_BUF_DISABLE, 0));
+
+    #ifdef HWCONFIG_OLED_ISPRESENT
+    static SSD1306_config cfgSSD1306 = SSD1306_CONFIG_DEFAULT_128x64;
+	//cfgSSD1306.pinReset = (gpio_num_t)CONFIG_I2C_MASTER_RESET;
+    SSD1306_Init(&m_ssd1306, i2c_master_port, &cfgSSD1306);
+    SSD1306_ClearDisplay(&m_ssd1306);
+    SSD1306_DrawString(&m_ssd1306, 0, 0, "patate", 6);
+    SSD1306_UpdateDisplay(&m_ssd1306);
     #endif
 }
 

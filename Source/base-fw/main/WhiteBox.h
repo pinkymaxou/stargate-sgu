@@ -1,7 +1,7 @@
 #ifndef _WHITEBOX_H_
 #define _WHITEBOX_H_
 
-#define WHITEBOX_ISACTIVE (1)
+#define WHITEBOX_ISACTIVE (0)
 
 #if WHITEBOX_ISACTIVE != 0
 
