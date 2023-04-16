@@ -17,7 +17,6 @@
 #include "WhiteBox.h"
 #include "HWConfig.h"
 #include "driver/i2c.h"
-#include "SSD1306.h"
 
 #define TAG "GPIO"
 
@@ -146,7 +145,8 @@ void GPIO_Init()
 	//cfgSSD1306.pinReset = (gpio_num_t)CONFIG_I2C_MASTER_RESET;
     SSD1306_Init(&m_ssd1306, i2c_master_port, &cfgSSD1306);
     SSD1306_ClearDisplay(&m_ssd1306);
-    SSD1306_DrawString(&m_ssd1306, 0, 0, "patate", 6);
+    const char* szBooting = "Booting ...";
+    SSD1306_DrawString(&m_ssd1306, 0, 0, szBooting, strlen(szBooting));
     SSD1306_UpdateDisplay(&m_ssd1306);
     #endif
 }
@@ -244,3 +244,10 @@ void GPIO_RefreshPixels()
 {
     ESP_ERROR_CHECK(m_strip->refresh(m_strip, 100));
 }
+
+#ifdef HWCONFIG_OLED_ISPRESENT
+SSD1306_handle* GPIO_GetSSD1306Handle()
+{
+    return &m_ssd1306;
+}
+#endif

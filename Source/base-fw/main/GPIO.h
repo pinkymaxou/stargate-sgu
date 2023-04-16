@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "SSD1306.h"
 
 void GPIO_Init();
 
@@ -26,5 +27,7 @@ void GPIO_ClearAllPixels();
 void GPIO_RefreshPixels();
 
 void GPIO_SendMp3PlayerCMD(const char* szCmd);
+
+SSD1306_handle* GPIO_GetSSD1306Handle();
 
 #endif
