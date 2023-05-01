@@ -30,8 +30,13 @@ It sounds better at 1/16 but it's perfectly workable at 1/8.
 | High | High | High | 1/32 step
 
 The photo is old, I used JST connector later because the job is prettier.
+(No attachement in this photo, perhaps a STL for attach will be made later)
 
 ![](./Assets/circuit-board-example.jpg)
+
+The OLED screen is not mandatory
+
+![](./Assets/pcb-3d.png)
 
 ## Program the ESP32
 

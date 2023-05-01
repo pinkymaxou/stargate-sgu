@@ -27,15 +27,20 @@ Inspired partly by:
 
 # Copyrights & Thanks
 
-Some fonts:
+Copyright:
 |File | Info
 |---|---
 | stargateuniverse.woff | Created by : Gilles Nuytens (http://www.thescifiworld.net/fonts.htm)
 | eurostile_extended2_bold.woff | https://fontsgeek.com/fonts/eurostile-extended-2-bold?ref=readme
 | ancient_virtual.ttf.woff | Created by VirtualCLD (http://www.thescifiworld.net/fonts.htm)
-| explanation and inspiration for the design | https://stargate.fandom.com/wiki/Glyph#Milky_Way_glyphs
-| DF Robot | https://www.dfrobot.com/
 | MGM (for the franchise)
+| Explanation and inspiration for the design | https://stargate.fandom.com/wiki/Glyph#Milky_Way_glyphs
+| Adafruit | OLED library |
+
+|File | Info
+|---|---
+| DF Robot | https://www.dfrobot.com/
+| Embedded file generator (python) | Created by ducalex https://github.com/ducalex
 
 # Original gate
 
@@ -63,6 +68,13 @@ Some fonts:
 | ring-fw | Ring firmware |
 | tools/otauploader.py | Do upload using HTTP for OTA |
 | tools/embeddedgen.py | Generate embedded resources |
+
+# Electronic board
+
+A new electronic board has been created. Not yet tested entierely.
+
+![](./Readme-Assets/board.jpg)
+![](./Readme-Assets/board-real.jpg)
 
 # Parts to print
 

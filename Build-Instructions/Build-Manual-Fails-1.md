@@ -32,7 +32,7 @@ Using sanding paper:
 
 ## With bearing outside the ring
 
-This one is an epic fail, it could barely old itself and was ridiculously shacky.
+This one is an epic fail, it could barely hold itself and was ridiculously shacky.
 
 ![](./Assets/failed-proto-bearingout-1.jpg)
 
