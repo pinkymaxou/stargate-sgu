@@ -18,6 +18,7 @@
 #include "sdkconfig.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "lwip/ip4_addr.h"
 #include "esp_system.h"
 #include "driver/gpio.h"
 #include "gpio.h"
@@ -259,11 +260,14 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED) {
         wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
-        ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
-                 MAC2STR(event->mac), (int)event->aid);
+        ESP_LOGI(TAG, "station %02x:%02x:%02x:%02x:%02x:%02x join, AID=%d",
+            event->mac[0], event->mac[1],event->mac[2], event->mac[3],event->mac[4], event->mac[5],
+            (int)event->aid);
     } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
         wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
-        ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d", MAC2STR(event->mac), (int)event->aid);
+        ESP_LOGI(TAG, "station %02x:%02x:%02x:%02x:%02x:%02x leave, AID=%d",
+            event->mac[0], event->mac[1],event->mac[2], event->mac[3],event->mac[4], event->mac[5],
+            (int)event->aid);
     }
 }
 
