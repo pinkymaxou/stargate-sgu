@@ -241,7 +241,7 @@ static void writeI2C(SSD1306_handle* pHandle, ControlByte controlByte, uint8_t* 
     }
 	ESP_ERROR_CHECK(i2c_master_stop(cmd));
 
-	esp_err_t ret = i2c_master_cmd_begin(pHandle->i2c_port, cmd, 1000 / portTICK_RATE_MS);
+	esp_err_t ret = i2c_master_cmd_begin(pHandle->i2c_port, cmd, pdMS_TO_TICKS(1000));
 	ESP_ERROR_CHECK(ret);
 
 	i2c_cmd_link_delete(cmd);
