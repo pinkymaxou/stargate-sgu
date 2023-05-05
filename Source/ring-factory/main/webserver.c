@@ -2,6 +2,8 @@
 #include "esp_log.h"
 #include "esp_chip_info.h"
 #include "esp_system.h"
+#include "esp_chip_info.h"
+#include "esp_mac.h"
 //#include "esp_vfs.h"
 #include <stdio.h>
 #include <sys/param.h>
