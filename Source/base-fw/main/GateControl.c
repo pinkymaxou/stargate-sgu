@@ -407,7 +407,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 
             if (!GPIO_IsHomeActive())
             {
-                ESP_LOGI(TAG, "Homing first step, count: %d", m_s32Count);
+                ESP_LOGI(TAG, "Homing first step, count: %d", (int)m_s32Count);
                 break;
             }
             vTaskDelay(pdMS_TO_TICKS(1));
@@ -432,7 +432,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 
             if (GPIO_IsHomeActive())
             {
-                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
+                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", (int)m_s32Count);
                 m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
                 break;
             }
@@ -466,7 +466,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
             const bool bIsHome = GPIO_IsHomeActive();
             if (!bLastIsHome && bIsHome)
             {
-                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
+                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", (int)m_s32Count);
                 m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
                 break;
             }

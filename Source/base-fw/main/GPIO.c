@@ -163,9 +163,9 @@ void GPIO_StepMotorCW()
 {
     gpio_set_level(HWCONFIG_STEPPER_DIR_PIN, true);
     gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, true);
-    ets_delay_us(10);
+    esp_rom_delay_us(10);
     gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, false);
-    ets_delay_us(10);
+    esp_rom_delay_us(10);
 }
 
 /*! @brief The gate spin clockwise */
@@ -173,9 +173,9 @@ void GPIO_StepMotorCCW()
 {
     gpio_set_level(HWCONFIG_STEPPER_DIR_PIN, false);
     gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, true);
-    ets_delay_us(10);
+    esp_rom_delay_us(10);
     gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, false);
-    ets_delay_us(10);
+    esp_rom_delay_us(10);
 }
 
 /*! @brief motor start */

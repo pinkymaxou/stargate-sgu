@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "esp_system.h"

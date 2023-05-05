@@ -14,15 +14,14 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "nvs_flash.h"
-
 #include <esp_event.h>
 #include <esp_log.h>
 #include <esp_sntp.h>
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "webserver/WebServer.h"
-#include "mdns.h"
 #include "lwip/apps/netbiosns.h"
 #include "GPIO.h"
 #include "FWConfig.h"
@@ -55,7 +54,6 @@ static void wifi_init_softap(void);
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void wifistation_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
-static void mdns_sn_init();
 static void PrintCurrentTime();
 
 static void time_sync_notification_cb(struct timeval *tv);
@@ -200,12 +198,6 @@ static void wifi_init_all(void)
     ESP_ERROR_CHECK(esp_wifi_start() );
 }
 
-static void mdns_sn_init()
-{
-    netbiosns_init();
-    netbiosns_set_name(FWCONFIG_MDNS_HOSTNAME);
-}
-
 void app_main(void)
 {
     //Initialize NVS
@@ -234,8 +226,6 @@ void app_main(void)
     ESP_LOGI(TAG, "wifi_init_all");
     // wifi_init_softap();
     wifi_init_all();
-
-    mdns_sn_init();
 
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, "pool.ntp.org");
