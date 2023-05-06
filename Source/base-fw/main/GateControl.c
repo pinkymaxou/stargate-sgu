@@ -299,7 +299,7 @@ static bool AutoCalibrate(const SProcCycle* psProcCycle)
         MoveUntilHomeSwitch(false, 30000, &s32CountGap);
 
         s32StepCount += s32Count + s32CountGap;
-        ESP_LOGI(TAG, "[Autocalibration] #%d, count: %d, gap: %d, tick count: %d", i+1, s32Count, s32CountGap, s32Count + s32CountGap);
+        ESP_LOGI(TAG, "[Autocalibration] #%d, count: %d, gap: %d, tick count: %d", i+1, (int)s32Count, (int)s32CountGap, (int)(s32Count + s32CountGap));
     }
 
     const int32_t s32OldStepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
@@ -311,9 +311,9 @@ static bool AutoCalibrate(const SProcCycle* psProcCycle)
     const int32_t s32NewTimePerRotation = pdTICKS_TO_MS(xTaskGetTickCount() - ttStartAll);
 
     ESP_LOGI(TAG, "[Autocalibration] After %d turn, it got: %d, avg: %.2f, ticks per rotation: %d => %d, rotation time: %d ms",
-        s32AttemptCount, s32StepCount, (float)s32StepCount / (float)s32AttemptCount,
-        s32OldStepPerRotation, s32NewStepPerRotation,
-        s32NewTimePerRotation );
+        (int)s32AttemptCount, (int)s32StepCount, (float)s32StepCount / (float)s32AttemptCount,
+        (int)s32OldStepPerRotation, (int)s32NewStepPerRotation,
+        (int)s32NewTimePerRotation );
 
     // Record values
     NVSJSON_SetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation, false, s32NewStepPerRotation);
@@ -407,7 +407,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 
             if (!GPIO_IsHomeActive())
             {
-                ESP_LOGI(TAG, "Homing first step, count: %d", m_s32Count);
+                ESP_LOGI(TAG, "Homing first step, count: %d", (int)m_s32Count);
                 break;
             }
             vTaskDelay(pdMS_TO_TICKS(1));
@@ -432,7 +432,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 
             if (GPIO_IsHomeActive())
             {
-                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
+                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", (int)m_s32Count);
                 m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
                 break;
             }
@@ -466,7 +466,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
             const bool bIsHome = GPIO_IsHomeActive();
             if (!bLastIsHome && bIsHome)
             {
-                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", m_s32Count);
+                ESP_LOGI(TAG, "[DoHoming] Reached, count: %d", (int)m_s32Count);
                 m_s32Count = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingHomeOffset);
                 break;
             }
@@ -548,7 +548,7 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCyc
         const uint8_t u8SymbolIndex = psDialArg->u8Symbols[i];
         int32_t s32TicksTarget = GetAbsoluteSymbolTarget(u8SymbolIndex, s32StepPerRotation);
 
-        ESP_LOGI(TAG, "Go Home - Symbol: %d, previous target: %d, new target: %d, current: %d", /*0*/u8SymbolIndex, /*1*/m_s32Count, /*2*/s32TicksTarget, /*3*/m_s32Count);
+        ESP_LOGI(TAG, "Go Home - Symbol: %d, previous target: %d, new target: %d, current: %d", /*0*/(int)u8SymbolIndex, /*1*/(int)m_s32Count, /*2*/(int)s32TicksTarget, /*3*/(int)m_s32Count);
 
         int32_t s32Move = (s32TicksTarget - m_s32Count);
 

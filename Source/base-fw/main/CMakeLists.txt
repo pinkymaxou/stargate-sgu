@@ -6,4 +6,4 @@ idf_component_register(
     "webserver/WebAPI.c" "webserver/WebAPI.h" "webserver/ApiURL.h"
     "GateControl.c" "GPIO.c"
     INCLUDE_DIRS "."
-    REQUIRES SGU SSD1306 lwip nvsjson led_strip mdns nvs_flash json esp_http_server esp_wifi app_update fatfs esp_timer esp_hw_support esp_common log)
+    REQUIRES SGU SSD1306 driver nvsjson led_strip esp_rom lwip nvs_flash json esp_http_server esp_wifi app_update fatfs esp_rom esp_timer esp_hw_support esp_common log)

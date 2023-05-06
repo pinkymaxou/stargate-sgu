@@ -11,6 +11,16 @@ static led_strip_t* m_strip = NULL;
 
 void GPIO_Init()
 {
+    // Hold the power pin on start-up
+	//gpio_pad_select_gpio(CONFIG_HOLDPOWER_PIN);
+	gpio_set_direction(CONFIG_HOLDPOWER_PIN, GPIO_MODE_OUTPUT);
+    gpio_set_level(CONFIG_HOLDPOWER_PIN, true);
+
+    // Configure the switch
+	//gpio_pad_select_gpio(CONFIG_SWITCH_PIN);
+	gpio_set_direction(CONFIG_SWITCH_PIN, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(CONFIG_SWITCH_PIN, GPIO_PULLUP_ONLY);
+
     // Initialize LED drivers
     rmt_config_t config = RMT_DEFAULT_CONFIG_TX(CONFIG_WS1228B_PIN, CONFIG_WS1228B_RMT_TX_CHANNEL);
     // set counter clock to 40MHz

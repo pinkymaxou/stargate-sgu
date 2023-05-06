@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
+#include "esp_random.h"
 #include "FWConfig.h"
 #include "Settings.h"
 #include "SoundFX.h"

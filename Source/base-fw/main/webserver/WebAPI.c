@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "esp_system.h"
@@ -263,7 +264,7 @@ esp_err_t WEBAPI_ActionHandler(httpd_req_t *req)
         int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
         if (reqN <= 0)
         {
-            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", (int)n, (int)reqN);
             break;
         }
         n += reqN;
@@ -410,7 +411,7 @@ esp_err_t WEBAPI_PostHandler(httpd_req_t *req)
         int reqN = httpd_req_recv(req, (char*)m_u8Buffers + n, HTTPSERVER_BUFFERSIZE - n - 1);
         if (reqN <= 0)
         {
-            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", n, reqN);
+            ESP_LOGI(TAG, "api_post_handler, test: %d, reqN: %d", (int)n, (int)reqN);
             break;
         }
         n += reqN;

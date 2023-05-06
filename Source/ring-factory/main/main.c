@@ -12,23 +12,28 @@
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
+#include "esp_netif.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_pm.h"
+#include "esp_chip_info.h"
+#include "esp_mac.h"
+#include "esp_system.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 #include "webserver.h"
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "gpio.h"
+#include "lwip/apps/netbiosns.h"
+#include "lwip/ip4_addr.h"
 
 static const char *TAG = "Main";
 
 static volatile int m_iConnectedCount = 0;
 static bool m_bIsSuicide = false;
 
-
-
+static esp_netif_t* m_pWifiSoftAP;
 static wifi_config_t m_wifi_config;
 
 static esp_pm_lock_handle_t m_lockHandle;
@@ -39,14 +44,14 @@ static void wifi_init_softap(void)
 {
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_t* wifiAP = esp_netif_create_default_wifi_ap();
+    m_pWifiSoftAP = esp_netif_create_default_wifi_ap();
     esp_netif_ip_info_t ipInfo;
     IP4_ADDR(&ipInfo.ip, 192, 168, 66, 1);
 	IP4_ADDR(&ipInfo.gw, 192, 168, 66, 1);
 	IP4_ADDR(&ipInfo.netmask, 255, 255, 255, 0);
-	esp_netif_dhcps_stop(wifiAP);
-	esp_netif_set_ip_info(wifiAP, &ipInfo);
-	esp_netif_dhcps_start(wifiAP);
+	esp_netif_dhcps_stop(m_pWifiSoftAP);
+	esp_netif_set_ip_info(m_pWifiSoftAP, &ipInfo);
+	esp_netif_dhcps_start(m_pWifiSoftAP);
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -85,7 +90,7 @@ static void wifi_init_softap(void)
 
     ESP_LOGI(TAG, "AP IP Address: %s", ipString);
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-             m_wifi_config.ap.ssid, CONFIG_ESP_WIFI_PASS, CONFIG_ESP_WIFI_CHANNEL);
+             m_wifi_config.ap.ssid, CONFIG_ESP_WIFI_PASS, (int)CONFIG_ESP_WIFI_CHANNEL);
 }
 
 static void LightningTask(void *pvParameters)
@@ -159,16 +164,6 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
-    // Hold the power pin on start-up
-	gpio_pad_select_gpio(CONFIG_HOLDPOWER_PIN);
-	gpio_set_direction(CONFIG_HOLDPOWER_PIN, GPIO_MODE_OUTPUT);
-    gpio_set_level(CONFIG_HOLDPOWER_PIN, true);
-
-    // Configure the switch
-	gpio_pad_select_gpio(CONFIG_SWITCH_PIN);
-	gpio_set_direction(CONFIG_SWITCH_PIN, GPIO_MODE_INPUT);
-    gpio_set_pull_mode(CONFIG_SWITCH_PIN, GPIO_PULLUP_ONLY);
-
     ESP_LOGI(TAG, "wifi_init_softap");
     wifi_init_softap();
 
@@ -226,13 +221,13 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
         wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
         m_iConnectedCount++;
         ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
-                 MAC2STR(event->mac), event->aid);
+                 MAC2STR(event->mac), (int)event->aid);
     }
     else if (event_id == WIFI_EVENT_AP_STADISCONNECTED)
     {
         wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
         m_iConnectedCount--;
         ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d",
-                 MAC2STR(event->mac), event->aid);
+                 MAC2STR(event->mac), (int)event->aid);
     }
 }

@@ -73,7 +73,7 @@ void SOUNDFX_WormholeClose()
 void SOUNDFX_PlayFile(SOUNDFX_EFILE eFile, bool bIsRepeat)
 {
     char szBuff[64];
-    sprintf(szBuff, "AT+VOL=%d\r\n", NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_Mp3PlayerVolume));
+    sprintf(szBuff, "AT+VOL=%d\r\n", (int)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_Mp3PlayerVolume));
     GPIO_SendMp3PlayerCMD(szBuff);
     vTaskDelay(pdMS_TO_TICKS(25));
 
@@ -86,7 +86,7 @@ void SOUNDFX_PlayFile(SOUNDFX_EFILE eFile, bool bIsRepeat)
 
     // Play number
     const uint32_t u32Ix = (uint32_t)eFile + 1;
-    sprintf(szBuff, "AT+PLAYNUM=%d\r\n", u32Ix);
+    sprintf(szBuff, "AT+PLAYNUM=%d\r\n", (int)u32Ix);
     GPIO_SendMp3PlayerCMD(szBuff);
 }
 

@@ -1,6 +1,10 @@
 #include "webserver.h"
 #include "esp_log.h"
-#include "esp_vfs.h"
+#include "esp_chip_info.h"
+#include "esp_system.h"
+#include "esp_chip_info.h"
+#include "esp_mac.h"
+//#include "esp_vfs.h"
 #include <stdio.h>
 #include <sys/param.h>
 #include <sys/unistd.h>
@@ -74,7 +78,7 @@ void WEBSERVER_Init()
     config.max_open_sockets = 13;
 
     // Start the httpd server
-    ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
+    ESP_LOGI(TAG, "Starting server on port: '%d'", (int)config.server_port);
     if (httpd_start(&server, &config) == ESP_OK) {
         // Set URI handlers
         ESP_LOGI(TAG, "Registering URI handlers");
@@ -188,17 +192,17 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
     if (configured != running)
     {
         ESP_LOGW(TAG, "Configured OTA boot partition at offset 0x%08x, but running from offset 0x%08x",
-                 configured->address, running->address);
+                 (int)configured->address, (int)running->address);
         ESP_LOGW(TAG, "(This can happen if either the OTA boot data or preferred boot image become corrupted somehow.)");
     }
 
     ESP_LOGI(TAG, "Running partition type %d subtype %d (offset 0x%08x)",
-             running->type, running->subtype, running->address);
+             (int)running->type, (int)running->subtype, (int)running->address);
 
     const esp_partition_t* update_partition = esp_ota_get_next_update_partition(NULL);
     assert(update_partition != NULL);
     ESP_LOGI(TAG, "Writing to partition subtype %d at offset 0x%x",
-             update_partition->subtype, update_partition->address);
+             (int)update_partition->subtype, (int)update_partition->address);
 
     esp_ota_handle_t update_handle = 0;
 
@@ -216,7 +220,7 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
 
     while(n > 0)
     {
-        ESP_LOGI(TAG, "file_otauploadpost_handler / receiving: %d bytes", n);
+        ESP_LOGI(TAG, "file_otauploadpost_handler / receiving: %d bytes", (int)n);
 
         err = esp_ota_write( update_handle, (const void *)m_u8Buffers, n);
         if (err != ESP_OK)
@@ -225,7 +229,7 @@ static esp_err_t file_otauploadpost_handler(httpd_req_t *req)
             goto ERROR;
         }
         binary_file_length += n;
-        ESP_LOGD(TAG, "Written image length %d", binary_file_length);
+        ESP_LOGD(TAG, "Written image length %d", (int)binary_file_length);
 
         n = httpd_req_recv(req, (char*)m_u8Buffers, HTTPSERVER_BUFFERSIZE);
     }

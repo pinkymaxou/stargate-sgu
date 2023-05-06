@@ -14,15 +14,14 @@
 #include "esp_wifi.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "nvs_flash.h"
-
 #include <esp_event.h>
 #include <esp_log.h>
 #include <esp_sntp.h>
 #include "lwip/err.h"
 #include "lwip/sys.h"
 #include "webserver/WebServer.h"
-#include "mdns.h"
 #include "lwip/apps/netbiosns.h"
 #include "GPIO.h"
 #include "FWConfig.h"
@@ -55,7 +54,6 @@ static void wifi_init_softap(void);
 static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void wifistation_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
-static void mdns_sn_init();
 static void PrintCurrentTime();
 
 static void time_sync_notification_cb(struct timeval *tv);
@@ -64,12 +62,14 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
 {
     if (event_id == WIFI_EVENT_AP_STACONNECTED) {
         wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*) event_data;
-        ESP_LOGI(TAG, "station "MACSTR" join, AID=%d",
-                 MAC2STR(event->mac), event->aid);
+        ESP_LOGI(TAG, "station %02x:%02x:%02x:%02x:%02x:%02x join, AID=%d",
+                 event->mac[0], event->mac[1],event->mac[2], event->mac[3],event->mac[4], event->mac[5],
+                 (int)event->aid);
     } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
         wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*) event_data;
-        ESP_LOGI(TAG, "station "MACSTR" leave, AID=%d",
-                 MAC2STR(event->mac), event->aid);
+        ESP_LOGI(TAG, "station %02x:%02x:%02x:%02x:%02x:%02x leave, AID=%d",
+                 event->mac[0], event->mac[1],event->mac[2], event->mac[3],event->mac[4], event->mac[5],
+                 (int)event->aid);
     }
 }
 
@@ -153,7 +153,7 @@ static void wifi_init_all(void)
 
     // Soft Access Point Mode
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
-             wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, FWCONFIG_SOFTAP_WIFI_CHANNEL);
+             wifi_configAP.ap.ssid, FWCONFIG_SOFTAP_WIFI_PASS, (int)FWCONFIG_SOFTAP_WIFI_CHANNEL);
 
     if (isWiFiSTA)
     {
@@ -198,26 +198,6 @@ static void wifi_init_all(void)
     ESP_ERROR_CHECK(esp_wifi_start() );
 }
 
-static void mdns_sn_init()
-{
-    ESP_LOGI(TAG, "mdns_sn_init, hostname: '%s', desc: '%s', service: '%s'", FWCONFIG_MDNS_HOSTNAME, FWCONFIG_MDNS_DESCRIPTION, FWCONFIG_MDNS_SERVICENAME);
-
-    mdns_init();
-    mdns_hostname_set(FWCONFIG_MDNS_HOSTNAME);
-    mdns_instance_name_set(FWCONFIG_MDNS_DESCRIPTION);
-
-    mdns_txt_item_t serviceTxtData[] = {
-        {"gate", "stargate-sgu"},
-        {"path", "/"}
-    };
-
-    ESP_ERROR_CHECK(mdns_service_add(FWCONFIG_MDNS_SERVICENAME, "_http", "_tcp", 80, serviceTxtData,
-                                     sizeof(serviceTxtData) / sizeof(serviceTxtData[0])));
-
-    netbiosns_init();
-    netbiosns_set_name(FWCONFIG_MDNS_HOSTNAME);
-}
-
 void app_main(void)
 {
     //Initialize NVS
@@ -246,8 +226,6 @@ void app_main(void)
     ESP_LOGI(TAG, "wifi_init_all");
     // wifi_init_softap();
     wifi_init_all();
-
-    mdns_sn_init();
 
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
     sntp_setservername(0, "pool.ntp.org");
@@ -362,7 +340,7 @@ static void PrintCurrentTime()
     tzset();
     time(&now);
     localtime_r(&now, &timeinfo);
-    ESP_LOGI(TAG, "The current date/time in New York is: %2d:%2d:%2d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+    ESP_LOGI(TAG, "The current date/time in New York is: %2d:%2d:%2d", (int)timeinfo.tm_hour, (int)timeinfo.tm_min, (int)timeinfo.tm_sec);
 }
 
 static void time_sync_notification_cb(struct timeval* tv)
