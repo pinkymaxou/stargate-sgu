@@ -57,7 +57,7 @@ Copyright:
  - At least 22 x 22 cm printer, capable of printing with 0.2 mm nozzle (yes, 0.2mm !)<br>
     **Warning: Don't even think of printing it using a bigger nozzle, it just won't work.**
  - Have some knowledge in electronic.
- - ESP-IDF toolkit installed (tested on IDF 4.4)
+ - ESP-IDF toolkit installed (tested on IDF 5.0)
 
 # Included softwares
 
