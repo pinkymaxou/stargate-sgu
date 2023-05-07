@@ -16,7 +16,7 @@ void GPIO_Init()
 
 	gpio_set_direction((gpio_num_t)FWCONFIG_SWITCH_PIN, GPIO_MODE_INPUT);
     gpio_set_pull_mode((gpio_num_t)FWCONFIG_SWITCH_PIN, GPIO_PULLUP_ONLY);
-    
+
     // Initialize LED drivers
     rmt_config_t config = RMT_DEFAULT_CONFIG_TX(FWCONFIG_WS1228B_PIN, FWCONFIG_WS1228B_RMT_TX_CHANNEL);
     // set counter clock to 40MHz
