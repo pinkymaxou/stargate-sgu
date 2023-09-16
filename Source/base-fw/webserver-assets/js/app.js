@@ -12,9 +12,14 @@ function SendAction(actionURL, data)
   }
 }
 
-function DialGate(symbols)
+function DialGate(symbols, wormhole)
 {
-  SendAction('action/dial', { symbols : symbols } );
+  if (wormhole) {
+    SendAction('action/dial', { symbols : symbols, wormhole: wormhole } );
+  }
+  else {
+    SendAction('action/dial', { symbols : symbols } );
+  }
 }
 
 let allsymbols = [
@@ -74,6 +79,7 @@ let alladdresses = [
   { symbolIndexes: [2, 14, 18, 23, 30, 5, 33],           name: 'Malice Planet' },
   { symbolIndexes: [5, 17, 23, 25, 1, 28, 33],           name: 'Novus Colony Planet' },
   { symbolIndexes: [6, 26, 28, 10, 31, 12, 33],          name: 'Last Planet' },
+  { symbolIndexes: [5, 13, 34, 18, 13, 7, 4],            name: 'Wormhole', wormhole: 3 },
   // { symbolIndexes: [1, 36, 2, 35, 3, 34],                name: 'Test #1' },
 ];
 
