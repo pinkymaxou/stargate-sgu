@@ -93,7 +93,9 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
     {
         const int32_t s32 = MIN(abs(m_s32Count) , abs(m_s32Target - m_s32Count));
 
-        if (s32 < 100*2)
+        if (s32 < 50*2)
+            m_s32Period = 1750/2;
+        else if (s32 < 100*2)
             m_s32Period = 1500/2;
         else if (s32 < 200*2)
             m_s32Period = 1250/2;
@@ -104,9 +106,11 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
         else if (s32 < 500*2)
             m_s32Period = 675/2;
         else if (s32 < 600*2)
-            m_s32Period = 600/2;
-        else
             m_s32Period = 500/2;
+        else if (s32 < 700*2)
+            m_s32Period = 400/2;
+        else
+            m_s32Period = 300/2;
 
         // Count every two
         m_s32Count++;

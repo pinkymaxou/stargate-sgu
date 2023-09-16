@@ -91,53 +91,77 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
             SOUNDFX_WormholeIdling();
         }
 
-        for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
+        if (m_sArg.eType == WORMHOLE_ETYPE_Blackhole)
         {
-            SLedEffect* psLedEffect = &m_sLedEffects[i];
-
-            // Not optimized at all, basically I'm testing many trick until I'm satisfied
-            const int d = GetRing(i);
-            float fFactor = 1.0f;
-            switch(d)
+            static int32_t ix = 0;
+            for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
             {
-                case 3:
-                    fFactor = 2.5f;
-                    break;
-                case 2:
-                    fFactor = 1.5f;
-                    break;
-                case 1:
-                    fFactor = 0.6f;
-                    break;
-                case 0:
-                    fFactor = 0.25f;
-                    break;
+                if (i == ix)
+                {
+                    for(int j = 0; j < HWCONFIG_WORMHOLELEDS_LEDCOUNT; j++)
+                    {
+                        int z = 155 - j*3;
+                        GPIO_SetPixel( (i+j) % HWCONFIG_WORMHOLELEDS_LEDCOUNT, z, 0, z);
+                    }
+                    i += 19;
+                }
+                else
+                    GPIO_SetPixel(i, 0, 0, 0);
             }
+            ix = (ix + 1) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
 
-
-            if (m_sArg.eType == WORMHOLE_ETYPE_NormalSGU)
-                GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255));
-            else if (m_sArg.eType == WORMHOLE_ETYPE_NormalSG1)
-                GPIO_SetPixel(i, MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), 16+MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255-16));
-            else if (m_sArg.eType == WORMHOLE_ETYPE_Hell)
-                GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), 1, 1);
-
-            const float fInc = 0.005f + ( 0.01f * (esp_random() % 100) ) * 0.001f;
-
-            if (psLedEffect->bUp)
-                psLedEffect->fOne += fInc;
-            else
-                psLedEffect->fOne -= fInc;
-
-            if (psLedEffect->fOne >= maxF)
+            GPIO_RefreshPixels();
+            vTaskDelay(pdMS_TO_TICKS(10));
+        }
+        else
+        {
+            for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
             {
-                psLedEffect->fOne = maxF;
-                psLedEffect->bUp = false;
-            }
-            else if (psLedEffect->fOne <= minF)
-            {
-                psLedEffect->fOne = minF;
-                psLedEffect->bUp = true;
+                SLedEffect* psLedEffect = &m_sLedEffects[i];
+
+                // Not optimized at all, basically I'm testing many trick until I'm satisfied
+                const int d = GetRing(i);
+                float fFactor = 1.0f;
+                switch(d)
+                {
+                    case 3:
+                        fFactor = 2.5f;
+                        break;
+                    case 2:
+                        fFactor = 1.5f;
+                        break;
+                    case 1:
+                        fFactor = 0.6f;
+                        break;
+                    case 0:
+                        fFactor = 0.25f;
+                        break;
+                }
+
+                if (m_sArg.eType == WORMHOLE_ETYPE_NormalSGU)
+                    GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255));
+                else if (m_sArg.eType == WORMHOLE_ETYPE_NormalSG1)
+                    GPIO_SetPixel(i, MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), 16+MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255-16));
+                else if (m_sArg.eType == WORMHOLE_ETYPE_Hell)
+                    GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), 1, 1);
+
+                const float fInc = 0.005f + ( 0.01f * (esp_random() % 100) ) * 0.001f;
+
+                if (psLedEffect->bUp)
+                    psLedEffect->fOne += fInc;
+                else
+                    psLedEffect->fOne -= fInc;
+
+                if (psLedEffect->fOne >= maxF)
+                {
+                    psLedEffect->fOne = maxF;
+                    psLedEffect->bUp = false;
+                }
+                else if (psLedEffect->fOne <= minF)
+                {
+                    psLedEffect->fOne = minF;
+                    psLedEffect->bUp = true;
+                }
             }
         }
 
