@@ -94,24 +94,31 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
         if (m_sArg.eType == WORMHOLE_ETYPE_Blackhole)
         {
             static int32_t ix = 0;
-            for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
+
+            for(int ppp = 0; ppp < 3; ppp++)
             {
-                if (i == ix)
+                int32_t ix2 = (ix + ppp*16) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
+
+                for(int j = 1; j < 5; j++)
                 {
-                    for(int j = 0; j < HWCONFIG_WORMHOLELEDS_LEDCOUNT; j++)
-                    {
-                        int z = 155 - j*3;
-                        GPIO_SetPixel( (i+j) % HWCONFIG_WORMHOLELEDS_LEDCOUNT, z, 0, z);
-                    }
-                    i += 19;
+                    int z = 85 - j*20;
+                    int zzz = (ix2-j);
+                    if (zzz < 0)
+                        zzz = HWCONFIG_WORMHOLELEDS_LEDCOUNT + zzz;
+
+                    GPIO_SetPixel(zzz, z, 0, z);
                 }
-                else
-                    GPIO_SetPixel(i, 0, 0, 0);
+
+                for(int j = 0; j < 5; j++)
+                {
+                    int z = 85 - j*20;
+                    GPIO_SetPixel( (ix2+j) % HWCONFIG_WORMHOLELEDS_LEDCOUNT, z, 0, z);
+                }
             }
             ix = (ix + 1) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
 
             GPIO_RefreshPixels();
-            vTaskDelay(pdMS_TO_TICKS(10));
+            vTaskDelay(pdMS_TO_TICKS(20));
         }
         else
         {
