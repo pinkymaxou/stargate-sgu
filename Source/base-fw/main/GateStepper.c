@@ -112,10 +112,16 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
         else
             m_s32Period = 400/2;*/
 
-        /* a = -0.53846153846153846153846153846154
-           b = 1053.84*/
-        m_s32Period = (-538 * s32 + 1053840)/1000;
+        /* (100, 1000), (1400, 300)
+           a = -0.53846153846153846153846153846154
+           b = 1053.84 */
+        const int32_t a = -538;
+        const int32_t b = 1053840;
+        m_s32Period = (a * s32 + b)/1000;
+
+        // I hoped it would reduce jitter.
         m_s32Period = (m_s32Period / 100) * 100;
+
         if (m_s32Period < 200)
             m_s32Period = 200;
         if (m_s32Period > 1000)
