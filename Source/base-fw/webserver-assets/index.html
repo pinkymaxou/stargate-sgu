@@ -52,7 +52,7 @@
 					<p>Mode</p>
 					<button id="idBtSwitchToAdvanced" class="button-27 item" @click="is_adv_mode = true">Advanced mode</button>
 				</div>
-				
+
 				<!-- Advanced mode -->
 				<div style="display: flex; flex-flow: column;" v-show="is_adv_mode">
 					<p>Gate</p>
@@ -69,7 +69,7 @@
 			<div class="main">
 				<div class="address-container">
 					<div v-for="addr in alladdresses" class="address-item">
-						<button class="sguaddrbtn" :disabled="!is_connected" @click="DialGate(addr.symbolIndexes)">
+						<button class="sguaddrbtn" :disabled="!is_connected" @click="DialGate(addr.symbolIndexes, addr.wormhole)">
 							<p>{{ addr.name }}</p>
 							<span v-for="symbolIndex in addr.symbolIndexes">
 								<span>{{ GetSymbolIndex(symbolIndex).txt }}</span>

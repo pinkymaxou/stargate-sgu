@@ -129,7 +129,7 @@ void GPIO_Init()
     #endif
 
 	const int i2c_master_port = HWCONFIG_I2C_MASTER_NUM;
-    i2c_config_t conf;
+    i2c_config_t conf = {0};
     conf.mode = I2C_MODE_MASTER;
     conf.sda_io_num = HWCONFIG_I2C_SDA;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;

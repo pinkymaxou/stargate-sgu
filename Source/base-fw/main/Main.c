@@ -125,16 +125,12 @@ static void wifi_init_all(void)
                                                         NULL,
                                                         NULL));
 
-    wifi_config_t wifi_configAP = {
-        .ap = {
-            //.ssid = FWCONFIG_SOFTAP_WIFI_SSID,
-            //.ssid_len = strlen(FWCONFIG_SOFTAP_WIFI_SSID),
-            .channel = FWCONFIG_SOFTAP_WIFI_CHANNEL,
-            .password = FWCONFIG_SOFTAP_WIFI_PASS,
-            .max_connection = FWCONFIG_SOFTAP_MAX_CONN,
-            .authmode = WIFI_AUTH_WPA_WPA2_PSK
-        },
-    };
+    wifi_config_t wifi_configAP;
+    memset(&wifi_configAP, 0, sizeof(wifi_configAP));
+    //wifi_configAP.ap.channel = FWCONFIG_SOFTAP_WIFI_CHANNEL;
+    strcpy((char*)wifi_configAP.ap.password, FWCONFIG_SOFTAP_WIFI_PASS);
+    wifi_configAP.ap.max_connection = FWCONFIG_SOFTAP_MAX_CONN;
+    wifi_configAP.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
 
     uint8_t macAddr[6];
     esp_read_mac(macAddr, ESP_MAC_WIFI_SOFTAP);
@@ -172,16 +168,11 @@ static void wifi_init_all(void)
                                                             NULL,
                                                             &instance_got_ip));
 
-        wifi_config_t wifi_configSTA = {
-            .sta = {
-                .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-
-                .pmf_cfg = {
-                    .capable = true,
-                    .required = false
-                },
-            },
-        };
+        wifi_config_t wifi_configSTA;
+        memset(&wifi_configSTA, 0, sizeof(wifi_configSTA));
+        //wifi_configSTA.sta.threshold.authmode = WIFI_AUTH_OPEN;
+        wifi_configSTA.sta.threshold.authmode = WIFI_AUTH_WPA_PSK;
+        wifi_configSTA.sta.sae_pwe_h2e = WPA3_SAE_PWE_BOTH;
 
         size_t staSSIDLength = 32;
         NVSJSON_GetValueString(&g_sSettingHandle, SETTINGS_EENTRY_WSTASSID, (char*)wifi_configSTA.sta.ssid, &staSSIDLength);
