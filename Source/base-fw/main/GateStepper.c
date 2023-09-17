@@ -109,10 +109,8 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
             m_s32Period = 800/2;
         else if (s32 < 700*2)
             m_s32Period = 600/2;
-        else if (s32 < 800*2)
-            m_s32Period = 400/2;
         else
-            m_s32Period = 300/2;
+            m_s32Period = 400/2;
 
         // Count every two
         m_s32Count++;
