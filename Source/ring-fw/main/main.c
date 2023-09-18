@@ -252,7 +252,7 @@ static void LedRefreshTask(void *pvParameters)
                             if ((i % 5) == 0)
                                 GPIO_SetPixel(i, brightness, brightness, brightness);
                             else
-                                GPIO_SetPixel(i, 15, 15, 15);
+                                GPIO_SetPixel(i, 5, 5, 5);
                         }
                         GPIO_RefreshPixels();
                         vTaskDelay(pdMS_TO_TICKS(50));

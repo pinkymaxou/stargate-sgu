@@ -21,6 +21,8 @@ static void DoRing3();
 
 static int GetRing(int zeroBasedIndex);
 
+static double GetWormholeRingFactor(int32_t ledIndex);
+
 // 0 = Exterior <====> 3 = interior
 // One based, but I should have made it 0 based like a respectable programmer.
 static const int m_pRing0[] = { 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 47, 48 };
@@ -95,24 +97,31 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
         {
             static int32_t ix = 0;
 
+            static int32_t maximumLightLED = 180;
+
             for(int ppp = 0; ppp < 3; ppp++)
             {
                 int32_t ix2 = (ix + ppp*16) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
 
                 for(int j = 1; j < 5; j++)
                 {
-                    int z = 85 - j*20;
-                    int zzz = (ix2-j);
-                    if (zzz < 0)
-                        zzz = HWCONFIG_WORMHOLELEDS_LEDCOUNT + zzz;
+                    int32_t ledIndex = (ix2-j);
+                    if (ledIndex < 0)
+                        ledIndex = HWCONFIG_WORMHOLELEDS_LEDCOUNT + ledIndex;
+                    double dFactor = GetWormholeRingFactor(ledIndex);
 
-                    GPIO_SetPixel(zzz, z, 0, z);
+                    const int32_t z = 5 + (int32_t)(0.2d*(4-j) * dFactor * maximumLightLED);
+
+                    GPIO_SetPixel(ledIndex, z, 0, z);
                 }
 
                 for(int j = 0; j < 5; j++)
                 {
-                    int z = 85 - j*20;
-                    GPIO_SetPixel( (ix2+j) % HWCONFIG_WORMHOLELEDS_LEDCOUNT, z, 0, z);
+                    const int32_t ledIndex = (ix2+j) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
+                    double dFactor = GetWormholeRingFactor(ledIndex);
+
+                    const int32_t z = 5 + (int32_t)(0.25d*j * dFactor * maximumLightLED);
+                    GPIO_SetPixel( ledIndex, z, 0, z);
                 }
             }
             ix = (ix + 1) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
@@ -196,6 +205,18 @@ static int GetRing(int zeroBasedIndex)
             return 3;
 
     return 0;
+}
+
+static double GetWormholeRingFactor(int32_t ledIndex)
+{
+    switch(GetRing(ledIndex))
+    {
+        case 3: return 0.3d;
+        case 2: return 0.5d;
+        case 1: return 0.7d;
+        case 0: return 1.0d;
+    }
+    return 0.0d;
 }
 
 void WORMHOLE_Close(volatile bool* pIsCancelled)
