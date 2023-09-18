@@ -117,7 +117,7 @@ static void GateControlTask( void *pvParameters )
 
         if (m_eCurrentMode == GATECONTROL_EMODE_GoHome)
         {
-            SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeIn);
+            SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_AllSymbolsOn);
             vTaskDelay(pdMS_TO_TICKS(750));
             if (DoHoming(&sProcCycle))
                 SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_FadeOut);

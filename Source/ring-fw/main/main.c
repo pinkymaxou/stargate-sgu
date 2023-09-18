@@ -242,6 +242,23 @@ static void LedRefreshTask(void *pvParameters)
                     }
                     break;
                 }
+                case SGUBRPROTOCOL_ECHEVRONANIM_AllSymbolsOn:
+                {
+                    ESP_LOGI(TAG, "Animation / AllSymbolsOn");
+                    for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
+                    {
+                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        {
+                            if ((i % 5) == 0)
+                                GPIO_SetPixel(i, brightness, brightness, brightness);
+                            else
+                                GPIO_SetPixel(i, 15, 15, 15);
+                        }
+                        GPIO_RefreshPixels();
+                        vTaskDelay(pdMS_TO_TICKS(50));
+                    }
+                    break;
+                }
                 default:
                     ESP_LOGE(TAG, "Unknown animation");
                     break;
