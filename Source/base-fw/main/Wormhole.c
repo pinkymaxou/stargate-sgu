@@ -74,6 +74,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
 
     m_bIsIdlingSoundPlaying = false;
     bool bIsInitalized = false;
+    int32_t s32GlitchTempActCount = 0;
 
     while(!*pIsCancelled && (m_sArg.bNoTimeLimit || (xTaskGetTickCount() - xStartTicks) < pdMS_TO_TICKS(1000*u32OpenTimeS)))
     {
@@ -146,12 +147,26 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
                 }
                 bIsInitalized = true;
             }
-            // Lowest threshold to create a glitched effect
+
             if (m_sArg.eType == WORMHOLE_ETYPE_Glitch)
             {
-                minF = 0.0f;
-                maxF = 0.1f;
-                s32Speed = 20;
+                if (s32GlitchTempActCount > 0)
+                {
+                    // Lowest threshold to create a glitched effect
+                    minF = 0.0f;
+                    maxF = 0.1f;
+                    s32Speed = 20;
+                    s32GlitchTempActCount--;
+                    if (s32GlitchTempActCount == 0)
+                    {
+                        bIsInitalized = false;
+                    }
+                }
+                else if (esp_random() % 200 == 0)
+                {
+                    s32GlitchTempActCount = 25 + (esp_random() % 25);
+                    bIsInitalized = false;
+                }
             }
 
             for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
