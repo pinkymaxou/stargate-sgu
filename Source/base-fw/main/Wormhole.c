@@ -135,7 +135,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
                  m_sArg.eType == WORMHOLE_ETYPE_Glitch)
         {
             float minF = 0.10f;
-            float maxF = 0.25f;
+            float maxF = 0.35f;
 
             if (!bIsInitalized)
             {
