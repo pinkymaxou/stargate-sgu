@@ -103,6 +103,8 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
         {
             static int32_t ix = 0;
 
+            const uint32_t u32MaxBrightness2 = 100;
+
             for(int ppp = 0; ppp < 3; ppp++)
             {
                 int32_t ix2 = (ix + ppp*16) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
@@ -112,7 +114,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
                     int32_t ledIndex = (ix2-j);
                     if (ledIndex < 0)
                         ledIndex = HWCONFIG_WORMHOLELEDS_LEDCOUNT + ledIndex;
-                    const int32_t z = 5 + (int32_t)(0.2d*(4-j) * u32MaxBrightness);
+                    const int32_t z = 5 + (int32_t)(0.2d*(4-j) * u32MaxBrightness2);
 
                     GPIO_SetPixel(ledIndex, z, 0, z);
                 }
@@ -120,7 +122,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
                 for(int j = 0; j < 5; j++)
                 {
                     const int32_t ledIndex = (ix2+j) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
-                    const int32_t z = 5 + (int32_t)(0.25d*j * u32MaxBrightness);
+                    const int32_t z = 5 + (int32_t)(0.25d*j * u32MaxBrightness2);
                     GPIO_SetPixel( ledIndex, z, 0, z);
                 }
             }
