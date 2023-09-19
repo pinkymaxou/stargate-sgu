@@ -21,8 +21,6 @@ static void DoRing3();
 
 static int GetRing(int zeroBasedIndex);
 
-static double GetWormholeRingFactor(int32_t ledIndex);
-
 // 0 = Exterior <====> 3 = interior
 // One based, but I should have made it 0 based like a respectable programmer.
 static const int m_pRing0[] = { 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 47, 48 };
@@ -69,21 +67,13 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
 {
     const uint32_t u32MaxBrightness = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_WormholeMaxBrightness);
 
-    const float minF = 0.10f;
-    const float maxF = 0.25f;
-
-    for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
-    {
-        m_sLedEffects[i].fOne = (float)(esp_random() % 100) * 0.01f * maxF;
-        m_sLedEffects[i].bUp = false;
-    }
-
     // Wait until we get stop command or timeout reached.
     TickType_t xStartTicks = xTaskGetTickCount();
 
     const uint32_t u32OpenTimeS = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_GateOpenedTimeout);
 
     m_bIsIdlingSoundPlaying = false;
+    bool bIsInitalized = false;
 
     while(!*pIsCancelled && (m_sArg.bNoTimeLimit || (xTaskGetTickCount() - xStartTicks) < pdMS_TO_TICKS(1000*u32OpenTimeS)))
     {
@@ -93,11 +83,25 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
             SOUNDFX_WormholeIdling();
         }
 
-        if (m_sArg.eType == WORMHOLE_ETYPE_Blackhole)
+        int32_t s32Speed = 20;
+
+        if (m_sArg.eType == WORMHOLE_ETYPE_Strobe)
+        {
+            static bool bInvert = false;
+
+            for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
+            {
+                if (bInvert)
+                    GPIO_SetPixel(i, 200, 200, 200);
+                else
+                    GPIO_SetPixel(i, 0, 0, 0);
+            }
+
+            bInvert = !bInvert;
+        }
+        else if (m_sArg.eType == WORMHOLE_ETYPE_Blackhole)
         {
             static int32_t ix = 0;
-
-            static int32_t maximumLightLED = 180;
 
             for(int ppp = 0; ppp < 3; ppp++)
             {
@@ -108,9 +112,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
                     int32_t ledIndex = (ix2-j);
                     if (ledIndex < 0)
                         ledIndex = HWCONFIG_WORMHOLELEDS_LEDCOUNT + ledIndex;
-                    double dFactor = GetWormholeRingFactor(ledIndex);
-
-                    const int32_t z = 5 + (int32_t)(0.2d*(4-j) * dFactor * maximumLightLED);
+                    const int32_t z = 5 + (int32_t)(0.2d*(4-j) * u32MaxBrightness);
 
                     GPIO_SetPixel(ledIndex, z, 0, z);
                 }
@@ -118,19 +120,38 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
                 for(int j = 0; j < 5; j++)
                 {
                     const int32_t ledIndex = (ix2+j) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
-                    double dFactor = GetWormholeRingFactor(ledIndex);
-
-                    const int32_t z = 5 + (int32_t)(0.25d*j * dFactor * maximumLightLED);
+                    const int32_t z = 5 + (int32_t)(0.25d*j * u32MaxBrightness);
                     GPIO_SetPixel( ledIndex, z, 0, z);
                 }
             }
             ix = (ix + 1) % HWCONFIG_WORMHOLELEDS_LEDCOUNT;
-
-            GPIO_RefreshPixels();
-            vTaskDelay(pdMS_TO_TICKS(20));
+            s32Speed = 40;
         }
-        else
+        else if (m_sArg.eType == WORMHOLE_ETYPE_NormalSGU ||
+                 m_sArg.eType == WORMHOLE_ETYPE_NormalSG1 ||
+                 m_sArg.eType == WORMHOLE_ETYPE_Hell ||
+                 m_sArg.eType == WORMHOLE_ETYPE_Glitch)
         {
+            float minF = 0.10f;
+            float maxF = 0.25f;
+
+            if (!bIsInitalized)
+            {
+                for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
+                {
+                    m_sLedEffects[i].fOne = (float)(esp_random() % 100) * 0.01f * maxF;
+                    m_sLedEffects[i].bUp = false;
+                }
+                bIsInitalized = true;
+            }
+            // Lowest threshold to create a glitched effect
+            if (m_sArg.eType == WORMHOLE_ETYPE_Glitch)
+            {
+                minF = 0.0f;
+                maxF = 0.1f;
+                s32Speed = 20;
+            }
+
             for(int i = 0; i < HWCONFIG_WORMHOLELEDS_LEDCOUNT; i++)
             {
                 SLedEffect* psLedEffect = &m_sLedEffects[i];
@@ -154,7 +175,8 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
                         break;
                 }
 
-                if (m_sArg.eType == WORMHOLE_ETYPE_NormalSGU)
+                if (m_sArg.eType == WORMHOLE_ETYPE_NormalSGU ||
+                    m_sArg.eType == WORMHOLE_ETYPE_Glitch)
                     GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255));
                 else if (m_sArg.eType == WORMHOLE_ETYPE_NormalSG1)
                     GPIO_SetPixel(i, MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), 16+MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255-16));
@@ -182,7 +204,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
         }
 
         GPIO_RefreshPixels();
-        vTaskDelay(pdMS_TO_TICKS(20));
+        vTaskDelay(pdMS_TO_TICKS(s32Speed));
     }
 }
 
@@ -205,18 +227,6 @@ static int GetRing(int zeroBasedIndex)
             return 3;
 
     return 0;
-}
-
-static double GetWormholeRingFactor(int32_t ledIndex)
-{
-    switch(GetRing(ledIndex))
-    {
-        case 3: return 0.3d;
-        case 2: return 0.5d;
-        case 1: return 0.7d;
-        case 0: return 1.0d;
-    }
-    return 0.0d;
 }
 
 void WORMHOLE_Close(volatile bool* pIsCancelled)

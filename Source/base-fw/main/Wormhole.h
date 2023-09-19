@@ -11,7 +11,8 @@ typedef enum
     WORMHOLE_ETYPE_NormalSG1 = 1,
     WORMHOLE_ETYPE_Hell = 2,
     WORMHOLE_ETYPE_Blackhole = 3,
-    /* WORMHOLE_ETYPE_Glitch = 4 */
+    WORMHOLE_ETYPE_Strobe = 4,
+    WORMHOLE_ETYPE_Glitch = 5,
     WORMHOLE_ETYPE_Count
 } WORMHOLE_ETYPE;
 
