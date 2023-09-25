@@ -67,7 +67,7 @@ let allsymbols = [
 ];
 
 let alladdresses = [
-  { symbolIndexes: [10, 15, 20, 26, 28, 13, 18, 32, 30], name: 'Earth' },
+  { symbolIndexes: [10, 15, 20, 26, 28, 13, 18, 32, 30], name: 'Earth', wormhole: 5 },
   { symbolIndexes: [3, 34, 12, 7, 19, 6, 29],            name: 'Jungle Planet' },
   { symbolIndexes: [7, 8, 14, 17, 32, 23, 33],           name: 'Desert Planet' },
   { symbolIndexes: [15, 35, 8, 30, 31, 29, 33],          name: 'Hoth' },
