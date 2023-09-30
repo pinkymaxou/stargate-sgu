@@ -239,7 +239,7 @@ static void LedRefreshTask(void *pvParameters)
 
                     for(float fltBrightness = 1.0f; fltBrightness >= 0.0f; fltBrightness -= 0.05f)
                     {
-                        const uint8_t u8Brightness = (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX);
+                        const uint8_t u8Brightness = (fltBrightness < 0.05f ? 0 : (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX));
 
                         for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
