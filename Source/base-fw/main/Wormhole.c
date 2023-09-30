@@ -104,7 +104,7 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
         {
             static int32_t ix = 0;
 
-            const uint32_t u32MaxBrightness2 = 100;
+            const uint32_t u32MaxBrightness2 = 80;
 
             for(int ppp = 0; ppp < 3; ppp++)
             {
