@@ -1,3 +1,7 @@
+#include <stdint.h>
+#include <string.h>
+#include <math.h>
+#include "HelperMacro.h"
 #include "GateControl.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -16,8 +20,6 @@
 #include "GateControl.h"
 #include "GateStepper.h"
 #include "SoundFX.h"
-#include <stdint.h>
-#include <string.h>
 
 #define TAG "GateControl"
 
@@ -497,20 +499,25 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 void GATECONTROL_AnimRampLight(bool bIsActive)
 {
     const float fltPWMOn = (float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOnPercent) / 100.0f;
-    const float fltInc = (fltPWMOn / 50.0f);
+    const float fltInc = 0.01f;
 
     if (bIsActive)
-        for(float flt = 0.0f; flt < fltPWMOn; flt += fltInc)
+    {
+        for(float flt = 0.0f; flt <= 1.0f; flt += fltInc)
         {
-            GPIO_SetRampLightPerc(flt);
+            // Log corrected
+            GPIO_SetRampLightPerc(HELPERMACRO_LEDLOGADJ(flt, fltPWMOn));
             vTaskDelay(pdMS_TO_TICKS(5));
         }
+    }
     else
-        for(float flt = fltPWMOn; flt >= 0.0f; flt -= fltInc)
+    {
+        for(float flt = 1.0f; flt >= 0.0f; flt -= fltInc)
         {
-            GPIO_SetRampLightPerc(flt);
+            GPIO_SetRampLightPerc(HELPERMACRO_LEDLOGADJ(flt, fltPWMOn));
             vTaskDelay(pdMS_TO_TICKS(5));
         }
+    }
 }
 
 static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCycle* psProcCycle)
