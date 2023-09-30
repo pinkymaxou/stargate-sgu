@@ -33,7 +33,7 @@
 
 #define SGU_GATTS_TAG "SGU-GATTS"
 
-#define LED_OUTPUT_MAX (220)
+#define LED_OUTPUT_MAX (160)
 #define LED_OUTPUT_IDLE (100)
 
 static void InitESPNOW();
