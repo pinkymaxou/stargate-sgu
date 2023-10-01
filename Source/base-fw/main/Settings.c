@@ -26,7 +26,7 @@ static NVSJSON_SSettingEntry m_sConfigEntries[SETTINGS_EENTRY_Count] =
     [SETTINGS_EENTRY_RampOnPercent] =           NVSJSON_INITINT32_RNG("Ramp.LightOn",    "Ramp illumination ON (percent)",       30,    0,    100, NVSJSON_EFLAGS_None),
 
     [SETTINGS_EENTRY_WormholeMaxBrightness] =   NVSJSON_INITINT32_RNG("WH.MaxBright",    "Maximum brightness for wormhole leds. (Warning: can cause voltage drop)", 220, 0, 255, NVSJSON_EFLAGS_None),
-    [SETTINGS_EENTRY_WormholeType] =            NVSJSON_INITINT32_RNG("WH.Type",         "0: SGU, 1: SG1, 2: Hell", (int)WORMHOLE_ETYPE_NormalSGU, 0, (int)WORMHOLE_ETYPE_Count-1, NVSJSON_EFLAGS_None),
+    [SETTINGS_EENTRY_WormholeType] =            NVSJSON_INITINT32_RNG("WH.Type",         "0: SGU, 1: SG1, 2: Hell, 3: Blackhole, 4: Strobe, 5: Glitch", (int)WORMHOLE_ETYPE_NormalSGU, 0, (int)WORMHOLE_ETYPE_Count-1, NVSJSON_EFLAGS_None),
 
     // WiFi Station related
     [SETTINGS_EENTRY_WSTAIsActive] =            NVSJSON_INITINT32_RNG("WSTA.IsActive",   "Wi-Fi is active",                        0,    0, 1, NVSJSON_EFLAGS_NeedsReboot),

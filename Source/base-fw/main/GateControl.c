@@ -271,6 +271,7 @@ static bool AutoCalibrate(const SProcCycle* psProcCycle)
     // Move until it's outside
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
+    SOUNDFX_Stop();
 
     const int32_t s32AttemptCount = 10;
     int32_t s32StepCount = 0;
@@ -366,6 +367,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 
     m_bIsHomingCompleted = false;
 
+    SOUNDFX_Stop();
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
     ESP_LOGI(TAG, "[DoHoming] Started");
