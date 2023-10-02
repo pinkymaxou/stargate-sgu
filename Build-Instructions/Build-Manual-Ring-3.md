@@ -13,15 +13,15 @@ the slighest flaw will make it works badly.
 
 ![](./Assets/Lower-bridge.png)
 
-- It will looks like this once glued:
+- It will look like this once glued:
 
 ![](./Assets/inner-ring+lowerbridge.png)
 
-- Once the glue is set, you can remove M3 screw and fill the hole with more glue. 
+- Once the glue is set, you can remove M3 screw and fill the hole with more glue.
 
 ## Install the inner ring into the ring
 
-- Install the inner ring into the center, ensure it's in the ring direction relative to the outer ring. 
+- Install the inner ring into the center, ensure it's in the right ring direction relative to the outer ring.
 - Install bearing modules in place
 - Number bearing module with sharpie starting from the master chevron as #1, go counter-clockwise. Mark again the master chevron anywhere it could help.
 
@@ -48,7 +48,7 @@ It should looks like this:
 
 ## Install screws
 
-This step is necessary to ensure the gate spin correctly before going further. 
+This step is necessary to ensure the gate spin correctly before going further.
 You will need to screw both halves in place using M2x15 screws (shorter can do it too).
 
 There are 9 screws that fit in the back of the gate.

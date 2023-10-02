@@ -20,7 +20,7 @@ Glue "Back-plunger-bar_4mm-x1.stl" and "Back-plunger-Higher-spring_4mm-x1.stl" t
 
 ## Assemble "Back-plunger-arm_4mm-x1.stl"
 
-- You needs to wrap each contactor with cooper tape. 
+- You needs to wrap each contactor with cooper tape.
 - The left side (relative to the view on the picture) should be soldered to the ground, on a black wire if possible. The wire should be flexible, sillicon is the best.
 - The right side should be soldered to positive (+5v). The wire should be flexible, sillicon is the best.
 
