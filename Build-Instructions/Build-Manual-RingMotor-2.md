@@ -32,7 +32,7 @@ Glue "Back-plunger-Higher-spring_4mm-x1.stl" to "Back-plunger-arm_4mm-x1.stl" us
 
 ![](./Assets/Back-plunger-arm-highspring-part.png)
 
-Install a 4 mm by 30 mm spring, I used one coming from a pen. If it's too long you can cut it.
+Install a 4 mm by 30 mm spring, we used one coming from a pen. If it's too long you can cut it.
 
 ## Install the arm
 

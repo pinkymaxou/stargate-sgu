@@ -7,7 +7,7 @@ the slighest flaw will make it works badly.
 
 ![](./Assets/Inner-ring.png)
 
-## Glue the cradle
+## Glue the bridge
 
 - You will need gorilla glue, clamp and 10 mm M3 screw. M3 screw are only used for alignment, glue is what matter to hold parts together.
 
