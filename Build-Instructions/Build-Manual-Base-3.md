@@ -1,14 +1,26 @@
 # Base electronic
 
-You can use almost any ESP32 breakout variant, we tried node MCU but it proven to be not reliable, but it could have been caused by a bad quality one of.
-We used the Lolin32 then.
+We use the Lolin32. Former attempt using NodeMCU didn't go well. Likely a bad copy.
 
- - You can use JST connector anything else as long as it suit your needs. You can also just solder everything to the board but it's not recommended.
+ - You can use JST connector or anything else as long as it suit your needs. You can also just solder everything to the board but it's not recommended.
 
 Knowns issues:
+
  - We used 1A 12v to 5v regulator from dollar store, it proved to be unsufficient in some situation like when the servo motor move or the board starts. So 3A or more should be better.
 
 ![](./Assets/Schematic_SGU-Base.png)
+
+# WS2812B
+
+Based on empirical measurements, there is the average power consumption for WS2812B.<br>
+It needs ~1 mA at 0 PWM.
+
+| Channel | Power usage at 255 (mA) |
+|-------------|----------|
+| RED	      | 13.14084507 |
+| GREEN	      | 13.01408451 |
+| BLUE	      | 13.16901408 |
+| RGB (White) | 35.38 |
 
 ## Stepper Driver (DRV8825)
 

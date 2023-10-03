@@ -32,7 +32,7 @@
 | Privacy film  | 25x25 cm at least | https://www.aliexpress.com/item/32967449727.html |
 | Copper tape  | 1 | https://www.aliexpress.com/item/1005002822966859.html |
 | Plexiglass 20x20cm (recommend buying spare)  | 1 + 1 spare | https://www.aliexpress.com/item/32833660352.html |
-| Servo 9g | 1 | https://www.amazon.ca/-/fr/Servo-num%C3%A9rique-Micro-Metal-mod%C3%A8le/dp/B07FPJYM5T | I tried cheap one but they proved to be problematic, one died suddently and the other draw too much current sometime. You may have to invest in something better.
+| Servo 9g | 1 | https://www.amazon.ca/-/fr/Servo-num%C3%A9rique-Micro-Metal-mod%C3%A8le/dp/B07FPJYM5T | We tried cheap one but they proved to be problematic, one died suddently and the other draw too much current sometime. You may have to invest in something better.
 | M2 screws kit | 1 | https://www.amazon.ca/-/fr/Hilitchi-Assortiment-hexagonale-acier-inoxydable/dp/B014ONS02S | You needs several lengths
 | M3 screws kit | 1 | https://www.amazon.ca/Assortiment-cruciformes-cylindrique-acier-inoxydable/dp/B075RCVVYN/ | You needs several lengths
 
@@ -44,7 +44,7 @@
 
 ## Recommendations
 
-Parts are printed are very high resolution (by FDM standard) and last for several days in some case, it's very important to have a good way to ensure it stick in place.
+Parts are printed at very high resolution (by FDM standard) and printing require for several days in some case. It's very important to have a good way to ensure it sticks in place.
 
 | Description | Quantity | URL
 |---|---|---|
@@ -64,12 +64,12 @@ Parts are printed are very high resolution (by FDM standard) and last for severa
 
 ## Required plastics
 
-Basically color is up to you, but you will probably needs at least 3 colors.
-Nothing prevent you from painting parts if you can't find the right plastic color. If you do I suggest using dark PLA before painting for the ring, to be sure it doesn't have light leaking.
+Basically color is up to you, but you will probably needs at least 3 colors.<br>
+Nothing prevent you from painting parts if you can't find the right plastic color. If you do it, we suggest using dark PLA before painting over the ring, to be sure lights do not leak.
 
 | Color | Used for | Comments
 |---|---|---|
-| Dark gray or black PLA | Ring | The ring in the serie is almost black if not black. The one I made was gray but not dark enough, if I could do it again I would likely make it black |
-| Transparent PLA | Ring | Used for chevron illumination and light diffusion. It may be possible to use white instead but I suggest you to test it before commiting yourself.
-| White PLA | Ring/Base | Used for reflector but can be used for any parts that is not visible. (example, bearing module, inner ring, alignment block etc ...)
-| Sand PLA | Base | Sand like color, yes I realise there are many possible color for sand so let's say the same color as egypt pyramid?
+| Dark gray or black PLA | Ring | The ring in the serie is almost black if not black. The one we made was gray but not dark enough, if we could do it again we would likely make it black |
+| Transparent PLA | Ring | Used for chevron illumination and light diffusion. It may be possible to use white instead but we suggest you to test it before commiting yourself.
+| White PLA | Ring/Base | Used for reflectors but can be used for any parts that is not visible. (example, bearing module, inner ring, alignment block etc ...)
+| Sand PLA | Base | Sand like color, yes we realise there are many possible color for sand so let's say the same color as pyramid of egypt?
