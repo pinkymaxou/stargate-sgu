@@ -77,19 +77,19 @@ static void wifistation_event_handler(void* arg, esp_event_base_t event_base, in
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
-    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        //esp_netif_create_ip6_linklocal(m_pWifiSTA);
+     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
         esp_wifi_connect();
         ESP_LOGI(TAG, "retry to connect to the AP");
         ESP_LOGI(TAG,"connect to the AP fail");
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_GOT_IP6) {
+        ESP_LOGI(TAG, "GOT IPv6 event!");
 
-        /*if (!m_bIsWebServerInit)
-        {
-            m_bIsWebServerInit = true;
-            WEBSERVER_Init();
-        }*/
+        ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
+        ESP_LOGI(TAG, "Got IPv6 address " IPV6STR, IPV62STR(event->ip6_info.ip));
     }
 }
 
@@ -157,16 +157,23 @@ static void wifi_init_all(void)
 
         esp_event_handler_instance_t instance_any_id;
         esp_event_handler_instance_t instance_got_ip;
+        esp_event_handler_instance_t instance_got_ip6;
         ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
                                                             ESP_EVENT_ANY_ID,
                                                             &wifistation_event_handler,
                                                             NULL,
                                                             &instance_any_id));
+
         ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
                                                             IP_EVENT_STA_GOT_IP,
                                                             &wifistation_event_handler,
                                                             NULL,
                                                             &instance_got_ip));
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                            IP_EVENT_GOT_IP6,
+                                                            &wifistation_event_handler,
+                                                            NULL,
+                                                            &instance_got_ip6));
 
         wifi_config_t wifi_configSTA;
         memset(&wifi_configSTA, 0, sizeof(wifi_configSTA));
