@@ -77,7 +77,10 @@ static void wifistation_event_handler(void* arg, esp_event_base_t event_base, in
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
-        //esp_netif_create_ip6_linklocal(m_pWifiSTA);
+     }
+     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED ) {
+        ESP_LOGI(TAG, "Connected to the AP");
+        esp_netif_create_ip6_linklocal(m_pWifiSTA);
      } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
         esp_wifi_connect();
         ESP_LOGI(TAG, "retry to connect to the AP");
