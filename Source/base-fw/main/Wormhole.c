@@ -7,6 +7,7 @@
 #include "FWConfig.h"
 #include "Settings.h"
 #include "SoundFX.h"
+#include "HelperMacro.h"
 
 typedef struct
 {
@@ -27,9 +28,6 @@ static const int m_pRing0[] = { 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 
 static const int m_pRing1[] = { 9, 10, 11, 12, 20, 21, 22, 23, 24, 25, 26, 27, 31, 32, 33, 34, 35, 36 };
 static const int m_pRing2[] = { 37, 38, 39, 40, 28, 29, 30, 42, 43 };
 static const int m_pRing3[] = { 41, 44, 45, 46  };
-
-#define MIN(X,Y) (((X) < (Y)) ? (X) : (Y))
-#define MAX(X,Y) (((X) > (Y)) ? (X) : (Y))
 
 static SLedEffect m_sLedEffects[HWCONFIG_WORMHOLELEDS_LEDCOUNT];
 static WORMHOLE_SArg m_sArg = {0};
@@ -194,11 +192,11 @@ void WORMHOLE_Run(volatile bool* pIsCancelled)
 
                 if (m_sArg.eType == WORMHOLE_ETYPE_NormalSGU ||
                     m_sArg.eType == WORMHOLE_ETYPE_Glitch)
-                    GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255));
+                    GPIO_SetPixel(i, HELPERMACRO_MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), HELPERMACRO_MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), HELPERMACRO_MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255));
                 else if (m_sArg.eType == WORMHOLE_ETYPE_NormalSG1)
-                    GPIO_SetPixel(i, MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), 16+MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255-16));
+                    GPIO_SetPixel(i, HELPERMACRO_MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), HELPERMACRO_MAX(psLedEffect->fOne*u32MaxBrightness * fFactor, 16), 16+HELPERMACRO_MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255-16));
                 else if (m_sArg.eType == WORMHOLE_ETYPE_Hell)
-                    GPIO_SetPixel(i, MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), 1, 1);
+                    GPIO_SetPixel(i, HELPERMACRO_MIN(psLedEffect->fOne*u32MaxBrightness * fFactor, 255), 1, 1);
 
                 const float fInc = 0.005f + ( 0.01f * (esp_random() % 100) ) * 0.001f;
 
