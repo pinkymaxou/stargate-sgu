@@ -1,4 +1,5 @@
 #include "webserver.h"
+#include "HelperMacro.h"
 #include "esp_log.h"
 #include "esp_chip_info.h"
 #include "esp_system.h"
@@ -125,7 +126,7 @@ static esp_err_t file_get_handler(httpd_req_t *req)
 
     while(u32Index < pFile->u32Length)
     {
-        const uint32_t n = MIN(pFile->u32Length - u32Index, HTTPSERVER_BUFFERSIZE);
+        const uint32_t n = HELPERMACRO_MIN(pFile->u32Length - u32Index, HTTPSERVER_BUFFERSIZE);
 
         if (n > 0) {
             /* Send the buffer contents as HTTP response m_u8Buffers */

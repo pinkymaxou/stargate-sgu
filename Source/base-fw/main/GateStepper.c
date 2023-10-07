@@ -1,4 +1,5 @@
 #include "GateStepper.h"
+#include "HelperMacro.h"
 #include "HWConfig.h"
 #include "esp_timer.h"
 #include "esp_log.h"
@@ -7,9 +8,6 @@
 #include "freertos/semphr.h"
 
 #define TAG "GateStepper"
-
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
 
 static void tmr_signal_callback(void* arg);
 
@@ -91,7 +89,7 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
     gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, m_bPeriodAlternate);
     if (m_bPeriodAlternate)
     {
-        const int32_t s32 = MIN(abs(m_s32Count) , abs(m_s32Target - m_s32Count));
+        const int32_t s32 = HELPERMACRO_MIN(abs(m_s32Count) , abs(m_s32Target - m_s32Count));
         /* Former code
         if (s32 < 50*2)
             m_s32Period = 2000/2;
@@ -125,8 +123,8 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
         // I hoped it would reduce jitter.
         m_s32Period = (m_s32Period / 50) * 50;
 
-        if (m_s32Period < 200)
-            m_s32Period = 200;
+        if (m_s32Period < 300)
+            m_s32Period = 300;
         if (m_s32Period > 700)
             m_s32Period = 700;
 

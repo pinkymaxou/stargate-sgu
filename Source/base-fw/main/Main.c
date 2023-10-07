@@ -83,14 +83,11 @@ static void wifistation_event_handler(void* arg, esp_event_base_t event_base, in
         esp_netif_create_ip6_linklocal(m_pWifiSTA);
      } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
         esp_wifi_connect();
-        ESP_LOGI(TAG, "retry to connect to the AP");
-        ESP_LOGI(TAG,"connect to the AP fail");
+        ESP_LOGI(TAG, "connect to the AP faile, retry to connect to the AP");
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_GOT_IP6) {
-        ESP_LOGI(TAG, "GOT IPv6 event!");
-
         ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
         ESP_LOGI(TAG, "Got IPv6 address " IPV6STR, IPV62STR(event->ip6_info.ip));
     }
@@ -262,6 +259,10 @@ void app_main(void)
     ESP_LOGI(TAG, "vTaskList: \r\n\r\n%s", szAllTask);
     free(szAllTask);
 
+    // Small delay to be sure the Mp3 player doesn't play random things before being started up.
+    vTaskDelay(pdMS_TO_TICKS(500));
+    SOUNDFX_Stop();
+
     while(true)
     {
         #ifdef HWCONFIG_OLED_ISPRESENT
@@ -324,6 +325,13 @@ void MAIN_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
 {
     if (m_pWifiSTA != NULL)
         esp_netif_get_ip_info(m_pWifiSTA, pIPInfo);
+}
+
+int32_t MAIN_GetWiFiSTAIPv6(esp_ip6_addr_t if_ip6[CONFIG_LWIP_IPV6_NUM_ADDRESSES])
+{
+    if (m_pWifiSTA != NULL)
+        return esp_netif_get_all_ip6(m_pWifiSTA, if_ip6);
+    return 0;
 }
 
 void MAIN_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)
