@@ -25,6 +25,7 @@
 #include "gpio.h"
 #include "SGUBRProtocol.h"
 #include "SGUBRComm.h"
+#include "SGUHelper.h"
 #include "esp_now.h"
 #include "esp_crc.h"
 #include "esp_netif.h"
@@ -174,9 +175,9 @@ static void LedRefreshTask(void *pvParameters)
                     {
                         const uint8_t u8Brightness = (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX);
 
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
+                            if (SGUHELPER_IsLEDIndexChevron(i))
                                 GPIO_SetPixel(i, u8Brightness, u8Brightness, u8Brightness);
                             else
                                 GPIO_SetPixel(i, 0, 0, 0);
@@ -193,9 +194,9 @@ static void LedRefreshTask(void *pvParameters)
                     {
                         const uint8_t u8Brightness = (fltBrightness < 0.05f ? 0 : (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX));
 
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
+                            if (SGUHELPER_IsLEDIndexChevron(i))
                                 GPIO_SetPixel(i, u8Brightness, u8Brightness, u8Brightness);
                             else
                                 GPIO_SetPixel(i, 0, 0, 0);
@@ -208,9 +209,9 @@ static void LedRefreshTask(void *pvParameters)
                 case SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite:
                 {
                     ESP_LOGI(TAG, "Animation / Error");
-                    for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                    for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
-                        if ((i % 5) == 0)
+                        if (SGUHELPER_IsLEDIndexChevron(i))
                             GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
                         else
                             GPIO_SetPixel(i, 0, 0, 0);
@@ -221,9 +222,9 @@ static void LedRefreshTask(void *pvParameters)
                     for(float fltBrightness = 0.0f; fltBrightness <= 1.0f; fltBrightness += 0.05f)
                     {
                         const uint8_t u8Brightness = (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX);
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
+                            if (SGUHELPER_IsLEDIndexChevron(i))
                                 GPIO_SetPixel(i, LED_OUTPUT_MAX, u8Brightness, u8Brightness);
                         }
                         GPIO_RefreshPixels();
@@ -234,9 +235,9 @@ static void LedRefreshTask(void *pvParameters)
                 case SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff:
                 {
                     ESP_LOGI(TAG, "Animation / Error");
-                    for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                    for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
-                        if ((i % 5) == 0)
+                        if (SGUHELPER_IsLEDIndexChevron(i))
                             GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
                         else
                             GPIO_SetPixel(i, 0, 0, 0);
@@ -249,9 +250,9 @@ static void LedRefreshTask(void *pvParameters)
                     {
                         const uint8_t u8Brightness = (fltBrightness < 0.05f ? 0 : (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX));
 
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
+                            if (SGUHELPER_IsLEDIndexChevron(i))
                                 GPIO_SetPixel(i, u8Brightness, 0, 0);
                         }
                         GPIO_RefreshPixels();
@@ -265,9 +266,9 @@ static void LedRefreshTask(void *pvParameters)
                     for(float fltBrightness = 0.0f; fltBrightness <= 1.0f; fltBrightness += 0.05f)
                     {
                         const uint8_t u8Brightness = (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX);
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
+                            if (SGUHELPER_IsLEDIndexChevron(i))
                                 GPIO_SetPixel(i, u8Brightness, u8Brightness, u8Brightness);
                             else
                                 GPIO_SetPixel(i, 5, 5, 5);
@@ -346,7 +347,7 @@ static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg)
     ESP_LOGI(TAG, "BLE Update light received. Lights: %u", /*0*/(uint)psArg->u8LightCount);
 
      // Keep chevrons dimly lit
-    for(int i = 0; i < psArg->u8LightCount; i++)
+    for(int32_t i = 0; i < psArg->u8LightCount; i++)
     {
         uint8_t u8LightIndex = psArg->u8Lights[i];
 
