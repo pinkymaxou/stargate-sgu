@@ -158,6 +158,14 @@ static void LedRefreshTask(void *pvParameters)
         {
             switch((SGUBRPROTOCOL_ECHEVRONANIM)m_s32ChevronAnim)
             {
+                case SGUBRPROTOCOL_ECHEVRONANIM_Suicide:
+                {
+                    ESP_LOGI(TAG, "Animation / Suicide");
+                    // Light up the hidden chevron RED.
+                    GPIO_SetPixel(SGUHELPER_ChevronIndexToLedIndex(5), LED_OUTPUT_MAX, 0, 0);
+                    GPIO_SetPixel(SGUHELPER_ChevronIndexToLedIndex(6), LED_OUTPUT_MAX, 0, 0);
+                    break;
+                }
                 case SGUBRPROTOCOL_ECHEVRONANIM_FadeIn:
                 {
                     ESP_LOGI(TAG, "Animation / FadeIn");
@@ -432,6 +440,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(&MainTask, "MainTask", 4000, NULL, 10, NULL, 1);
 
     long switchTicks = 0;
+    bool bLastIsSuicide = false;
 
     while(true)
     {
@@ -463,14 +472,21 @@ void app_main(void)
         // Means cutting to power to itself.
         if (m_bIsSuicide)
         {
+            if (!bLastIsSuicide)
+            {
+                m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_Suicide;
+                ESP_LOGW(TAG, "Suicide animation");
+            }
+
             // Release the power pin
             // Delay for animation before stop
             GPIO_EnableHoldPowerPin(false);
             // At this point if there are no external power to maintain it, it should die.
-            vTaskDelay(pdMS_TO_TICKS(500));
-            ESP_LOGW(TAG, "Seems like it we will live");
+            vTaskDelay(pdMS_TO_TICKS(250));
+            ESP_LOGW(TAG, "Seems like we will live");
         }
 
+        bLastIsSuicide = m_bIsSuicide;
         vTaskDelay(pdMS_TO_TICKS(250));
     }
 }
