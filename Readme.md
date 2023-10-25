@@ -1,5 +1,5 @@
 **Warning**: This project contains several hundred parts to print and hundreds hours of print.
-If you decide to take this path you will suffer a lot, you may lost some compatriot in the battle.
+If you decide to take this path you will suffer a lot, you may lose some compatriot in the battle.
 You will no longer be the same after that, it could also cause hair loss.
 
 # Stargate Universe
