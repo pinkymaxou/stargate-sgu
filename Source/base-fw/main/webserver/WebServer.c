@@ -12,6 +12,7 @@
 #include "cJSON.h"
 #include "Settings.h"
 #include "GateControl.h"
+#include "FWConfig.h"
 #include "Main.h"
 #include "GPIO.h"
 #include "GateStepper.h"
@@ -83,6 +84,7 @@ void WEBSERVER_Init()
     config.lru_purge_enable = true;
     config.uri_match_fn = httpd_uri_match_wildcard;
     config.max_open_sockets = 13;
+    config.task_priority = FWCONFIG_WEBSERVERTASK_PRIORITY_DEFAULT;
 
     // Start the httpd server
     ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
