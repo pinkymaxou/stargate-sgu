@@ -198,6 +198,8 @@ static void wifi_init_all(void)
 
 void app_main(void)
 {
+    vTaskPrioritySet( NULL, FWCONFIG_MAINTASK_PRIORITY_DEFAULT);
+
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
