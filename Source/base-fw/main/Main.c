@@ -77,19 +77,19 @@ static void wifistation_event_handler(void* arg, esp_event_base_t event_base, in
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
-    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+     }
+     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED ) {
+        ESP_LOGI(TAG, "Connected to the AP");
+        esp_netif_create_ip6_linklocal(m_pWifiSTA);
+     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
         esp_wifi_connect();
-        ESP_LOGI(TAG, "retry to connect to the AP");
-        ESP_LOGI(TAG,"connect to the AP fail");
+        ESP_LOGI(TAG, "connect to the AP faile, retry to connect to the AP");
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
         ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-
-        /*if (!m_bIsWebServerInit)
-        {
-            m_bIsWebServerInit = true;
-            WEBSERVER_Init();
-        }*/
+    } else if (event_base == IP_EVENT && event_id == IP_EVENT_GOT_IP6) {
+        ip_event_got_ip6_t *event = (ip_event_got_ip6_t *)event_data;
+        ESP_LOGI(TAG, "Got IPv6 address " IPV6STR, IPV62STR(event->ip6_info.ip));
     }
 }
 
@@ -157,16 +157,23 @@ static void wifi_init_all(void)
 
         esp_event_handler_instance_t instance_any_id;
         esp_event_handler_instance_t instance_got_ip;
+        esp_event_handler_instance_t instance_got_ip6;
         ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
                                                             ESP_EVENT_ANY_ID,
                                                             &wifistation_event_handler,
                                                             NULL,
                                                             &instance_any_id));
+
         ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
                                                             IP_EVENT_STA_GOT_IP,
                                                             &wifistation_event_handler,
                                                             NULL,
                                                             &instance_got_ip));
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                            IP_EVENT_GOT_IP6,
+                                                            &wifistation_event_handler,
+                                                            NULL,
+                                                            &instance_got_ip6));
 
         wifi_config_t wifi_configSTA;
         memset(&wifi_configSTA, 0, sizeof(wifi_configSTA));
@@ -191,6 +198,8 @@ static void wifi_init_all(void)
 
 void app_main(void)
 {
+    vTaskPrioritySet( NULL, FWCONFIG_MAINTASK_PRIORITY_DEFAULT);
+
     //Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -251,6 +260,10 @@ void app_main(void)
     vTaskList(szAllTask);
     ESP_LOGI(TAG, "vTaskList: \r\n\r\n%s", szAllTask);
     free(szAllTask);
+
+    // Small delay to be sure the Mp3 player doesn't play random things before being started up.
+    vTaskDelay(pdMS_TO_TICKS(500));
+    SOUNDFX_Stop();
 
     while(true)
     {
@@ -314,6 +327,13 @@ void MAIN_GetWiFiSTAIP(esp_netif_ip_info_t* pIPInfo)
 {
     if (m_pWifiSTA != NULL)
         esp_netif_get_ip_info(m_pWifiSTA, pIPInfo);
+}
+
+int32_t MAIN_GetWiFiSTAIPv6(esp_ip6_addr_t if_ip6[CONFIG_LWIP_IPV6_NUM_ADDRESSES])
+{
+    if (m_pWifiSTA != NULL)
+        return esp_netif_get_all_ip6(m_pWifiSTA, if_ip6);
+    return 0;
 }
 
 void MAIN_GetWiFiSoftAPIP(esp_netif_ip_info_t* pIPInfo)

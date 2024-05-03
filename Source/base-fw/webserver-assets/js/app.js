@@ -67,7 +67,7 @@ let allsymbols = [
 ];
 
 let alladdresses = [
-  { symbolIndexes: [10, 15, 20, 26, 28, 13, 18, 32, 30], name: 'Earth' },
+  { symbolIndexes: [10, 15, 20, 26, 28, 13, 18, 32, 30], name: 'Earth', wormhole: 5 },
   { symbolIndexes: [3, 34, 12, 7, 19, 6, 29],            name: 'Jungle Planet' },
   { symbolIndexes: [7, 8, 14, 17, 32, 23, 33],           name: 'Desert Planet' },
   { symbolIndexes: [15, 35, 8, 30, 31, 29, 33],          name: 'Hoth' },
@@ -80,7 +80,6 @@ let alladdresses = [
   { symbolIndexes: [5, 17, 23, 25, 1, 28, 33],           name: 'Novus Colony Planet' },
   { symbolIndexes: [6, 26, 28, 10, 31, 12, 33],          name: 'Last Planet' },
   { symbolIndexes: [5, 13, 34, 18, 31, 7, 4],            name: 'Wormhole', wormhole: 3 },
-  { symbolIndexes: [2, 10, 35, 9, 29, 23, 15],           name: 'Hell', wormhole: 2 },
   // { symbolIndexes: [1, 36, 2, 35, 3, 34],                name: 'Test #1' },
 ];
 

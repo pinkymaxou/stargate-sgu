@@ -2,7 +2,7 @@
 
 ## Cut the plexiglass
 
-You need a 2 mm sheet of plexiglass. Be carefull with compass, it could leave horrible trace.
+You need a 2 mm sheet of plexiglass. Be carefull with compass, it could leave horrible traces.
 
 You need to cut circle of 161.5 mm into a plexiglass sheet.
 You will need to cut the lower part at the right height using a dremel or use "Plexgliass-Template-Dummy.stl" as template for laser cut.
@@ -14,7 +14,7 @@ You will need to cut the lower part at the right height using a dremel or use "P
 Remove the plastic protection on the mirror film, it could be a nightmare to find but it's there.
 You cannot apply it directly to the plexiglass, it won't work it will just create something horrible full of bubble and ruin your nice work.
 You can check on youtube there are several tutorial about how to apply it but basically you need:
-- Cut the film, it should be 1 inch bigger on every side. Ensure you get a nice spot, sometime the film could be slighly damaged. Inspect just to be sure. 
+- Cut the film, it should be 1 inch bigger on every side. Ensure you get a nice spot, sometime the film could be slighly damaged. Inspect just to be sure.
 - Apply water mixed with soap using a spray bottle over the plexiglass
 - Remove the protection film from the mirror film
 - Stick the mirror film over the plexiglass, use a ruler to push water bubble ouside
@@ -57,7 +57,7 @@ Example of ruined filter:
 ## Glue "Wormhole-outer-rim.stl"
 
 Glue it using gorilla glue on the outside part of the "Wormhole-outer-rim.stl".
-Use clamp to be sure it hold in place until glue is completely cured. 
+Use clamp to be sure it hold in place until glue is completely cured.
 
 ![](./Assets/install-wormhole-outer-rim.png)
 

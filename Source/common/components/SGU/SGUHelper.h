@@ -5,11 +5,16 @@
 extern "C" {
 #endif
 
-double SGUHELPER_LEDIndexToDeg(int ledIndex);
+#include <stdbool.h>
+#include <stdint.h>
 
-int SGUHELPER_ChevronIndexToLedIndex(int chevronIndexOneBased);
+double SGUHELPER_LEDIndexToDeg(int32_t ledIndex);
 
-int SGUHELPER_SymbolIndexToLedIndex(int symbolIndexOneBased);
+int32_t SGUHELPER_ChevronIndexToLedIndex(int32_t chevronIndexOneBased);
+
+int32_t SGUHELPER_SymbolIndexToLedIndex(int32_t symbolIndexOneBased);
+
+bool SGUHELPER_IsLEDIndexChevron(int32_t ledIndex);
 
 #ifdef __cplusplus
 }

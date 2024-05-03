@@ -7,6 +7,7 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include "FWConfig.h"
+#include "HelperMacro.h"
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -24,6 +25,7 @@
 #include "gpio.h"
 #include "SGUBRProtocol.h"
 #include "SGUBRComm.h"
+#include "SGUHelper.h"
 #include "esp_now.h"
 #include "esp_crc.h"
 #include "esp_netif.h"
@@ -32,7 +34,7 @@
 
 #define SGU_GATTS_TAG "SGU-GATTS"
 
-#define LED_OUTPUT_MAX (220)
+#define LED_OUTPUT_MAX (160)
 #define LED_OUTPUT_IDLE (100)
 
 static void InitESPNOW();
@@ -157,46 +159,59 @@ static void LedRefreshTask(void *pvParameters)
         {
             switch((SGUBRPROTOCOL_ECHEVRONANIM)m_s32ChevronAnim)
             {
+                case SGUBRPROTOCOL_ECHEVRONANIM_Suicide:
+                {
+                    ESP_LOGI(TAG, "Animation / Suicide");
+                    // Light up the hidden chevron RED.
+                    GPIO_SetPixel(SGUHELPER_ChevronIndexToLedIndex(5), LED_OUTPUT_MAX, 0, 0);
+                    GPIO_SetPixel(SGUHELPER_ChevronIndexToLedIndex(6), LED_OUTPUT_MAX, 0, 0);
+                    break;
+                }
                 case SGUBRPROTOCOL_ECHEVRONANIM_FadeIn:
                 {
                     ESP_LOGI(TAG, "Animation / FadeIn");
-                    for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
+
+                    for(float fltBrightness = 0.0f; fltBrightness <= 1.0f; fltBrightness += 0.05f)
                     {
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        const uint8_t u8Brightness = (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX);
+
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
-                                GPIO_SetPixel(i, brightness, brightness, brightness);
+                            if (SGUHELPER_IsLEDIndexChevron(i))
+                                GPIO_SetPixel(i, u8Brightness, u8Brightness, u8Brightness);
                             else
                                 GPIO_SetPixel(i, 0, 0, 0);
                         }
                         GPIO_RefreshPixels();
-                        vTaskDelay(pdMS_TO_TICKS(50));
+                        vTaskDelay(pdMS_TO_TICKS(40));
                     }
                     break;
                 }
                 case SGUBRPROTOCOL_ECHEVRONANIM_FadeOut:
                 {
                     ESP_LOGI(TAG, "Animation / FadeOut");
-                    for(int brightness = LED_OUTPUT_MAX; brightness >= 0; brightness -= 10)
+                    for(float fltBrightness = 1.0f; fltBrightness >= 0.0f; fltBrightness -= 0.05f)
                     {
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        const uint8_t u8Brightness = (fltBrightness < 0.05f ? 0 : (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX));
+
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
-                                GPIO_SetPixel(i, brightness, brightness, brightness);
+                            if (SGUHELPER_IsLEDIndexChevron(i))
+                                GPIO_SetPixel(i, u8Brightness, u8Brightness, u8Brightness);
                             else
                                 GPIO_SetPixel(i, 0, 0, 0);
                         }
                         GPIO_RefreshPixels();
-                        vTaskDelay(pdMS_TO_TICKS(50));
+                        vTaskDelay(pdMS_TO_TICKS(40));
                     }
                     break;
                 }
                 case SGUBRPROTOCOL_ECHEVRONANIM_ErrorToWhite:
                 {
                     ESP_LOGI(TAG, "Animation / Error");
-                    for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                    for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
-                        if ((i % 5) == 0)
+                        if (SGUHELPER_IsLEDIndexChevron(i))
                             GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
                         else
                             GPIO_SetPixel(i, 0, 0, 0);
@@ -204,12 +219,13 @@ static void LedRefreshTask(void *pvParameters)
                     GPIO_RefreshPixels();
                     vTaskDelay(pdMS_TO_TICKS(1500));
 
-                    for(int brightness = 0; brightness < LED_OUTPUT_MAX; brightness += 10)
+                    for(float fltBrightness = 0.0f; fltBrightness <= 1.0f; fltBrightness += 0.05f)
                     {
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        const uint8_t u8Brightness = (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX);
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
-                                GPIO_SetPixel(i, LED_OUTPUT_MAX, brightness, brightness);
+                            if (SGUHELPER_IsLEDIndexChevron(i))
+                                GPIO_SetPixel(i, LED_OUTPUT_MAX, u8Brightness, u8Brightness);
                         }
                         GPIO_RefreshPixels();
                         vTaskDelay(pdMS_TO_TICKS(50));
@@ -219,9 +235,9 @@ static void LedRefreshTask(void *pvParameters)
                 case SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff:
                 {
                     ESP_LOGI(TAG, "Animation / Error");
-                    for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                    for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                     {
-                        if ((i % 5) == 0)
+                        if (SGUHELPER_IsLEDIndexChevron(i))
                             GPIO_SetPixel(i, LED_OUTPUT_MAX, 0, 0);
                         else
                             GPIO_SetPixel(i, 0, 0, 0);
@@ -230,12 +246,32 @@ static void LedRefreshTask(void *pvParameters)
                     GPIO_RefreshPixels();
                     vTaskDelay(pdMS_TO_TICKS(1500));
 
-                    for(int brightness = LED_OUTPUT_MAX; brightness >= 0; brightness -= 10)
+                    for(float fltBrightness = 1.0f; fltBrightness >= 0.0f; fltBrightness -= 0.05f)
                     {
-                        for(int i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        const uint8_t u8Brightness = (fltBrightness < 0.05f ? 0 : (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX));
+
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
                         {
-                            if ((i % 5) == 0)
-                                GPIO_SetPixel(i, brightness, 0, 0);
+                            if (SGUHELPER_IsLEDIndexChevron(i))
+                                GPIO_SetPixel(i, u8Brightness, 0, 0);
+                        }
+                        GPIO_RefreshPixels();
+                        vTaskDelay(pdMS_TO_TICKS(50));
+                    }
+                    break;
+                }
+                case SGUBRPROTOCOL_ECHEVRONANIM_AllSymbolsOn:
+                {
+                    ESP_LOGI(TAG, "Animation / AllSymbolsOn");
+                    for(float fltBrightness = 0.0f; fltBrightness <= 1.0f; fltBrightness += 0.05f)
+                    {
+                        const uint8_t u8Brightness = (uint8_t)(HELPERMACRO_LEDLOGADJ(fltBrightness, 1.0f) * LED_OUTPUT_MAX);
+                        for(int32_t i = 0; i < HWCONFIG_WS1228B_LEDCOUNT; i++)
+                        {
+                            if (SGUHELPER_IsLEDIndexChevron(i))
+                                GPIO_SetPixel(i, u8Brightness, u8Brightness, u8Brightness);
+                            else
+                                GPIO_SetPixel(i, 5, 5, 5);
                         }
                         GPIO_RefreshPixels();
                         vTaskDelay(pdMS_TO_TICKS(50));
@@ -311,7 +347,7 @@ static void SGUBRUpdateLightHandler(const SGUBRPROTOCOL_SUpdateLightArg* psArg)
     ESP_LOGI(TAG, "BLE Update light received. Lights: %u", /*0*/(uint)psArg->u8LightCount);
 
      // Keep chevrons dimly lit
-    for(int i = 0; i < psArg->u8LightCount; i++)
+    for(int32_t i = 0; i < psArg->u8LightCount; i++)
     {
         uint8_t u8LightIndex = psArg->u8Lights[i];
 
@@ -405,6 +441,7 @@ void app_main(void)
     xTaskCreatePinnedToCore(&MainTask, "MainTask", 4000, NULL, 10, NULL, 1);
 
     long switchTicks = 0;
+    bool bLastIsSuicide = false;
 
     while(true)
     {
@@ -436,14 +473,21 @@ void app_main(void)
         // Means cutting to power to itself.
         if (m_bIsSuicide)
         {
+            if (!bLastIsSuicide)
+            {
+                m_s32ChevronAnim = SGUBRPROTOCOL_ECHEVRONANIM_Suicide;
+                ESP_LOGW(TAG, "Suicide animation");
+            }
+
             // Release the power pin
             // Delay for animation before stop
             GPIO_EnableHoldPowerPin(false);
             // At this point if there are no external power to maintain it, it should die.
-            vTaskDelay(pdMS_TO_TICKS(500));
-            ESP_LOGW(TAG, "Seems like it we will live");
+            vTaskDelay(pdMS_TO_TICKS(250));
+            ESP_LOGW(TAG, "Seems like we will live");
         }
 
+        bLastIsSuicide = m_bIsSuicide;
         vTaskDelay(pdMS_TO_TICKS(250));
     }
 }

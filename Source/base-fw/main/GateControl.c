@@ -1,3 +1,7 @@
+#include <stdint.h>
+#include <string.h>
+#include <math.h>
+#include "HelperMacro.h"
 #include "GateControl.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -16,8 +20,6 @@
 #include "GateControl.h"
 #include "GateStepper.h"
 #include "SoundFX.h"
-#include <stdint.h>
-#include <string.h>
 
 #define TAG "GateControl"
 
@@ -269,6 +271,7 @@ static bool AutoCalibrate(const SProcCycle* psProcCycle)
     // Move until it's outside
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
+    SOUNDFX_Stop();
 
     const int32_t s32AttemptCount = 10;
     int32_t s32StepCount = 0;
@@ -364,6 +367,7 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 
     m_bIsHomingCompleted = false;
 
+    SOUNDFX_Stop();
     GPIO_StartStepper();
     GPIO_ReleaseClamp();
     ESP_LOGI(TAG, "[DoHoming] Started");
@@ -497,25 +501,31 @@ static bool DoHoming(const SProcCycle* psProcCycle)
 void GATECONTROL_AnimRampLight(bool bIsActive)
 {
     const float fltPWMOn = (float)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RampOnPercent) / 100.0f;
-    const float fltInc = (fltPWMOn / 50.0f);
+    const float fltInc = 0.01f;
 
     if (bIsActive)
-        for(float flt = 0.0f; flt < fltPWMOn; flt += fltInc)
+    {
+        for(float flt = 0.0f; flt <= 1.0f; flt += fltInc)
         {
-            GPIO_SetRampLightPerc(flt);
+            // Log corrected
+            GPIO_SetRampLightPerc(HELPERMACRO_LEDLOGADJ(flt, fltPWMOn));
             vTaskDelay(pdMS_TO_TICKS(5));
         }
+    }
     else
-        for(float flt = fltPWMOn; flt >= 0.0f; flt -= fltInc)
+    {
+        for(float flt = 1.0f; flt >= 0.0f; flt -= fltInc)
         {
-            GPIO_SetRampLightPerc(flt);
+            GPIO_SetRampLightPerc(HELPERMACRO_LEDLOGADJ(flt, fltPWMOn));
             vTaskDelay(pdMS_TO_TICKS(5));
         }
+    }
 }
 
 static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCycle* psProcCycle)
 {
     const char* szErrorString = "unknown";
+    bool bIsCancelled = false;
 
     if (!m_bIsHomingCompleted)
     {
@@ -537,16 +547,22 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCyc
     const int32_t s32StepPerRotation = NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_StepPerRotation);
     const uint32_t u32SymbBright = (uint32_t)NVSJSON_GetValueInt32(&g_sSettingHandle, SETTINGS_EENTRY_RingSymbolBrightness);
 
+    #define CHECK_CANCEL_JUMP \
+    do { \
+        if (m_bIsStop) \
+        { \
+            bIsCancelled = true; \
+            szErrorString = "cancelled"; \
+            goto ERROR; \
+        } \
+    } while(0)
+
     for(int i = 0; i < psDialArg->u8SymbolCount; i++)
     {
-        if (m_bIsStop)
-        {
-            szErrorString = "cancelled";
-            goto ERROR;
-        }
-
         const uint8_t u8SymbolIndex = psDialArg->u8Symbols[i];
         int32_t s32TicksTarget = GetAbsoluteSymbolTarget(u8SymbolIndex, s32StepPerRotation);
+
+        CHECK_CANCEL_JUMP;
 
         ESP_LOGI(TAG, "Go Home - Symbol: %d, previous target: %d, new target: %d, current: %d", /*0*/(int)u8SymbolIndex, /*1*/(int)m_s32Count, /*2*/(int)s32TicksTarget, /*3*/(int)m_s32Count);
 
@@ -562,6 +578,7 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCyc
         SOUNDFX_StartRollingSound();
         vTaskDelay(pdMS_TO_TICKS(250));
         MoveRelative(s32Move);
+        CHECK_CANCEL_JUMP;
         SOUNDFX_Stop();
         vTaskDelay(pdMS_TO_TICKS(150));
         SOUNDFX_EngageChevron();
@@ -596,7 +613,8 @@ static bool DoDialSequence(const GATECONTROL_SDialArg* psDialArg, const SProcCyc
     GPIO_StopStepper();
     SOUNDFX_Fail();
     GATECONTROL_AnimRampLight(false);
-    SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff);
+    const SGUBRPROTOCOL_ECHEVRONANIM eChevronAnim = (bIsCancelled ? SGUBRPROTOCOL_ECHEVRONANIM_FadeOut : SGUBRPROTOCOL_ECHEVRONANIM_ErrorToOff);
+    SGUBRCOMM_ChevronLightning(&g_sSGUBRCOMMHandle, eChevronAnim);
     return false;
 }
 

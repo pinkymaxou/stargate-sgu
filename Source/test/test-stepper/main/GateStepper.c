@@ -1,4 +1,5 @@
 #include "GateStepper.h"
+#include "HelperMacro.h"
 #include "esp_timer.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -6,9 +7,6 @@
 #include "freertos/semphr.h"
 
 #define TAG "GateStepper"
-
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
 
 static void tmr_signal_callback(void* arg);
 
@@ -95,7 +93,7 @@ static IRAM_ATTR void tmr_signal_callback(void* arg)
     gpio_set_level(HWCONFIG_STEPPER_STEP_PIN, m_bPeriodAlternate);
     if (m_bPeriodAlternate)
     {
-        const int32_t s32 = MIN(abs(m_count) , abs(m_target - m_count));
+        const int32_t s32 = HELPERMACRO_MIN(abs(m_count) , abs(m_target - m_count));
 
         if (s32 < 100)
             m_period = 1500;

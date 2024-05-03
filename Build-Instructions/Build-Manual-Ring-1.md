@@ -10,7 +10,7 @@
 
 ![](./Assets/Stargate-Back.png)
 
-- Print "Light-chevron-0.2mm_x18" 18 times using 0.2 mm nozzle 
+- Print "Light-chevron-0.2mm_x18" 18 times using 0.2 mm nozzle
 
 ![](./Assets/Light-chevron-0.2mm_x18.png)
 
@@ -66,19 +66,24 @@ You can use a resin printer to print them and get better resolution, but resin i
 
 ## Assemble alignment block and chevrons light diffuser
 
-Use this picture as reference: 
+Use this picture as reference:
 
 ![](./Assets/stargate-front-inserts.png)
 
 # Lightning diffuser for chevrons
-- Insert "Light-Chevron" into place on "Stargate-Front" and "Stargate-Back". You may need a hammer and a big metal part to force it. Be gentle to now destroy the parts. You can print "Chevron-insert-tool.stl" too to help.
+
+- Insert "Light-Chevron" into place on "Stargate-Front" and "Stargate-Back".<br>
+You may need a hammer and a big metal part to force it.<br>
+Be gentle to not destroy the parts. You can print "Chevron-insert-tool.stl" too to help.
 
 # Alignment blocks
-- Insert "Alignment-block" into place on the "Stargate-Front" part. 
+
+- Insert "Alignment-block" into place on the "Stargate-Front" part.
 Ensure the holes are clear and everything fit. Then glue them in place, pour gorilla glue into the hole then install the alignment blocks.
 - Use a sharpie and mark a chevron as being the "master chevron" on both side. Doesn't matter which one it is but it should have a master chevron. It's labelled M.C on the picture above, use the same pattern.
 
 # Test
+
 - Try to assemble "Stargate-Front" and "Stargate-Back" together to ensure alignment block are meshing together.
 
 ![](./Assets/stargate-front-back-assemble.png)
@@ -86,9 +91,9 @@ Ensure the holes are clear and everything fit. Then glue them in place, pour gor
 # Assemble bearing modules
 
 - Ordered bearing comes with not so great grease, put some WD40 or Jig-A-Loo into bearings. Be careful, Jig-A-Loo attack PLA a little bit, if you clean the part with a towel the color of the PLA stain the paper so ...
-- Modules are made of two part meant to mesh together and hold the bearing in sandwitch.
+- Modules are made of two parts meant to mesh together and hold the bearing in sandwitch.
 The part is printed 18 times so you will have 9 modules.
-So the tolerance are very tight, you will have to use a lot of force to insert the bearing. If it's not hard to insert then something is wrong and you may need to change the design of the part or trying print it with lower resolution. We suggest you to use a wrench or c-clamp to force two part together.
+Tolerances are very tight, you will have to use a lot of force to insert the bearing. If it's not hard to insert then something is wrong and you may need to change the design of the part or trying print it with lower resolution. We suggest you to use a wrench or c-clamp to force two part together.
 - Use gorilla glue to glue both part together and use clamp to hold parts
 
 ![](./Assets/Module-With_wheel-0.2mm_x18-2.png)
@@ -104,7 +109,7 @@ So the tolerance are very tight, you will have to use a lot of force to insert t
 
 # Assemble symbols
 
-Tolerance are so tight that you will need a hammer to insert symbols in place and you need to put something behind the gate to avoid destroying it. 
+Tolerances are so tight that you will need a hammer to insert symbols in place and you need to put something behind the gate to avoid destroying it.
 You don't need glue. It may be possible you need to sand a bit to insert symbols.
 
 - Put each "symbol-light-guide_0.2mm-x36" (36 of them) into symbol holes. You can try lighting up a LED behind to ensure they diffuse light correctly.
@@ -131,7 +136,7 @@ The master chevron LED data input should be where the microcontroller will be co
 
 ![](./Assets/Light-chevron-cover.png)
 
-- Add tape over symbol LEDs to project from accidental short circuit.
+- Add tape over symbols LEDs to project from accidental short circuit.
 - Add a 3 pins connector on the master chevron LED. Servo motor connector or JST can do the job. One ground, one positive and the WS2812B led data input.
 
 ![](./Assets/light-tape-chevron.png)
@@ -153,7 +158,7 @@ You needs those parts:
 
 ### Power collector
 
-- Use two "Stargate-Back-TransWindow-0.2mm-x10-12", wrap them using cooper tape. 
+- Use two "Stargate-Back-TransWindow-0.2mm-x10-12", wrap them using cooper tape.
 ** Warning: ** The back of the cooper tape is not conductor at all, ensure both side are covered by the same piece.
 - Glue them in place using gorilla glue
 - Use a sharpy to mark the positive and the negative inside the ring.
@@ -178,8 +183,8 @@ Hall sensor are sensitive to polarity, so you need to test it before attempting 
 # Magnetic ring
 
 Odd position magnets should not have the same polarity as even magnets.
-**WARNING** Recomment to install the magnet ring into the "stargate-front" part and glue it in place before installing magnets.
-Don't glue it too hard, just tacking is good enough as long as magnet don't move outside.
+**WARNING** We recommend to install the magnet ring into the "stargate-front" part and glue it in place before installing magnets.
+Don't glue it too hard, just tacking is good enough as long as the magnets cannot move outside.
 
 - Use the stack of magnets and put them in place starting from the top most magnets, skip one position every time.
 - Flip the stack of magnets and put reverted polarity magnet into remaining holes.

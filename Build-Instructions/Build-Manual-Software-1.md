@@ -10,7 +10,7 @@
 
 ## About-OTA
 
-Give system informations and allow to upload over-the-air (OTA) update
+Give system informations and it allows to upload over-the-air (OTA) update
 
 ## Settings
 
@@ -23,7 +23,7 @@ DF Robot Mini Pro (DF1201S). It has it's own USB drive so you can plug it to a c
 
 ![](./Assets/DF1201S.png)
 
-The only way I found to play a specific file (the provided command for playing by name doesn't work) is
+The only way we have found to play a specific file (the provided command for playing by name doesn't work) is
 to use the file number. It is defined by copy order on the USB drive.
 
 To add sound FX to the mp3 player:
@@ -34,7 +34,7 @@ To add sound FX to the mp3 player:
 ![](./Assets/edit-copy-mp3.png)
 
 - Execute it.
-- Ensure all file were copied on the USB drive. If you screw the order you can format it and do the procedure again.
+- Ensure all files were copied on the USB drive. If you screw the order you can format it and do the procedure again.
 
 ![](./Assets/file-explorer-mp3.png)
 

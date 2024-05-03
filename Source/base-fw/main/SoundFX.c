@@ -22,7 +22,7 @@ _Static_assert((sizeof(m_sFiles)/sizeof(m_sFiles[0])) == SOUNDFX_EFILE_Count, "d
 
 void SOUNDFX_Init()
 {
-    SOUNDFX_Stop();
+    // SOUNDFX_Stop();
 }
 
 const SOUNDFX_SFile* SOUNDFX_GetFile(SOUNDFX_EFILE eFile)
@@ -95,8 +95,8 @@ void SOUNDFX_Stop()
     // We don't know when it is playing and there is no explicit STOP command. It just toggle
     // so the trick is to play something then immediately put it on pause.
     GPIO_SendMp3PlayerCMD("AT+PLAYMODE=3\r\n");
-    vTaskDelay(pdMS_TO_TICKS(25));
+    vTaskDelay(pdMS_TO_TICKS(35));
     GPIO_SendMp3PlayerCMD("AT+PLAYNUM=6\r\n");
-    vTaskDelay(pdMS_TO_TICKS(25));
+    vTaskDelay(pdMS_TO_TICKS(35));
     GPIO_SendMp3PlayerCMD("AT+PLAY=PP\r\n");
 }
